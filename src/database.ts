@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { MatchMongoose, MatchType } from "./schemas/match";
+import { CreateMatchType, MatchMongoose } from "./schemas/match";
+import { MONGO_DB_CONNECTION_STRING } from "./constant/credentials";
 
-const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING!;
 let mongoClient: mongoose.Mongoose;
 let mongoConnection: mongoose.Connection;
 
@@ -24,7 +24,7 @@ export async function databaseConnection(){
 }
 
 
-export async function createMatch(match: MatchType) {
+export async function createMatch(match: CreateMatchType) {
     const dbClient = await databaseConnection()
     const response = await dbClient.model("Match", MatchMongoose).create(match)
     return response;

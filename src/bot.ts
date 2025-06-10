@@ -1,6 +1,7 @@
-import { Client, IntentsBitField, Interaction, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Client, IntentsBitField, Interaction, CommandInteraction } from 'discord.js';
 import { createMatch } from './database';
-
+import { convertToDateTime } from './utils/date';
+import { DISCORD_TOKEN, GENERAL_CHANNEL_ID, OWNER_ID } from './constant/credentials';
 
 const client = new Client({
   intents: [
@@ -9,40 +10,6 @@ const client = new Client({
     IntentsBitField.Flags.DirectMessages
   ]
 });
-
-// Replace with your Discord user ID
-const OWNER_ID = process.env.OWNER_ID!;
-const GENERAL_CHANNEL_ID  = process.env.GENERAL_CHANNEL_ID!;
-
-// Slash Commands
-export const commands = [
-  new SlashCommandBuilder()
-    .setName('anon')
-    .setDescription('Send a secret message to the owner')
-    .addStringOption(option =>
-      option.setName('message')
-        .setDescription('Your secret message')
-        .setRequired(true)),
-  new SlashCommandBuilder()
-    .setName('say')
-    .setDescription('Send a message through the bot (Owner only)')
-    .addStringOption(option =>
-      option.setName('message')
-        .setDescription('Message to send')
-        .setRequired(true)),
-  new SlashCommandBuilder()
-    .setName('create-match')
-    .setDescription('Create a match to post results in a channel')
-    .addStringOption(option =>
-      option.setName('team1')
-        .setDescription('Team 1 Name')
-        .setRequired(true))
-    .addStringOption(option =>
-      option.setName('team2')
-        .setDescription('Team 2 Name')
-        .setRequired(true))
-].map(command => command.toJSON());
-
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
@@ -105,8 +72,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
     const team1 = interaction.options.get('team1')?.value as string;
     const team2 = interaction.options.get('team2')?.value as string;
+    const datetime = interaction.options.get('datetime')?.value as string;
+    const group = interaction.options.get('group')?.value as string;
 
-    await createMatch({team1, team2});
+    await createMatch({team1, team2, datetime: convertToDateTime(datetime), group});
     await interaction.reply({
       content: 'Match created!',
       ephemeral: true
@@ -114,4 +83,4 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(DISCORD_TOKEN);
