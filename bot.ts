@@ -1,8 +1,6 @@
 import { Client, IntentsBitField, CommandInteraction, SlashCommandBuilder } from 'discord.js';
-import * as dotenv from 'dotenv';
 import { createMatch } from './database';
 
-dotenv.config();
 
 const client = new Client({
   intents: [

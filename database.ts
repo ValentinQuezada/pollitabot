@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
 import { MatchMongoose, MatchType } from "./schemas/match";
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING!;
 let mongoClient: mongoose.Mongoose;
