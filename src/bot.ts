@@ -1,4 +1,4 @@
-import { Client, IntentsBitField, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Client, IntentsBitField, Interaction, CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { createMatch } from './database';
 
 
@@ -48,22 +48,24 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
 
-client.on('interactionCreate', async (interaction: CommandInteraction) => {
+client.on('interactionCreate', async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
+  
+  const commandInteraction = interaction as CommandInteraction;
+  
+  if (commandInteraction.commandName === 'anon') {
+    const message = commandInteraction.options.get('message')?.value as string;
+    const member = commandInteraction.member; 
+    const displayName = (member && 'displayName' in member) 
+      ? member.displayName 
+      : interaction.user.username;
 
-  if (interaction.commandName === 'anon') {
-    const message = interaction.options.get('message')?.value as string;
-    const member = interaction.member; // This is a GuildMember if in a guild
-    const displayName = member?.displayName || interaction.user.username;
 
-
-    // Send to owner's DMs
     const owner = await client.users.fetch(OWNER_ID);
     await owner.send(`Secret message from ${displayName}:\n${message}`);
     
-    // Send announcement to #general
     const generalChannel = await client.channels.fetch(GENERAL_CHANNEL_ID);
-    if (generalChannel?.isTextBased()) {
+    if (generalChannel && 'send' in generalChannel) {
       await generalChannel.send(`${displayName} said something!`);
     }
 
@@ -83,7 +85,10 @@ client.on('interactionCreate', async (interaction: CommandInteraction) => {
     }
 
     const message = interaction.options.get('message')?.value as string;
-    await interaction.channel?.send(message);
+    const channel = await client.channels.fetch(GENERAL_CHANNEL_ID);
+    if (channel && 'send' in channel) {
+      await channel.send(message);
+    }
     await interaction.reply({
       content: 'Message sent!',
       ephemeral: true

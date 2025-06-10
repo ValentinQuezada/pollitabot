@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { commands } from './bot.ts'; // Adjust the path as needed
+import { commands } from './bot';
 
 const token = process.env.DISCORD_TOKEN!;
 const clientId = process.env.CLIENT_ID!;
