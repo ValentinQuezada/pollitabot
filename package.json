@@ -17,7 +17,7 @@
     "build": "tsc",
     "prestart": "rimraf dist && npm run build",
     "start": "dotenv -- node dist/index.js",
-    "deploy": "tsx src/deploy-commands.ts",
+    "deploy": "dotenv -- tsx src/deploy-commands.ts",
     "watch": "tsc -w"
   }
 }
