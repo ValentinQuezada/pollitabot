@@ -1,5 +1,6 @@
 import { Client, IntentsBitField, CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import * as dotenv from 'dotenv';
+import { createMatch } from './database';
 
 dotenv.config();
 
@@ -30,6 +31,17 @@ export const commands = [
     .addStringOption(option =>
       option.setName('message')
         .setDescription('Message to send')
+        .setRequired(true)),
+  new SlashCommandBuilder()
+    .setName('create-match')
+    .setDescription('Create a match to post results in a channel')
+    .addStringOption(option =>
+      option.setName('team1')
+        .setDescription('Team 1 Name')
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('team2')
+        .setDescription('Team 2 Name')
         .setRequired(true))
 ].map(command => command.toJSON());
 
@@ -76,6 +88,24 @@ client.on('interactionCreate', async (interaction: CommandInteraction) => {
     await interaction.channel?.send(message);
     await interaction.reply({
       content: 'Message sent!',
+      ephemeral: true
+    });
+  }
+
+  if (interaction.commandName === 'create-match') {
+    if (interaction.user.id !== OWNER_ID) {
+      await interaction.reply({
+        content: 'You do not have permission for this command',
+        ephemeral: true
+      });
+      return;
+    }
+    const team1 = interaction.options.get('team1')?.value as string;
+    const team2 = interaction.options.get('team2')?.value as string;
+
+    await createMatch({team1, team2});
+    await interaction.reply({
+      content: 'Match created!',
       ephemeral: true
     });
   }
