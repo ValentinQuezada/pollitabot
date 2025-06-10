@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc",
     "prestart": "rimraf dist && npm run build",
-    "start": "dotenv -- node dist/bot.js",
+    "start": "dotenv -- node dist/index.js",
     "deploy": "tsx src/deploy-commands.ts",
     "watch": "tsc -w"
   }

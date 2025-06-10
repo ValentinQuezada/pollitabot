@@ -1,21 +1,10 @@
-import { Client, IntentsBitField, Interaction, CommandInteraction } from 'discord.js';
-import { createMatch } from './database';
-import { convertToDateTime } from './utils/date';
-import { DISCORD_TOKEN, GENERAL_CHANNEL_ID, OWNER_ID } from './constant/credentials';
+import { Interaction, CommandInteraction } from "discord.js";
+import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
+import BOT_CLIENT from "../init";
+import { convertToDateTime } from "../../utils/date";
+import { createMatch } from "../../database/controllers";
 
-const client = new Client({
-  intents: [
-    IntentsBitField.Flags.Guilds,
-    IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.DirectMessages
-  ]
-});
-
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user?.tag}!`);
-});
-
-client.on('interactionCreate', async (interaction: Interaction) => {
+const interactionCreateEvent = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
   
   const commandInteraction = interaction as CommandInteraction;
@@ -28,10 +17,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       : interaction.user.username;
 
 
-    const owner = await client.users.fetch(OWNER_ID);
+    const owner = await BOT_CLIENT.users.fetch(OWNER_ID);
     await owner.send(`Secret message from ${displayName}:\n${message}`);
     
-    const generalChannel = await client.channels.fetch(GENERAL_CHANNEL_ID);
+    const generalChannel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
     if (generalChannel && 'send' in generalChannel) {
       await generalChannel.send(`${displayName} said something!`);
     }
@@ -52,7 +41,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
 
     const message = interaction.options.get('message')?.value as string;
-    const channel = await client.channels.fetch(GENERAL_CHANNEL_ID);
+    const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
     if (channel && 'send' in channel) {
       await channel.send(message);
     }
@@ -81,6 +70,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       ephemeral: true
     });
   }
-});
+};
 
-client.login(DISCORD_TOKEN);
+export default interactionCreateEvent;

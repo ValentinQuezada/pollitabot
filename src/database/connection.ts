@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { CreateMatchType, MatchMongoose } from "./schemas/match";
-import { MONGO_DB_CONNECTION_STRING } from "./constant/credentials";
+import { MONGO_DB_CONNECTION_STRING } from "../constant/credentials";
+import { MatchMongoose } from "../schemas/match";
 
 let mongoClient: mongoose.Mongoose;
 let mongoConnection: mongoose.Connection;
 
-export async function databaseConnection(){
+async function databaseConnection(){
     console.log(MONGO_DB_CONNECTION_STRING)
 
     if (mongoConnection !== undefined) {
@@ -23,9 +23,4 @@ export async function databaseConnection(){
     return mongoConnection;
 }
 
-
-export async function createMatch(match: CreateMatchType) {
-    const dbClient = await databaseConnection()
-    const response = await dbClient.model("Match", MatchMongoose).create(match)
-    return response;
-}
+export default databaseConnection;
