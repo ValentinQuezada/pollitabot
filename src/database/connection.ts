@@ -6,8 +6,6 @@ let mongoClient: mongoose.Mongoose;
 let mongoConnection: mongoose.Connection;
 
 async function databaseConnection(){
-    console.log(MONGO_DB_CONNECTION_STRING)
-
     if (mongoConnection !== undefined) {
         return mongoConnection;
     }

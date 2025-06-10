@@ -2,7 +2,7 @@ import { Interaction, CommandInteraction } from "discord.js";
 import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 import { convertToDateTime } from "../../utils/date";
-import { createMatch } from "../../database/controllers";
+import { createMatch, retrieveMatches } from "../../database/controllers";
 import { linkMatchScore } from "../../gen/client";
 
 const interactionCreateEvent = async (interaction: Interaction) => {
@@ -80,14 +80,34 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       });
       return;
     }
-    const prediction = interaction.options.get('prediction')?.value as string;
-
-    await linkMatchScore(prediction)
     
-    await interaction.reply({
-      content: 'Score prediction sent!',
-      ephemeral: true
-    });
+    await interaction.deferReply({ ephemeral: true });
+
+    try {
+      const prediction = interaction.options.get('prediction')?.value as string;
+      const matches: {team1: string, team2: string}[] = await retrieveMatches();
+
+      const response = await linkMatchScore(prediction, matches.map(match => match.team1 + " vs " + match.team2));
+      
+      if (!response.success) {
+        await interaction.editReply({
+          content: response.error
+        });
+        return;
+      }
+      
+      const owner = await BOT_CLIENT.users.fetch(OWNER_ID);
+      await owner.send(`Score prediction from ${interaction.user.username}:\n${JSON.stringify(response.data)}`);
+
+      await interaction.editReply({
+        content: 'Score prediction sent!'
+      });
+    } catch (error) {
+      console.error('Error in send-score-prediction:', error);
+      await interaction.editReply({
+        content: 'An error occurred while processing your request.'
+      });
+    }
   }
 };
 

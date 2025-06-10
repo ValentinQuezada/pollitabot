@@ -5,18 +5,11 @@ import { GenContentResponse, ScorePrediction } from "./interfaces";
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY});
 
-const list = [
-    "BAY vs AUC",
-    "PSG vs ATM",
-    "PAL vs POR",
-    "BOT vs SEA"
-]
-
-export async function linkMatchScore(query: string): Promise<GenContentResponse<ScorePrediction>> {
+export async function linkMatchScore(query: string, matches: string[]): Promise<GenContentResponse<ScorePrediction>> {
     const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
     config: {
-        systemInstruction: "From the following list of matches, return the most similar match to the following: " + list.join("\n") + "\n\nFormat your response as a JSON object with the following structure: { team1: string, team2: string, score: { team1: number, team2: number } }. Every field is required.",
+        systemInstruction: "From the following list of matches, return the most similar match to the following: " + matches.join("\n") + "\n\nFormat your response as a JSON object with the following structure: { team1: string, team2: string, score: { team1: number, team2: number } }. Every field is required.",
         maxOutputTokens: 100,
         temperature: 0.1,
         responseMimeType: "application/json",
