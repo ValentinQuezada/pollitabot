@@ -1,11 +1,8 @@
 import { REST, Routes } from 'discord.js';
-import { commands } from './bot.ts'; // Adjust the path as needed
+import BOT_COMMANDS from './constant/commands';
+import { DISCORD_TOKEN, CLIENT_ID, GUILD_ID } from './constant/credentials';
 
-const token = process.env.DISCORD_TOKEN!;
-const clientId = process.env.CLIENT_ID!;
-const guildId = process.env.GUILD_ID!; // Optional: For guild-specific registration
-
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
 
 (async () => {
   try {
@@ -13,8 +10,8 @@ const rest = new REST({ version: '10' }).setToken(token);
 
     // Use this for guild-specific commands (faster, for testing)
     await rest.put(
-       Routes.applicationGuildCommands(clientId, guildId),
-       { body: commands }
+       Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+       { body: BOT_COMMANDS }
     );
 
     // Use this for global commands (takes up to an hour to propagate)

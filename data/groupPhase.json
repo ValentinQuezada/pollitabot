@@ -1,0 +1,115 @@
+[
+  {
+    "date": "14/06",
+    "matches": [
+      {"time": "7pm", "group": "A", "match": "AHL vs MIA"}
+    ]
+  },
+  {
+    "date": "15/06",
+    "matches": [
+      {"time": "11am", "group": "C", "match": "BAY vs AUC"},
+      {"time": "2pm", "group": "B", "match": "PSG vs ATM"},
+      {"time": "5pm", "group": "A", "match": "PAL vs POR"},
+      {"time": "9pm", "group": "B", "match": "BOT vs SEA"}
+    ]
+  },
+  {
+    "date": "16/06",
+    "matches": [
+      {"time": "2pm", "group": "D", "match": "CHE vs LAF"},
+      {"time": "5pm", "group": "C", "match": "BOC vs BEN"},
+      {"time": "8pm", "group": "D", "match": "FLA vs EST"}
+    ]
+  },
+  {
+    "date": "17/06",
+    "matches": [
+      {"time": "11am", "group": "F", "match": "FLU vs DOR"},
+      {"time": "2pm", "group": "E", "match": "RIV vs URA"},
+      {"time": "5pm", "group": "F", "match": "ULS vs SUN"},
+      {"time": "8pm", "group": "E", "match": "MON vs INT"}
+    ]
+  },
+  {
+    "date": "18/06",
+    "matches": [
+      {"time": "11am", "group": "G", "match": "MCI vs WYD"},
+      {"time": "2pm", "group": "H", "match": "RMA vs HIL"},
+      {"time": "5pm", "group": "H", "match": "PAC vs SAL"},
+      {"time": "8pm", "group": "G", "match": "AIN vs JUV"}
+    ]
+  },
+  {
+    "date": "19/06",
+    "matches": [
+      {"time": "11am", "group": "A", "match": "PAL vs AHL"},
+      {"time": "2pm", "group": "A", "match": "MIA vs POR"},
+      {"time": "5pm", "group": "B", "match": "SEA vs ATM"},
+      {"time": "8pm", "group": "B", "match": "PSG vs BOT"}
+    ]
+  },
+  {
+    "date": "20/06",
+    "matches": [
+      {"time": "11am", "group": "C", "match": "BEN vs AUC"},
+      {"time": "1pm", "group": "D", "match": "FLA vs CHE"},
+      {"time": "5pm", "group": "D", "match": "LAF vs EST"},
+      {"time": "8pm", "group": "C", "match": "BAY vs BOC"}
+    ]
+  },
+  {
+    "date": "21/06",
+    "matches": [
+      {"time": "11am", "group": "F", "match": "SUN vs DOR"},
+      {"time": "2pm", "group": "E", "match": "INT vs URA"},
+      {"time": "5pm", "group": "F", "match": "FLU vs ULS"},
+      {"time": "8pm", "group": "E", "match": "RIV vs MON"}
+    ]
+  },
+  {
+    "date": "22/06",
+    "matches": [
+      {"time": "11am", "group": "G", "match": "JUV vs WYD"},
+      {"time": "2pm", "group": "H", "match": "RMA vs PAC"},
+      {"time": "5pm", "group": "H", "match": "SAL vs HIL"},
+      {"time": "8pm", "group": "G", "match": "MCI vs AIN"}
+    ]
+  },
+  {
+    "date": "23/06",
+    "matches": [
+      {"time": "2pm", "group": "B", "match": "ATM vs BOT"},
+      {"time": "2pm", "group": "B", "match": "SEA vs PSG"},
+      {"time": "8pm", "group": "A", "match": "POR vs AHL"},
+      {"time": "8pm", "group": "A", "match": "MIA vs PAL"}
+    ]
+  },
+  {
+    "date": "24/06",
+    "matches": [
+      {"time": "2pm", "group": "C", "match": "AUC vs BOC"},
+      {"time": "2pm", "group": "C", "match": "BEN vs BAY"},
+      {"time": "8pm", "group": "D", "match": "EST vs CHE"},
+      {"time": "8pm", "group": "D", "match": "LAF vs FLA"}
+    ]
+  },
+  {
+    "date": "25/06",
+    "matches": [
+      {"time": "2pm", "group": "F", "match": "DOR vs ULS"},
+      {"time": "2pm", "group": "F", "match": "SUN vs FLU"},
+      {"time": "8pm", "group": "E", "match": "INT vs RIV"},
+      {"time": "8pm", "group": "E", "match": "URA vs MON"}
+    ]
+  },
+  {
+    "date": "26/06",
+    "matches": [
+      {"time": "2pm", "group": "G", "match": "JUV vs MCI"},
+      {"time": "2pm", "group": "G", "match": "WYD vs AIN"},
+      {"time": "8pm", "group": "H", "match": "HIL vs PAC"},
+      {"time": "8pm", "group": "H", "match": "SAL vs RMA"}
+    ]
+  }
+]
