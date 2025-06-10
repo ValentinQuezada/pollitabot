@@ -3,6 +3,7 @@ import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 import { convertToDateTime } from "../../utils/date";
 import { createMatch } from "../../database/controllers";
+import { linkMatchScore } from "../../gen/client";
 
 const interactionCreateEvent = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
@@ -67,6 +68,24 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     await createMatch({team1, team2, datetime: convertToDateTime(datetime), group});
     await interaction.reply({
       content: 'Match created!',
+      ephemeral: true
+    });
+  }
+
+  if(interaction.commandName === 'send-score-prediction') {
+    if (interaction.user.id !== OWNER_ID) {
+      await interaction.reply({
+        content: 'You do not have permission for this command',
+        ephemeral: true
+      });
+      return;
+    }
+    const prediction = interaction.options.get('prediction')?.value as string;
+
+    await linkMatchScore(prediction)
+    
+    await interaction.reply({
+      content: 'Score prediction sent!',
       ephemeral: true
     });
   }
