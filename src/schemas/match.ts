@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, Document, Types } from "mongoose";
 import { z } from "zod";
 
 const createMatchSchema = z.object({
@@ -30,6 +30,7 @@ const MatchSchema = createMatchSchema.merge(updateMatchScoreSchema);
 export type MatchType = z.infer<typeof MatchSchema>;
 
 export interface MatchDocument extends MatchType, Document {
+    _id: Types.ObjectId; // <-- id Mongoose
     createdAt: Date;
     updatedAt: Date;
 }
@@ -54,4 +55,3 @@ export const MatchMongoose = new Schema<MatchDocument>({
 }, {
     timestamps: true
 });
-    
