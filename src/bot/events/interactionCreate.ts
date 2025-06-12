@@ -2,12 +2,13 @@ import { Interaction, CommandInteraction } from "discord.js";
 import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 import { convertToDateTime } from "../../utils/date";
-import { createMatch, retrieveMatches } from "../../database/controllers";
+import { createMatch, createAward, retrieveMatches, retrieveAwards} from "../../database/controllers";
 import { linkMatchScore } from "../../gen/client";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { MatchTypeEnum } from "../../schemas/match";
+import { toNamespacedPath } from "path/win32";
 
 const interactionCreateEvent = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
@@ -145,6 +146,25 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await interaction.reply({ content: "Final result updated, announced, and stats updated.", ephemeral: true });
     }
   }
+
+ if (interaction.commandName === 'create-award') {
+    // if (interaction.user.id !== OWNER_ID) {
+    //   await interaction.reply({
+    //     content: 'You do not have permission for this command',
+    //     ephemeral: true
+    //   });
+    //   return;
+    // }
+    const name = interaction.options.get('name')?.value as string;
+
+    await createAward({name});
+
+    await interaction.reply({
+      content: 'Award created!',
+      ephemeral: true
+    });
+}
+
 
   if (interaction.commandName === 'send-score-prediction') {
     // everyone can send a score prediction

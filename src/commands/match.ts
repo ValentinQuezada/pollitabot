@@ -25,7 +25,6 @@ const createMatchCommand = new SlashCommandBuilder()
         .setRequired(true)
         .addChoices(
           { name: 'Group Regular', value: 'group-regular' },
-          { name: 'Group Extra', value: 'group-extra' },
           { name: 'Round of 16 Regular', value: 'round-of-16-regular' },
           { name: 'Round of 16 Extra', value: 'round-of-16-extra' },
           { name: 'Quarterfinal Regular', value: 'quarterfinal-regular' },
@@ -33,9 +32,7 @@ const createMatchCommand = new SlashCommandBuilder()
           { name: 'Semifinal Regular', value: 'semifinal-regular' },
           { name: 'Semifinal Extra', value: 'semifinal-extra' },
           { name: 'Final Regular', value: 'final-regular' },
-          { name: 'Final Extra', value: 'final-extra' },
-          { name: 'Third Place Regular', value: 'third-place-regular' },
-          { name: 'Third Place Extra', value: 'third-place-extra' }
+          { name: 'Final Extra', value: 'final-extra' }
         )
     );
 

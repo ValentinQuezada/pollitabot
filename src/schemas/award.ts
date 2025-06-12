@@ -1,68 +1,32 @@
 import { Schema, Document, Types } from "mongoose";
 import { z } from "zod";
 
-// Enum for match types
-export const matchTypes = [
-    "group-regular",
-    "group-extra",
-    "round-of-16-regular",
-    "round-of-16-extra",
-    "quarterfinal-regular",
-    "quarterfinal-extra",
-    "semifinal-regular",
-    "semifinal-extra",
-    "final-regular",
-    "final-extra",
-    "third-place-regular",
-    "third-place-extra"
-] as const;
-
-export type MatchTypeEnum = typeof matchTypes[number];
-
-// Zod schema for match creation
-const createMatchSchema = z.object({
-    team1: z.string(),
-    team2: z.string(),
-    datetime: z.date(),
-    group: z.string().length(1),
-    matchType: z.enum(matchTypes)
+// Zod schema para creación de award
+const createAwardSchema = z.object({
+    name: z.string(),
 });
 
-export type CreateMatchType = z.infer<typeof createMatchSchema>;
+export type CreateAwardType = z.infer<typeof createAwardSchema>;
 
-// Zod schema for updating match score (only regular score now)
-const updateMatchScoreSchema = z.object({
-    score: z.object({
-        team1: z.number().min(0).max(100),
-        team2: z.number().min(0).max(100)
-    }).optional()
+// Zod schema para actualización de result (opcional)
+const updateAwardResultSchema = z.object({
+    result: z.string().optional()
 });
 
-const MatchSchema = createMatchSchema.merge(updateMatchScoreSchema);
+const AwardSchema = createAwardSchema.merge(updateAwardResultSchema);
 
-export type MatchType = z.infer<typeof MatchSchema>;
+export type AwardType = z.infer<typeof AwardSchema>;
 
-export interface MatchDocument extends MatchType, Document {
+export interface AwardDocument extends AwardType, Document {
     _id: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
 
-// Mongoose schema for Match (no extraTimeScore or penaltyScore)
-export const MatchMongoose = new Schema<MatchDocument>({
-    team1: String,
-    team2: String,
-    datetime: Date,
-    group: String,
-    matchType: { type: String, enum: matchTypes, required: true },
-    score: { 
-        type: {
-            team1: Number,
-            team2: Number
-        }, 
-        default: undefined, 
-        _id: false 
-    }
+// Mongoose schema para Award
+export const AwardMongoose = new Schema<AwardDocument>({
+    name: { type: String, required: true },
+    result: { type: String }
 }, {
     timestamps: true
 });

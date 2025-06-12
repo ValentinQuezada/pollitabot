@@ -4,7 +4,6 @@ import { z } from "zod";
 // Enum for match types
 export const matchTypes = [
     "group-regular",
-    "group-extra",
     "round-of-16-regular",
     "round-of-16-extra",
     "quarterfinal-regular",
@@ -13,8 +12,6 @@ export const matchTypes = [
     "semifinal-extra",
     "final-regular",
     "final-extra",
-    "third-place-regular",
-    "third-place-extra"
 ] as const;
 
 export type MatchTypeEnum = typeof matchTypes[number];
