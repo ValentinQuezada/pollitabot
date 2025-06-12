@@ -23,7 +23,8 @@ const createMatchSchema = z.object({
     datetime: z.date(),
     group: z.string().length(1),
     matchType: z.enum(matchTypes),
-    isFinished: z.boolean().default(false)
+    isFinished: z.boolean().default(false),
+    hasStarted: z.boolean().default(false),
 });
 
 export type CreateMatchType = z.infer<typeof createMatchSchema>;
@@ -45,6 +46,7 @@ export interface MatchDocument extends MatchType, Document {
     createdAt: Date;
     updatedAt: Date;
     isFinished: boolean;
+    hasStarted: boolean;
 }
 
 // Mongoose schema for Match (no extraTimeScore or penaltyScore)
@@ -62,7 +64,8 @@ export const MatchMongoose = new Schema<MatchDocument>({
         default: undefined, 
         _id: false 
     },
-    isFinished: { type: Boolean, default: false }
+    isFinished: { type: Boolean, default: false },
+    hasStarted: { type: Boolean, default: false }
 }, {
     timestamps: true
 });

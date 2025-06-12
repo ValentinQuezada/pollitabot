@@ -1,6 +1,7 @@
 import { Client, IntentsBitField } from "discord.js";
 import interactionCreateEvent from "./events/interactionCreate";
 import readyEvent from "./events/ready";
+import "./jobs/matchStartJob";
 
 const BOT_CLIENT = new Client({
   intents: [

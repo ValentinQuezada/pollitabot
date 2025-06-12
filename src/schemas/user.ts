@@ -7,9 +7,11 @@ export interface UserStatsDocument extends Document {
   incorrectPredictions: number;
   noWinnersPredictions: number;
   streak: number;
-  loss: number;      // suma de pérdidas (-5 por predicción, por ahora)
-  gain: number;      // suma de ganancias (por predicción acertada)
-  total: number;     // gain + loss
+  loss: number;
+  gain: number;
+  total: number;
+  onlyGroupStage: boolean; // true = only group stage
+  missedNonGroupPredictions: number; // matches missed in non-group stages
 }
 
 export const UserStatsSchema = new Schema<UserStatsDocument>({
@@ -21,5 +23,7 @@ export const UserStatsSchema = new Schema<UserStatsDocument>({
   streak: { type: Number, default: 0 },
   loss: { type: Number, default: 0 },
   gain: { type: Number, default: 0 },
-  total: { type: Number, default: 0 }
+  total: { type: Number, default: 0 },
+  onlyGroupStage: { type: Boolean, default: true },
+  missedNonGroupPredictions: { type: Number, default: 0 }
 });

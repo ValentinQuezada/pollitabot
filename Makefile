@@ -8,6 +8,7 @@ SRC=main.py
 pre:
 	brew install node
 	npm install -D typescript
+	npm install node-cron
 
 build:
 	npm run build

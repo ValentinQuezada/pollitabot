@@ -71,13 +71,22 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     const group = interaction.options.get('group')?.value as string;
     const matchType = interaction.options.get('matchtype')?.value as MatchTypeEnum;
 
+    function limaToUTC(dateString: string) {
+      const [date, time] = dateString.split(" ");
+      const [year, month, day] = date.split("-").map(Number);
+      const [hour, minute] = time.split(":").map(Number);
+      // create a Date object in UTC
+      return new Date(Date.UTC(year, month - 1, day, hour + 5, minute));
+    }
+
     await createMatch({
       team1,
       team2,
-      datetime: convertToDateTime(datetime),
+      datetime: limaToUTC(datetime),
       group,
       matchType,
-      isFinished: false
+      isFinished: false,
+      hasStarted: false
     });
 
     await interaction.reply({
@@ -263,6 +272,12 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       );
       if (!match) {
         await interaction.editReply({ content: "No se encontró el partido para la predicción." });
+        return;
+      }
+      console.log(match.datetime, new Date());
+      
+      if (new Date() >= match.datetime) {
+        await interaction.editReply({ content: "Ya no puedes apostar, el partido ya empezó." });
         return;
       }
 
