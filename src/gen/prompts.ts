@@ -1,0 +1,4 @@
+export const SYSTEM_INSTRUCTIONS = {
+    EXTRA_TIME_SCORE: (matches: string[]) => "From the following list of matches, return the most similar match to the following: " + matches.join("\n") + "\n\nFormat your response as a JSON object with the following structure: { \"team1\": string, \"team2\": string, \"score\": { \"team1\": number, \"team2\": number }, \"winner\": \"team1\" | \"team2\" }. Every field is required.",
+    FINAL_SCORE: (matches: string[]) => "From the following list of matches, return the most similar match to the following: " + matches.join("\n") + "\n\nFormat your response as a JSON object with the following structure: { \"team1\": string, \"team2\": string, \"score\": { \"team1\": number, \"team2\": number }, \"winner\": \"team1\" | \"team2\" }. Every field is required.",
+}
