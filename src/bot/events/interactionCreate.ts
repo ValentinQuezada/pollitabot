@@ -4,6 +4,10 @@ import BOT_CLIENT from "../init";
 import { convertToDateTime } from "../../utils/date";
 import { createMatch, retrieveMatches } from "../../database/controllers";
 import { linkMatchScore } from "../../gen/client";
+import databaseConnection from "../../database/connection";
+import { PredictionSchema } from "../../schemas/prediction";
+import { UserStatsSchema } from "../../schemas/user";
+import { MatchTypeEnum } from "../../schemas/match";
 
 const interactionCreateEvent = async (interaction: Interaction) => {
   if (!interaction.isCommand()) return;
@@ -53,60 +57,146 @@ const interactionCreateEvent = async (interaction: Interaction) => {
   }
 
   if (interaction.commandName === 'create-match') {
-    if (interaction.user.id !== OWNER_ID) {
-      await interaction.reply({
-        content: 'You do not have permission for this command',
-        ephemeral: true
-      });
-      return;
-    }
+    // if (interaction.user.id !== OWNER_ID) {
+    //   await interaction.reply({
+    //     content: 'You do not have permission for this command',
+    //     ephemeral: true
+    //   });
+    //   return;
+    // }
     const team1 = interaction.options.get('team1')?.value as string;
     const team2 = interaction.options.get('team2')?.value as string;
     const datetime = interaction.options.get('datetime')?.value as string;
     const group = interaction.options.get('group')?.value as string;
+    const matchType = interaction.options.get('matchtype')?.value as MatchTypeEnum;
 
-    await createMatch({team1, team2, datetime: convertToDateTime(datetime), group});
+    await createMatch({
+      team1,
+      team2,
+      datetime: convertToDateTime(datetime),
+      group,
+      matchType
+    });
+
     await interaction.reply({
       content: 'Match created!',
       ephemeral: true
     });
   }
 
-  if(interaction.commandName === 'send-score-prediction') {
-    if (interaction.user.id !== OWNER_ID) {
-      await interaction.reply({
-        content: 'You do not have permission for this command',
-        ephemeral: true
-      });
+  if (interaction.commandName === 'update-match-score') {
+    const team1 = interaction.options.get('team1')?.value as string;
+    const team2 = interaction.options.get('team2')?.value as string;
+    const score1 = interaction.options.get('score1')?.value as number;
+    const score2 = interaction.options.get('score2')?.value as number;
+    const type = interaction.options.get('type')?.value as string;
+
+    const db = await databaseConnection();
+    const Match = db.model("Match");
+    const Prediction = db.model("Prediction");
+    const UserStats = db.model("UserStats");
+
+    const match = await Match.findOne({ team1, team2 });
+    if (!match) {
+      await interaction.reply({ content: "Match not found.", ephemeral: true });
       return;
     }
-    
+
+    match.score = { team1: score1, team2: score2 };
+    await match.save();
+
+    // get all predictions for this match
+    const predictions = await Prediction.find({ matchId: match._id });
+    const winners = predictions.filter(p =>
+      p.prediction.team1 === score1 && p.prediction.team2 === score2
+    );
+
+    if (type === 'partial') {
+      let message = `⏸️ Halftime! Current score: ${team1} ${score1} - ${score2} ${team2}\n`;
+      if (winners.length > 0) {
+        message += `Currently winning: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+      } else {
+        message += `No one is currently winning the bet.`;
+      }
+      if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+      ) {
+        await interaction.channel.send(message);
+      }
+      await interaction.reply({ content: "Partial result updated and announced.", ephemeral: true });
+    }
+
+    if (type === 'final') {
+      let message = `🏁 Full time! Final score: ${team1} ${score1} - ${score2} ${team2}\n`;
+      if (winners.length > 0) {
+        message += `Winner(s): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+      } else {
+        message += `No one won the bet.`;
+      }
+      if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+      ) {
+        await interaction.channel.send(message);
+      }
+      await interaction.reply({ content: "Final result updated, announced, and stats updated.", ephemeral: true });
+    }
+  }
+
+  if (interaction.commandName === 'send-score-prediction') {
+    // everyone can send a score prediction
     await interaction.deferReply({ ephemeral: true });
 
     try {
-      const prediction = interaction.options.get('prediction')?.value as string;
-      const matches: {team1: string, team2: string}[] = await retrieveMatches();
+      const predictionText = interaction.options.get('prediction')?.value as string;
+      const matches = await retrieveMatches();
+      console.log('Matches retrieved:', matches);
 
-      const response = await linkMatchScore(prediction, matches.map(match => match.team1 + " vs " + match.team2));
-      
+      const response = await linkMatchScore(predictionText, matches.map(match => match.team1 + " vs " + match.team2));
       if (!response.success) {
-        await interaction.editReply({
-          content: response.error
-        });
+        await interaction.editReply({ content: response.error });
         return;
       }
-      
-      const owner = await BOT_CLIENT.users.fetch(OWNER_ID);
-      await owner.send(`Score prediction from ${interaction.user.username}:\n${JSON.stringify(response.data)}`);
 
-      await interaction.editReply({
-        content: 'Score prediction sent!'
+      // find the match that corresponds to the prediction
+      const match = matches.find(m =>
+        m.team1 === response.data.team1 && m.team2 === response.data.team2
+      );
+      if (!match) {
+        await interaction.editReply({ content: "No se encontró el partido para la predicción." });
+        return;
+      }
+
+      // save the prediction to the database
+      const db = await databaseConnection();
+      const Prediction = db.model("Prediction", PredictionSchema);
+      await Prediction.create({
+        userId: interaction.user.id,
+        matchId: match._id,
+        prediction: response.data.score
       });
+
+      // update user stats
+      const UserStats = db.model("UserStats", UserStatsSchema);
+      await UserStats.updateOne(
+        { userId: interaction.user.id },
+        {
+          $inc: {
+            totalPredictions: 1,
+            loss: -5,
+            total: -5
+          }
+        },
+        { upsert: true }
+      );
+
+      await interaction.editReply({ content: '¡Predicción guardada!' });
     } catch (error) {
       console.error('Error in send-score-prediction:', error);
-      await interaction.editReply({
-        content: 'An error occurred while processing your request.'
-      });
+      await interaction.editReply({ content: 'Ocurrió un error al procesar tu predicción.' });
     }
   }
 };

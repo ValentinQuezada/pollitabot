@@ -10,7 +10,7 @@ export async function createMatch(match: CreateMatchType) {
 
 export async function retrieveMatches(
     filter: any = {}, 
-    select: any = {team1: 1, team2: 1, _id: 0},
+    select: any = {team1: 1, team2: 1, _id: 1},
     limit: number = 10,
     sortBy: any = {datetime: 1}
 ) {
