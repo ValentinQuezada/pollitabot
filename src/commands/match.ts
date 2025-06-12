@@ -18,6 +18,25 @@ const createMatchCommand = new SlashCommandBuilder()
     .addStringOption(option =>
       option.setName('group')
         .setDescription('Group Phase Letter(A, B, C, etc.)')
-        .setRequired(true));
-    
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('matchtype')
+        .setDescription('Type of match')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Group Regular', value: 'group-regular' },
+          { name: 'Group Extra', value: 'group-extra' },
+          { name: 'Round of 16 Regular', value: 'round-of-16-regular' },
+          { name: 'Round of 16 Extra', value: 'round-of-16-extra' },
+          { name: 'Quarterfinal Regular', value: 'quarterfinal-regular' },
+          { name: 'Quarterfinal Extra', value: 'quarterfinal-extra' },
+          { name: 'Semifinal Regular', value: 'semifinal-regular' },
+          { name: 'Semifinal Extra', value: 'semifinal-extra' },
+          { name: 'Final Regular', value: 'final-regular' },
+          { name: 'Final Extra', value: 'final-extra' },
+          { name: 'Third Place Regular', value: 'third-place-regular' },
+          { name: 'Third Place Extra', value: 'third-place-extra' }
+        )
+    );
+
 export default createMatchCommand;

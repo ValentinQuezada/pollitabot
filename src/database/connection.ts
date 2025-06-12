@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { MONGO_DB_CONNECTION_STRING } from "../constant/credentials";
 import { MatchMongoose } from "../schemas/match";
 import { PredictionSchema } from "../schemas/prediction";
 import { UserStatsSchema } from "../schemas/user";
@@ -12,15 +11,17 @@ async function databaseConnection(){
         return mongoConnection;
     }
 
-    mongoClient = await mongoose.connect(MONGO_DB_CONNECTION_STRING);
+    mongoClient = await mongoose.connect(process.env.MONGO_DB_CONNECTION_STRING!);
     mongoConnection = mongoClient.connection;
-    
+
+    // Register all schemas here
+    mongoConnection.model('Match', MatchMongoose);
+    mongoConnection.model('Prediction', PredictionSchema);
+    mongoConnection.model('UserStats', UserStatsSchema);
+
     mongoConnection.once("open", () => {
         console.log("Connected to MongoDB");
-        mongoConnection.model('Match', MatchMongoose);
-        mongoConnection.model('Prediction', PredictionSchema);
-        mongoConnection.model('UserStats', UserStatsSchema);
-    })
+    });
 
     return mongoConnection;
 }
