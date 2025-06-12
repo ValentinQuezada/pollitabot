@@ -115,11 +115,50 @@ const interactionCreateEvent = async (interaction: Interaction) => {
 
     if (type === 'partial') {
       let message = `¡⏸️ Medio tiempo! Resultado parcial: ${team1} ${score1} - ${score2} ${team2}\n`;
-      if (winners.length > 0) {
-        message += `Ganando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
-      } else {
-        message += `Nadie ha atinado por ahora.`;
+
+      // group predictions by score
+      const predictionsByScore: Record<string, string[]> = {};
+      predictions.forEach(p => {
+        const key = `${p.prediction.team1}-${p.prediction.team2}`;
+        if (!predictionsByScore[key]) predictionsByScore[key] = [];
+        predictionsByScore[key].push(`<@${p.userId}>`);
+      });
+
+      // determine the emoji for each prediction
+      function getEmoji(pred: { team1: number; team2: number }): string {
+        if (pred.team1 === score1 && pred.team2 === score2) return "✅";
+        // impossible to win
+        if (
+          (pred.team1 < score1) || (pred.team2 < score2)
+        ) return "❌";
+        // still possible to win
+        return "🟡";
       }
+
+      // sort predictions by score
+      const sortedScores = Object.keys(predictionsByScore).sort((a, b) => {
+        const [a1, a2] = a.split('-').map(Number);
+        const [b1, b2] = b.split('-').map(Number);
+        const totalA = a1 + a2;
+        const totalB = b1 + b2;
+        if (totalA !== totalB) return totalA - totalB;
+        return a1 - b1;
+      });
+
+      // list predictions by score
+      for (const score of sortedScores) {
+        const [pred1, pred2] = score.split('-').map(Number);
+        const emoji = getEmoji({ team1: pred1, team2: pred2 });
+        message += `- ${score}: ${predictionsByScore[score].join('/')} ${emoji}\n`;
+      }
+
+      // winners
+      if (winners.length > 0) {
+        message += `\nGanando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+      } else {
+        message += `\nNadie ha atinado por ahora.`;
+      }
+
       if (
         interaction.channel &&
         'send' in interaction.channel &&
@@ -128,23 +167,6 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         await interaction.channel.send(message);
       }
       await interaction.reply({ content: "Partial result updated and announced.", ephemeral: true });
-    }
-
-    if (type === 'final') {
-      let message = `¡🏁 Tiempo completo! Resultado final: ${team1} ${score1} - ${score2} ${team2}\n`;
-      if (winners.length > 0) {
-        message += `Ganador(es): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
-      } else {
-        message += `Nadie atinó el resultado.`;
-      }
-      if (
-        interaction.channel &&
-        'send' in interaction.channel &&
-        typeof interaction.channel.send === 'function'
-      ) {
-        await interaction.channel.send(message);
-      }
-      await interaction.reply({ content: "Final result updated, announced, and stats updated.", ephemeral: true });
     }
   }
 
@@ -238,7 +260,11 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await interaction.editReply({ content: '¡Predicción guardada!' });
     } catch (error) {
       console.error('Error in send-score-prediction:', error);
-      await interaction.editReply({ content: 'Ocurrió un error al procesar tu predicción.' });
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ content: 'Ocurrió un error al procesar tu predicción.' });
+      } else {
+        await interaction.reply({ content: 'Ocurrió un error al procesar tu predicción.', ephemeral: true });
+      }
     }
   }
 };
