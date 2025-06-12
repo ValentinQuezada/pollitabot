@@ -164,7 +164,38 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       content: 'Award created!',
       ephemeral: true
     });
-}
+  }
+
+  if (interaction.commandName === 'update-award-result') {
+    const name = interaction.options.get('name')?.value as string;
+    const result = interaction.options.get('result')?.value as string;
+
+    const db = await databaseConnection();
+    const Award = db.model("Award");
+
+    // Find the award by name
+    const award = await Award.findOne({ name });
+    if (!award) {
+      await interaction.reply({ content: "Award not found.", ephemeral: true });
+      return;
+    }
+
+    // Update the result
+    award.result = result;
+    await award.save();
+
+    // Optional: Announce in the channel
+    let message = `🏆 Award **${award.name}** result updated: **${award.result}**`;
+    if (
+      interaction.channel &&
+      'send' in interaction.channel &&
+      typeof interaction.channel.send === 'function'
+    ) {
+      await interaction.channel.send(message);
+    }
+
+    await interaction.reply({ content: "Award result updated!", ephemeral: true });
+  }
 
 
   if (interaction.commandName === 'send-score-prediction') {
