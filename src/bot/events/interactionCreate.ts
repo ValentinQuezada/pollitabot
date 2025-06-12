@@ -113,8 +113,10 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       p.prediction.team1 === score1 && p.prediction.team2 === score2
     );
 
-    if (type === 'partial') {
-      let message = `¡⏸️ Medio tiempo! Resultado parcial: ${team1} ${score1} - ${score2} ${team2}\n`;
+    if (type === 'partial' || type === 'final') {
+      let message = type === 'partial'
+        ? `¡⏸️ Medio tiempo! Resultado parcial: ${team1} ${score1} - ${score2} ${team2}\n`
+        : `¡🏁 Tiempo completo! Resultado final: ${team1} ${score1} - ${score2} ${team2}\n`;
 
       // group predictions by score
       const predictionsByScore: Record<string, string[]> = {};
@@ -127,12 +129,14 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       // determine the emoji for each prediction
       function getEmoji(pred: { team1: number; team2: number }): string {
         if (pred.team1 === score1 && pred.team2 === score2) return "✅";
-        // impossible to win
-        if (
-          (pred.team1 < score1) || (pred.team2 < score2)
-        ) return "❌";
-        // still possible to win
-        return "🟡";
+        if (type === 'partial') {
+          // impossble
+          if (pred.team1 < score1 || pred.team2 < score2) return "❌";
+          return "🟡";
+        } else {
+          // only for final
+          return "❌";
+        }
       }
 
       // sort predictions by score
@@ -154,9 +158,13 @@ const interactionCreateEvent = async (interaction: Interaction) => {
 
       // winners
       if (winners.length > 0) {
-        message += `\nGanando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+        message += type === 'partial'
+          ? `\nGanando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`
+          : `\nGanador(es): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
       } else {
-        message += `\nNadie ha atinado por ahora.`;
+        message += type === 'partial'
+          ? `\nNadie ha atinado por ahora.`
+          : `\nNadie atinó el resultado.`;
       }
 
       if (
@@ -166,7 +174,20 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       ) {
         await interaction.channel.send(message);
       }
-      await interaction.reply({ content: "Partial result updated and announced.", ephemeral: true });
+
+      await interaction.reply({
+        content: type === 'partial'
+          ? "Partial result updated and announced."
+          : "Final result updated, announced, and stats updated.",
+        ephemeral: true
+      });
+
+      // if final, update user stats
+      if (type === 'final') {
+        match.isFinished = true;
+        await match.save();
+        // update user stats
+      }
     }
   }
 
