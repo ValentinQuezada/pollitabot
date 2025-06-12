@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { MatchMongoose } from "../schemas/match";
 import { PredictionSchema } from "../schemas/prediction";
 import { UserStatsSchema } from "../schemas/user";
+import { AwardMongoose } from "../schemas/award";
 
 let mongoClient: mongoose.Mongoose;
 let mongoConnection: mongoose.Connection;
@@ -18,6 +19,7 @@ async function databaseConnection(){
     mongoConnection.model('Match', MatchMongoose);
     mongoConnection.model('Prediction', PredictionSchema);
     mongoConnection.model('UserStats', UserStatsSchema);
+    mongoConnection.model('Award', AwardMongoose);
 
     mongoConnection.once("open", () => {
         console.log("Connected to MongoDB");

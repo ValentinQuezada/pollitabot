@@ -3,6 +3,7 @@
     "@google/genai": "^1.4.0",
     "@types/node": "^22.15.30",
     "discord.js": "^14.19.3",
+    "make": "^0.8.1",
     "mongoose": "^8.15.1",
     "pino": "^9.7.0",
     "rimraf": "^6.0.1",

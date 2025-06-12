@@ -1,7 +1,9 @@
 import anonymousMessageCommand from "../commands/anon";
+import createAwardCommand from "../commands/award";
 import createMatchCommand from "../commands/match";
 import sayCommand from "../commands/say";
 import sendMatchScorePredictionCommand from "../commands/scorePrediction";
+import updateAwardResultCommand from "../commands/updateAward";
 import updateMatchScoreCommand from "../commands/updateScore";
 
 const BOT_COMMANDS = [
@@ -9,7 +11,9 @@ const BOT_COMMANDS = [
     sayCommand,
     createMatchCommand,
     sendMatchScorePredictionCommand,
-    updateMatchScoreCommand
+    updateMatchScoreCommand,
+    createAwardCommand,
+    updateAwardResultCommand
 ].map(command => command.toJSON());
 
 export default BOT_COMMANDS;
