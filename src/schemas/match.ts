@@ -12,9 +12,7 @@ export const matchTypes = [
     "semifinal-regular",
     "semifinal-extra",
     "final-regular",
-    "final-extra",
-    "third-place-regular",
-    "third-place-extra"
+    "final-extra"
 ] as const;
 
 export type MatchTypeEnum = typeof matchTypes[number];
@@ -25,7 +23,8 @@ const createMatchSchema = z.object({
     team2: z.string(),
     datetime: z.date(),
     group: z.string().length(1),
-    matchType: z.enum(matchTypes)
+    matchType: z.enum(matchTypes),
+    isFinished: z.boolean().default(false)
 });
 
 export type CreateMatchType = z.infer<typeof createMatchSchema>;
@@ -46,6 +45,7 @@ export interface MatchDocument extends MatchType, Document {
     _id: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
+    isFinished: boolean;
 }
 
 // Mongoose schema for Match (no extraTimeScore or penaltyScore)
@@ -62,7 +62,8 @@ export const MatchMongoose = new Schema<MatchDocument>({
         }, 
         default: undefined, 
         _id: false 
-    }
+    },
+    isFinished: { type: Boolean, default: false }
 }, {
     timestamps: true
 });

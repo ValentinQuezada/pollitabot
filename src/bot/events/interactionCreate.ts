@@ -75,7 +75,8 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       team2,
       datetime: convertToDateTime(datetime),
       group,
-      matchType
+      matchType,
+      isFinished: false
     });
 
     await interaction.reply({
@@ -112,11 +113,11 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     );
 
     if (type === 'partial') {
-      let message = `⏸️ Halftime! Current score: ${team1} ${score1} - ${score2} ${team2}\n`;
+      let message = `¡⏸️ Medio tiempo! Resultado parcial: ${team1} ${score1} - ${score2} ${team2}\n`;
       if (winners.length > 0) {
-        message += `Currently winning: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+        message += `Ganando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
       } else {
-        message += `No one is currently winning the bet.`;
+        message += `Nadie ha atinado por ahora.`;
       }
       if (
         interaction.channel &&
@@ -129,11 +130,11 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     }
 
     if (type === 'final') {
-      let message = `🏁 Full time! Final score: ${team1} ${score1} - ${score2} ${team2}\n`;
+      let message = `¡🏁 Tiempo completo! Resultado final: ${team1} ${score1} - ${score2} ${team2}\n`;
       if (winners.length > 0) {
-        message += `Winner(s): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+        message += `Ganador(es): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
       } else {
-        message += `No one won the bet.`;
+        message += `Nadie atinó el resultado.`;
       }
       if (
         interaction.channel &&
@@ -147,7 +148,6 @@ const interactionCreateEvent = async (interaction: Interaction) => {
   }
 
   if (interaction.commandName === 'send-score-prediction') {
-    // everyone can send a score prediction
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -155,31 +155,53 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       const matches = await retrieveMatches();
       console.log('Matches retrieved:', matches);
 
-      const response = await linkMatchScore(predictionText, matches.map(match => match.team1 + " vs " + match.team2));
+      const response = await linkMatchScore(
+        predictionText,
+        matches.map(match => match.team1 + " vs " + match.team2)
+      );
       if (!response.success) {
         await interaction.editReply({ content: response.error });
         return;
       }
 
-      // find the match that corresponds to the prediction
-      const match = matches.find(m =>
-        m.team1 === response.data.team1 && m.team2 === response.data.team2
+      const match = matches.find(
+        m => m.team1 === response.data.team1 && m.team2 === response.data.team2
       );
       if (!match) {
         await interaction.editReply({ content: "No se encontró el partido para la predicción." });
         return;
       }
 
-      // save the prediction to the database
       const db = await databaseConnection();
       const Prediction = db.model("Prediction", PredictionSchema);
-      await Prediction.create({
+
+      let existingPrediction = await Prediction.findOne({
         userId: interaction.user.id,
-        matchId: match._id,
-        prediction: response.data.score
+        matchId: match._id
       });
 
-      // update user stats
+      let actionMessage;
+      if (existingPrediction) {
+        existingPrediction.prediction = response.data.score;
+        await existingPrediction.save();
+        actionMessage = `*¡<@${interaction.user.id}> ha actualizado sus resultados para ${match.team1} vs ${match.team2}!*`;
+      } else {
+        await Prediction.create({
+          userId: interaction.user.id,
+          matchId: match._id,
+          prediction: response.data.score
+        });
+        actionMessage = `*¡<@${interaction.user.id}> ha enviado sus resultados para ${match.team1} vs ${match.team2}!*`;
+      }
+
+      if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+      ) {
+        await interaction.channel.send(actionMessage);
+      }
+
       const UserStats = db.model("UserStats", UserStatsSchema);
       await UserStats.updateOne(
         { userId: interaction.user.id },
