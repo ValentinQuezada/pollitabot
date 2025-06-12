@@ -8,6 +8,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { MatchTypeEnum } from "../../schemas/match";
+import { getMatchFee } from "../../utils/fee";
 import { toNamespacedPath } from "path/win32";
 
 const interactionCreateEvent = async (interaction: Interaction) => {
@@ -310,14 +311,16 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         await interaction.channel.send(actionMessage);
       }
 
+      const matchFee = getMatchFee(match.matchType);
+
       const UserStats = db.model("UserStats", UserStatsSchema);
       await UserStats.updateOne(
         { userId: interaction.user.id },
         {
           $inc: {
             totalPredictions: 1,
-            loss: -5,
-            total: -5
+            loss: -matchFee,
+            total: -matchFee
           }
         },
         { upsert: true }
