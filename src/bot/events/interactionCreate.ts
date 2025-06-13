@@ -4,7 +4,9 @@ import {
   createAwardCommand,
   createMatchCommand,
   sayCommand,
+  seeMissingCommand,
   seeResultsCommand,
+  sendMatchStatsCommand,
   sendMissingCommand,
   sendScorePredictionCommand,
   setGroupStageOnlyCommand,
@@ -47,6 +49,12 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'set-group-stage-only':
       await setGroupStageOnlyCommand(commandInteraction);
+      break;
+    case 'send-match-stats':
+      await sendMatchStatsCommand(commandInteraction);
+      break;
+    case 'see-missing':
+      await seeMissingCommand(commandInteraction);
       break;
   }
 };

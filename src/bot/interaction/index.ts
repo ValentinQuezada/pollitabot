@@ -8,6 +8,8 @@ import sendScorePredictionCommand from "./sendScorePrediction";
 import seeResultsCommand from "./seeResults";
 import sendMissingCommand from "./sendMissing";
 import setGroupStageOnlyCommand from "./setGroupStageOnly";
+import sendMatchStatsCommand from "./sendMatchStats";
+import seeMissingCommand from "./seeMissing";
 
 export {
     anonCommand,
@@ -19,5 +21,7 @@ export {
     sendScorePredictionCommand,
     seeResultsCommand,
     sendMissingCommand,
-    setGroupStageOnlyCommand
+    setGroupStageOnlyCommand,
+    sendMatchStatsCommand,
+    seeMissingCommand
 };
