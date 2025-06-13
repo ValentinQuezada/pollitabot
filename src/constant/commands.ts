@@ -11,6 +11,7 @@ import sendMissingCommand from "../commands/sendMissing";
 import seeResultsCommand from "../commands/seeResults";
 import sendMatchStatsCommand from "../commands/sendMatchStats";
 import seeMissingCommand from "../commands/seeMissing";
+import sendAwardPredictionCommand from "../commands/sendAwardPred";
 
 const BOT_COMMANDS = [
     anonymousMessageCommand,
@@ -24,7 +25,8 @@ const BOT_COMMANDS = [
     sendMissingCommand,
     seeResultsCommand,
     sendMatchStatsCommand,
-    seeMissingCommand
+    seeMissingCommand,
+    sendAwardPredictionCommand
 
 ].map(command => command.toJSON());
 
