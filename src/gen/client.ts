@@ -7,11 +7,13 @@ import { SYSTEM_INSTRUCTIONS } from "./prompts";
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const modelName = "gemini-2.0-flash";
 
-export async function linkMatchScore(query: string, matches: string[]): Promise<GenContentResponse<ScorePredictionType>> {
+export async function linkMatchScore(query: string, matches: [string, string][]): Promise<GenContentResponse<ScorePredictionType>> {
     const response = await ai.models.generateContent({
         model: modelName,
         config: {
-            systemInstruction: SYSTEM_INSTRUCTIONS.FINAL_SCORE(matches),
+            systemInstruction: SYSTEM_INSTRUCTIONS.FINAL_SCORE(
+                matches.map(match => match.join(' vs '))
+            ),
             maxOutputTokens: 100,
             temperature: 0.1,
             responseMimeType: "application/json",
@@ -28,11 +30,32 @@ export async function linkMatchScore(query: string, matches: string[]): Promise<
 
     try {
         const data = extractFromCodeblock(response.text);
+        let jsonData = JSON.parse(data);
+        if (Array.isArray(jsonData)) {
+            jsonData = jsonData[0];
+        }
+        const parsedData = ScorePredictioSchema.parse(jsonData);
 
-        const jsonData = ScorePredictioSchema.parse(JSON.parse(data));
+        const match = matches.find(
+            match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1
+        );
+        if (!match) {
+            return {
+                success: false,
+                error: "No match found"
+            }
+        }
+
+        if (parsedData.team1 === match[1]) {
+            parsedData.team1 = match[0];
+            parsedData.team2 = match[1];
+            parsedData.score.team1 = parsedData.score.team2;
+            parsedData.score.team2 = parsedData.score.team1;
+        }
+
         return {
             success: true,
-            data: jsonData
+            data: parsedData
         };
     } catch (e) {
         console.error(e);
@@ -64,11 +87,14 @@ export async function fixScoreExtraTime(query: string, wrongScore: ScorePredicti
 
     try {
         const data = extractFromCodeblock(response.text);
-
-        const jsonData = ScorePredictioSchema.parse(JSON.parse(data));
+        let jsonData = JSON.parse(data);
+        if (Array.isArray(jsonData)) {
+            jsonData = jsonData[0];
+        }
+        const parsedData = ScorePredictioSchema.parse(jsonData);
         return {
             success: true,
-            data: jsonData
+            data: parsedData
         };
     } catch (e) {
         console.error(e);
