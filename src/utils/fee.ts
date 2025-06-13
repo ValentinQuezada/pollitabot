@@ -5,3 +5,9 @@ export function getMatchFee(matchType: string, acertaronFinalRegular = false): n
   if (matchType === "final-extra") return acertaronFinalRegular ? 10 : 20;
   return 10; // for all other match types
 }
+
+export function getAwardFee(awardName: string): number {
+    // console.log(`Calculating fee for award type: ${awardName}`);
+  if (awardName === "campeon") return 10;
+  return 5; // for all other award types
+}

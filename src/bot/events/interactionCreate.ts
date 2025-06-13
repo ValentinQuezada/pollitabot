@@ -11,10 +11,91 @@ import {
   sendScorePredictionCommand,
   setGroupStageOnlyCommand,
   updateAwardResultCommand,
-  updateMatchScoreCommand
+  updateMatchScoreCommand,
+  sendAwardPredictionCommand
 } from "../interaction";
+import databaseConnection from "../../database/connection";
+
+export const ClubWorldCupTeams2025 = [
+  // UEFA
+  "Manchester City",
+  "Chelsea",
+  "Real Madrid",
+  "Bayern München",
+  "Paris Saint-Germain",
+  "Inter Milan",
+  "Benfica",
+  "Porto",
+  "Borussia Dortmund",
+  "Atlético de Madrid",
+  "Red Bull Salzburg",
+  "Juventus",
+  // CONMEBOL
+  "Flamengo",
+  "Palmeiras",
+  "Fluminense",
+  "River Plate",
+  "Boca Juniors",
+  "Botafogo",
+    // CONCACAF
+  "Monterrey",
+  "Seattle Sounders",
+  "Pachuca",
+  "Los Angeles FC",
+  // Anfitrión (USA)
+  "Inter Miami",
+  // AFC (Asia)
+  "Al Hilal",
+  "Al Ain",
+  "Urawa Red Diamonds",
+  "Ulsan HD",
+  // OFC (Oceanía)
+  "Auckland City",
+  // CAF (África)
+  "Al Ahly",
+  "Espérance de Tunis",
+  "Wydad Casablanca",
+  "Mamelodi Sundowns"
+];
 
 const interactionCreateEvent = async (interaction: Interaction) => {
+  
+  // --- Manejo de Autocomplete ---
+  if (interaction.isAutocomplete()){
+    if(interaction.commandName === 'send-award-prediction' || interaction.commandName === 'update-award-result' ) {
+      const focusedOption = interaction.options.getFocused(true); // Obtén el campo enfocado
+      const focusedValue = focusedOption.value;
+      const focusedField = focusedOption.name;
+
+      const db = await databaseConnection();
+
+      if(focusedField === 'award' || focusedField === 'name'){
+        const Award = db.model("Award");
+        const awards = await Award.find({ name: { $regex: focusedValue, $options: "i" } });
+
+        const choices = awards.map(a => ({
+          name: a.name,
+          value: a.name
+        }));
+
+        await interaction.respond(choices);
+      } else if (focusedField === 'prediction' || focusedField === 'result') {
+        const filteredTeams = ClubWorldCupTeams2025
+          .filter(team => team.toLowerCase().includes(focusedValue))
+          .slice(0,25)
+          .map(team => ({
+            name: team,
+            value: team
+          }));
+        await interaction.respond(filteredTeams);
+      }
+      return; 
+    }
+
+  }
+
+
+  // --- Manejo de comandos normales ---
   if (!interaction.isCommand()) return;
   
   const commandInteraction = interaction as CommandInteraction;
@@ -55,6 +136,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'see-missing':
       await seeMissingCommand(commandInteraction);
+      break;
+    case 'send-award-prediction':
+      await sendAwardPredictionCommand(commandInteraction);
       break;
   }
 };
