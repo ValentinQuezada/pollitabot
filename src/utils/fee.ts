@@ -1,4 +1,5 @@
 export function getMatchFee(matchType: string, acertaronFinalRegular = false): number {
+    // console.log(`Calculating fee for match type: ${matchType}`);
   if (matchType === "group-regular") return 5;
   if (matchType === "final-regular") return 20;
   if (matchType === "final-extra") return acertaronFinalRegular ? 10 : 20;

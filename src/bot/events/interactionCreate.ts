@@ -72,6 +72,14 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     const group = interaction.options.get('group')?.value as string;
     const matchType = interaction.options.get('matchtype')?.value as MatchTypeEnum;
 
+    if (!datetime || typeof datetime !== "string" || !datetime.includes(" ")) {
+      await interaction.reply({
+        content: "Debes ingresar una fecha y hora válida en el formato YYYY-MM-DD HH:mm.",
+        ephemeral: true
+      });
+      return;
+    }
+
     function limaToUTC(dateString: string) {
       const [date, time] = dateString.split(" ");
       const [year, month, day] = date.split("-").map(Number);
@@ -108,7 +116,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     const Prediction = db.model("Prediction");
     const UserStats = db.model("UserStats");
 
-    const match = await Match.findOne({ team1, team2 });
+    const match = await Match.findOne({ team1, team2, hasStarted: true, isFinished: false });
     if (!match) {
       await interaction.reply({ content: "Match not found.", ephemeral: true });
       return;
@@ -196,7 +204,52 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       if (type === 'final') {
         match.isFinished = true;
         await match.save();
-        // update user stats
+
+        // get all predictions for this match
+        const predictions = await Prediction.find({ matchId: match._id });
+        const winners = predictions.filter(p =>
+          p.prediction.team1 === score1 && p.prediction.team2 === score2
+        );
+        const winnerIds = new Set(winners.map(w => w.userId));
+        const allUserIds = predictions.map(p => p.userId);
+
+        const matchFee = getMatchFee(match.matchType);
+
+        // calculate the pool and gain per winner
+        const pool = allUserIds.length * matchFee;
+        const gainPerWinner = winners.length > 0 ? pool / winners.length : 0;
+
+        // for each prediction, update user stats
+        for (const prediction of predictions) {
+          const userId = prediction.userId;
+          const isWinner = winnerIds.has(userId);
+
+          const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+
+          // update user stats
+          // userStats.totalPredictions = (userStats.totalPredictions || 0) + 1;
+
+          if (isWinner) {
+            userStats.correctPredictions = (userStats.correctPredictions || 0) + 1;
+            userStats.streak = (userStats.streak || 0) + 1;
+            userStats.gain = (userStats.gain || 0) + gainPerWinner;
+            userStats.total = (userStats.total || 0) + gainPerWinner; // add gain
+            userStats
+          } else {
+            // if no winners, increment noWinnersPredictions
+            if (winners.length === 0) {
+              userStats.noWinnersPredictions = (userStats.noWinnersPredictions || 0) + 1;
+              userStats.loss = (userStats.loss || 0) + matchFee; // no gain, but no loss either
+              userStats.total = (userStats.total || 0) + matchFee; // deduct match fee
+              // streak remains the same
+            } else {
+              userStats.incorrectPredictions = (userStats.incorrectPredictions || 0) + 1;
+              userStats.streak = 0;
+            }
+          }
+
+          await userStats.save();
+        }
       }
     }
   }
@@ -268,7 +321,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       }
 
       const match = matches.find(
-        m => m.team1 === response.data.team1 && m.team2 === response.data.team2
+        m => m.team1 === response.data.team1 && m.team2 === response.data.team2 && m.hasStarted === false
       );
       if (!match) {
         await interaction.editReply({ content: "No se encontró el partido para la predicción." });
@@ -301,6 +354,20 @@ const interactionCreateEvent = async (interaction: Interaction) => {
           prediction: response.data.score
         });
         actionMessage = `*¡<@${interaction.user.id}> ha enviado sus resultados para ${match.team1} vs ${match.team2}!*`;
+
+        const matchFee = getMatchFee(match.matchType);
+        const UserStats = db.model("UserStats", UserStatsSchema);
+        await UserStats.updateOne(
+          { userId: interaction.user.id },
+          {
+            $inc: {
+              totalPredictions: 1,
+              loss: -matchFee,
+              total: -matchFee
+            }
+          },
+          { upsert: true }
+        );
       }
 
       if (
@@ -311,21 +378,6 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         await interaction.channel.send(actionMessage);
       }
 
-      const matchFee = getMatchFee(match.matchType);
-
-      const UserStats = db.model("UserStats", UserStatsSchema);
-      await UserStats.updateOne(
-        { userId: interaction.user.id },
-        {
-          $inc: {
-            totalPredictions: 1,
-            loss: -matchFee,
-            total: -matchFee
-          }
-        },
-        { upsert: true }
-      );
-
       await interaction.editReply({ content: '¡Predicción guardada!' });
     } catch (error) {
       console.error('Error in send-score-prediction:', error);
@@ -335,6 +387,79 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         await interaction.reply({ content: 'Ocurrió un error al procesar tu predicción.', ephemeral: true });
       }
     }
+  }
+
+  if (interaction.commandName === 'see-results') {
+    const db = await databaseConnection();
+    const Prediction = db.model("Prediction", PredictionSchema);
+    const Match = db.model("Match");
+
+    // search for all predictions of the user
+    const predictions = await Prediction.find({ userId: interaction.user.id });
+    const matchIds = predictions.map(p => p.matchId);
+    const matches = await Match.find({ _id: { $in: matchIds }, isFinished: false });
+
+    if (matches.length === 0) {
+      await interaction.reply({ content: "No tienes predicciones pendientes.", ephemeral: true });
+      return;
+    }
+
+    let message = "Tus predicciones pendientes:\n";
+    for (const match of matches) {
+      const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
+      message += `- ${match.team1} vs ${match.team2}: ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
+    }
+
+    await interaction.reply({ content: message, ephemeral: true });
+  }
+
+
+  if (interaction.commandName === 'send-missing') {
+    const team1 = interaction.options.get('team1')?.value as string;
+    const team2 = interaction.options.get('team2')?.value as string;
+
+    const db = await databaseConnection();
+    const Match = db.model("Match");
+    const Prediction = db.model("Prediction", PredictionSchema);
+    const UserStats = db.model("UserStats", UserStatsSchema);
+
+    // search for the match that is not finished and has not started
+    const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
+    if (!match) {
+      await interaction.reply({ content: "No se encontró el partido pendiente.", ephemeral: true });
+      return;
+    }
+
+    // search for all users
+    let users = await UserStats.find({});
+    // if the match is not a group stage match, filter users who have only group stage predictions
+    if (match.matchType !== "group-regular") {
+      users = users.filter(u => u.onlyGroupStage === false);
+    }
+
+    // search for all predictions for this match
+    const predictions = await Prediction.find({ matchId: match._id });
+    const predictedUserIds = new Set(predictions.map(p => p.userId));
+
+    // filter users who have not sent a prediction
+    const missingUsers = users.filter(u => !predictedUserIds.has(u.userId));
+    if (missingUsers.length === 0) {
+      await interaction.reply({ content: "Todos los jugadores ya enviaron predicción para este partido.", ephemeral: true });
+      return;
+    }
+
+    const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
+    const groupMessage = `Estos jugadores aún no han mandado resultados para ${team1} vs ${team2}: ${mentionList}`;
+
+    if (
+      interaction.channel &&
+      'send' in interaction.channel &&
+      typeof interaction.channel.send === 'function'
+    ) {
+      await interaction.channel.send(groupMessage);
+    }
+
+    await interaction.reply({ content: "Mensaje enviado al grupo.", ephemeral: true });
   }
 
   if (interaction.commandName === 'set-group-stage-only') {

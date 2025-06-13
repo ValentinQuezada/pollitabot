@@ -14,8 +14,8 @@ export async function createMatch(match: CreateMatchType) {
 // Recuperar Matches
 export async function retrieveMatches(
     filter: any = { isFinished: false }, 
-    select: any = {team1: 1, team2: 1, datetime: 1, _id: 1},
-    limit: number = 50,
+    select: any = {team1: 1, team2: 1, datetime: 1, _id: 1, matchType: 1, hasStarted: 1, isFinished: 1},
+    limit: number = 80,
     sortBy: any = {datetime: 1}
 ) {
     const dbClient = await databaseConnection();
