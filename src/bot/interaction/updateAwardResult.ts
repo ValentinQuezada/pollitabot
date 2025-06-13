@@ -13,7 +13,7 @@ const updateAwardResultCommand = async (interaction: CommandInteraction) => {
 
   const award = await Award.findOne({ name });
   if (!award) {
-    await interaction.reply({ content: "Award not found.", ephemeral: true });
+    await interaction.editReply({ content: "Award not found."});
     return;
   }
 
@@ -29,7 +29,7 @@ const updateAwardResultCommand = async (interaction: CommandInteraction) => {
     await interaction.channel.send(message);
   }
 
-  await interaction.reply({ content: "Award result updated!", ephemeral: true });
+  await interaction.editReply({ content: `✅ ¡Se guardó el resultado para la award **${award.name}** como **${award.result}**.`});
 };
 
 export default updateAwardResultCommand;

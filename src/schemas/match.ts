@@ -25,9 +25,6 @@ const createMatchSchema = z.object({
     matchType: z.enum(matchTypes),
     isFinished: z.boolean().default(false),
     hasStarted: z.boolean().default(false),
-    specialHit: z.boolean().default(false),   // Atinar 0-0 o >4 goles
-    lateGoalHit: z.boolean().default(false),  // Gol a los 90' o más
-    upsetHit: z.boolean().default(false)     // Pierde el favorito
 });
 
 export type CreateMatchType = z.infer<typeof createMatchSchema>;
@@ -36,7 +33,9 @@ export type CreateMatchType = z.infer<typeof createMatchSchema>;
 const updateMatchScoreSchema = z.object({
     score: z.object({
         team1: z.number().min(0).max(100),
-        team2: z.number().min(0).max(100)
+        team2: z.number().min(0).max(100),
+        lateGoalHit: z.boolean().default(false),
+        upsetHit: z.boolean().default(false)
     }).optional()
 });
 
@@ -52,9 +51,6 @@ export interface MatchDocument extends Omit<MatchType, "_id">, Document {
     updatedAt: Date;
     isFinished: boolean;
     hasStarted: boolean;
-    specialHit: boolean;   // Atinar 0-0 o >4 goles
-    lateGoalHit: boolean;  // Gol a los 90' o más
-    upsetHit: boolean;     // Pierde el favorito
 }
 
 // Mongoose schema for Match (no extraTimeScore or penaltyScore)
@@ -67,16 +63,15 @@ export const MatchMongoose = new Schema<MatchDocument>({
     score: { 
         type: {
             team1: Number,
-            team2: Number
+            team2: Number,
+            lateGoalHit: Boolean,
+            upsetHit: Boolean
         }, 
         default: undefined, 
-        _id: false 
+        _id: false,
     },
     isFinished: { type: Boolean, default: false },
-    hasStarted: { type: Boolean, default: false },
-    specialHit: { type: Boolean, default: false },
-    lateGoalHit: { type: Boolean, default: false },
-    upsetHit: { type: Boolean, default: false }
+    hasStarted: { type: Boolean, default: false }
 }, {
     timestamps: true
 });

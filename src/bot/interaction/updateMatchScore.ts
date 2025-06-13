@@ -14,9 +14,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const score1 = interaction.options.get('score1')?.value as number;
   const score2 = interaction.options.get('score2')?.value as number;
   const type = interaction.options.get('type')?.value as string;
-  const specialHit = interaction.options.get('specialhit')?.value as boolean | undefined;
-  const lateGoalHit = interaction.options.get('lategoalhit')?.value as boolean | undefined;
-  const upsetHit = interaction.options.get('upsethit')?.value as boolean | undefined;
+  const lategoalhit = interaction.options.get('lategoalhit')?.value as boolean;
+  const upsethit = interaction.options.get('upsethit')?.value as boolean;
 
   const db = await databaseConnection();
   const Match = db.model("Match", MatchMongoose);
@@ -29,7 +28,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     return;
   }
 
-  match.score = { team1: score1, team2: score2 };
+  match.score = { team1: score1, team2: score2, lateGoalHit: lategoalhit, upsetHit: upsethit };
   await match.save();
 
   // get all predictions for this match
@@ -109,9 +108,6 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     // if final, update user stats
     if (type === 'final') {
-      if (typeof specialHit === "boolean") match.specialHit = specialHit;
-      if (typeof lateGoalHit === "boolean") match.lateGoalHit = lateGoalHit;
-      if (typeof upsetHit === "boolean") match.upsetHit = upsetHit;
       match.isFinished = true;
       await match.save();
 
