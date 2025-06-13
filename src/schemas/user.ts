@@ -7,6 +7,8 @@ export interface UserStatsDocument extends Document {
   incorrectPredictions: number;
   noWinnersPredictions: number;
   streak: number;
+  maxStreak: number;
+  winRate: number;
   loss: number;
   gain: number;
   total: number;
@@ -21,6 +23,8 @@ export const UserStatsSchema = new Schema<UserStatsDocument>({
   incorrectPredictions: { type: Number, default: 0 },
   noWinnersPredictions: { type: Number, default: 0 },
   streak: { type: Number, default: 0 },
+  maxStreak: { type: Number, default: 0 },
+  winRate: { type: Number, default: 0 },
   loss: { type: Number, default: 0 },
   gain: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
