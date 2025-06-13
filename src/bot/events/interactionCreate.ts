@@ -302,6 +302,105 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     await interaction.reply({ content: "Award result updated!", ephemeral: true });
   }
 
+  if (interaction.commandName === 'send-match-stats') {
+    const team1 = interaction.options.get('team1')?.value as string;
+    const team2 = interaction.options.get('team2')?.value as string;
+
+    const db = await databaseConnection();
+    const Match = db.model("Match");
+    const Prediction = db.model("Prediction", PredictionSchema);
+    const UserStats = db.model("UserStats", UserStatsSchema);
+
+    // search for the match that is not finished and has not started
+    const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
+    if (!match) {
+      await interaction.reply({ content: "No se encontró el partido pendiente.", ephemeral: true });
+      return;
+    }
+
+    // search for all predictions and users
+    const predictions = await Prediction.find({ matchId: match._id });
+    const users = await UserStats.find({});
+    const relevantUsers = match.matchType === "group-regular"
+      ? users
+      : users.filter(u => u.onlyGroupStage === false);
+
+    // missing users
+    const predictedUserIds = new Set(predictions.map(p => p.userId));
+    const missingUsers = relevantUsers.filter(u => !predictedUserIds.has(u.userId));
+
+    // calculate scores
+    const scoresA = predictions.map(p => p.prediction.team1 ?? 0).sort((a, b) => a - b);
+    const scoresB = predictions.map(p => p.prediction.team2 ?? 0).sort((a, b) => a - b);
+
+    // mean
+    const meanA = scoresA.length ? (scoresA.reduce((a, b) => a + b, 0) / scoresA.length) : 0;
+    const meanB = scoresB.length ? (scoresB.reduce((a, b) => a + b, 0) / scoresB.length) : 0;
+
+    // median
+    function median(arr: number[]) {
+      if (!arr.length) return 0;
+      const mid = Math.floor(arr.length / 2);
+      return arr.length % 2 === 1
+        ? arr[mid]
+        : (arr[mid - 1] + arr[mid]) / 2;
+    }
+    const medianA = median(scoresA);
+    const medianB = median(scoresB);
+
+    let message = `📊 **Estadísticas de apuestas para ${team1} vs ${team2}**\n`;
+    message += `- Jugadores que faltan apostar: ${missingUsers.length} (${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'})\n`;
+    message += `- Total de apuestas: ${predictions.length}\n`;
+    message += `- Media de score: ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
+    message += `- Mediana de score: ${medianA}-${medianB}\n`;
+
+    if (
+      interaction.channel &&
+      'send' in interaction.channel &&
+      typeof interaction.channel.send === 'function'
+    ) {
+      await interaction.channel.send(message);
+    }
+
+    await interaction.reply({ content: "Estadísticas enviadas al canal.", ephemeral: true });
+  }
+
+  if (interaction.commandName === 'see-missing') {
+    const db = await databaseConnection();
+    const Match = db.model("Match");
+    const Prediction = db.model("Prediction", PredictionSchema);
+    const UserStats = db.model("UserStats", UserStatsSchema);
+
+    // search for user flag onlyGroupStage
+    const userStats = await UserStats.findOne({ userId: interaction.user.id });
+    const onlyGroupStage = userStats?.onlyGroupStage ?? true;
+
+    // search for all matches that are not finished and have not started
+    let matchFilter: any = { isFinished: false, hasStarted: false };
+    if (onlyGroupStage) {
+      matchFilter.matchType = "group-regular";
+    }
+    const matches = await Match.find(matchFilter);
+
+    // search for all predictions of the user
+    const predictions = await Prediction.find({ userId: interaction.user.id });
+    const predictedMatchIds = new Set(predictions.map(p => p.matchId.toString()));
+
+    // filter matches that the user has not predicted
+    const missingMatches = matches.filter(m => !predictedMatchIds.has(m._id.toString()));
+
+    if (missingMatches.length === 0) {
+      await interaction.reply({ content: "No tienes partidos pendientes por apostar.", ephemeral: true });
+      return;
+    }
+
+    let message = "Partidos pendientes por apostar:\n";
+    for (const match of missingMatches) {
+      message += `- ${match.team1} vs ${match.team2}\n`;
+    }
+
+    await interaction.reply({ content: message, ephemeral: true });
+  }
 
   if (interaction.commandName === 'send-score-prediction') {
     await interaction.deferReply({ ephemeral: true });
