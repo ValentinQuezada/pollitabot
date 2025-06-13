@@ -11,12 +11,6 @@ export const ScorePredictioSchema = z.object({
 
 export type ScorePredictionType = z.infer<typeof ScorePredictioSchema>;
 
-export const AdditionalTimeScorePredictionSchema = ScorePredictioSchema.extend({
-    winner: z.enum(["team1", "team2"]) 
-});
-
-export type AdditionalTimeScorePredictionType = z.infer<typeof AdditionalTimeScorePredictionSchema>;
-
 interface GenContentSuccessResponse<T> {
     success: true;
     data: T;
