@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 
-export const updateAwardResultCommand = async (interaction: CommandInteraction) => {
+const updateAwardResultCommand = async (interaction: CommandInteraction) => {
   const name = interaction.options.get('name')?.value as string;
   const result = interaction.options.get('result')?.value as string;
 
@@ -17,7 +17,7 @@ export const updateAwardResultCommand = async (interaction: CommandInteraction) 
   award.result = result;
   await award.save();
 
-  let message = `🏆 Award **${award.name}** result updated: **${award.result}**`;
+  let message = `🏆 Award **${award.name}** resultado actualizado: **${award.result}**`;
   if (
     interaction.channel &&
     'send' in interaction.channel &&
@@ -28,3 +28,5 @@ export const updateAwardResultCommand = async (interaction: CommandInteraction) 
 
   await interaction.reply({ content: "Award result updated!", ephemeral: true });
 };
+
+export default updateAwardResultCommand;

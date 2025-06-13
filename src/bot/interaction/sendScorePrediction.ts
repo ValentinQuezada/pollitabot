@@ -5,8 +5,9 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
+import { getMatchFee } from "../../utils/fee";
 
-export const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
+const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -25,7 +26,7 @@ export const sendScorePredictionCommand = async (interaction: CommandInteraction
         console.log(response.data);
 
         const match = matches.find(
-            m => m.team1 === response.data.team1 && m.team2 === response.data.team2
+            m => m.team1 === response.data.team1 && m.team2 === response.data.team2 && m.hasStarted === false
         );
         if (!match) {
             await interaction.editReply({ content: "No se encontró el partido para la predicción." });
@@ -89,6 +90,20 @@ export const sendScorePredictionCommand = async (interaction: CommandInteraction
                 prediction: response.data.score
             });
             actionMessage = `*¡<@${interaction.user.id}> ha enviado sus resultados para ${match.team1} vs ${match.team2}!*`;
+
+            const matchFee = getMatchFee(match.matchType);
+            const UserStats = db.model("UserStats", UserStatsSchema);
+            await UserStats.updateOne(
+                { userId: interaction.user.id },
+                {
+                    $inc: {
+                        totalPredictions: 1,
+                        loss: -matchFee,
+                        total: -matchFee
+                    }
+                },
+                { upsert: true }
+            );
         }
 
         if (
@@ -122,3 +137,5 @@ export const sendScorePredictionCommand = async (interaction: CommandInteraction
         }
     }
 };
+
+export default sendScorePredictionCommand;

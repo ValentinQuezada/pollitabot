@@ -5,6 +5,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
+import { getMatchFee } from "../../utils/fee";
 
 cron.schedule("* * * * *", async () => {
   const db = await databaseConnection();
@@ -27,9 +28,11 @@ cron.schedule("* * * * *", async () => {
     for (const user of users) {
       const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
       if (!prediction && match.matchType !== "group-regular") {
-        user.loss -= 2.5; // fee
+        const fee = getMatchFee(match.matchType);
+        const penalty = fee / 2;
+        user.loss -= penalty;
         user.missedNonGroupPredictions += 1;
-        user.total -= 2.5;
+        user.total -= penalty;
         await user.save();
       }
     }

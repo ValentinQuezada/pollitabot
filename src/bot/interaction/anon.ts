@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 
-export const anonCommand = async (interaction: CommandInteraction) => {
+const anonCommand = async (interaction: CommandInteraction) => {
   const message = interaction.options.get('message')?.value as string;
   const member = interaction.member;
   const displayName = (member && 'displayName' in member)
@@ -22,3 +22,5 @@ export const anonCommand = async (interaction: CommandInteraction) => {
     ephemeral: true
   });
 };
+
+export default anonCommand;

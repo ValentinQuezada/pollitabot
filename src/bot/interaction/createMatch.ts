@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { MatchTypeEnum } from "../../schemas/match";
 import { createMatch } from "../../database/controllers";
 
-export const createMatchCommand = async (interaction: CommandInteraction) => {
+const createMatchCommand = async (interaction: CommandInteraction) => {
   const team1 = interaction.options.get('team1')?.value as string;
   const team2 = interaction.options.get('team2')?.value as string;
   const datetime = interaction.options.get('datetime')?.value as string;
@@ -31,3 +31,5 @@ export const createMatchCommand = async (interaction: CommandInteraction) => {
     ephemeral: true
   });
 };
+
+export default createMatchCommand;

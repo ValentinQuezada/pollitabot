@@ -1,7 +1,23 @@
-export { anonCommand } from './anon';
-export { sayCommand } from './say';
-export { createMatchCommand } from './createMatch';
-export { updateMatchScoreCommand } from './updateMatchScore';
-export { createAwardCommand } from './createAward';
-export { updateAwardResultCommand } from './updateAwardResult';
-export { sendScorePredictionCommand } from './sendScorePrediction';
+import anonCommand from "./anon";
+import sayCommand from "./say";
+import createMatchCommand from "./createMatch";
+import updateMatchScoreCommand from "./updateMatchScore";
+import createAwardCommand from "./createAward";
+import updateAwardResultCommand from "./updateAwardResult";
+import sendScorePredictionCommand from "./sendScorePrediction";
+import seeResultsCommand from "./seeResults";
+import sendMissingCommand from "./sendMissing";
+import setGroupStageOnlyCommand from "./setGroupStageOnly";
+
+export {
+    anonCommand,
+    sayCommand,
+    createMatchCommand,
+    updateMatchScoreCommand,
+    createAwardCommand,
+    updateAwardResultCommand,
+    sendScorePredictionCommand,
+    seeResultsCommand,
+    sendMissingCommand,
+    setGroupStageOnlyCommand
+};

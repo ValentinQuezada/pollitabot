@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import { createAward } from "../../database/controllers";
 
-export const createAwardCommand = async (interaction: CommandInteraction) => {
+const createAwardCommand = async (interaction: CommandInteraction) => {
   const name = interaction.options.get('name')?.value as string;
 
   await createAward({ name });
@@ -11,3 +11,5 @@ export const createAwardCommand = async (interaction: CommandInteraction) => {
     ephemeral: true
   });
 };
+
+export default createAwardCommand;

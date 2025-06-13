@@ -4,7 +4,10 @@ import {
   createAwardCommand,
   createMatchCommand,
   sayCommand,
+  seeResultsCommand,
+  sendMissingCommand,
   sendScorePredictionCommand,
+  setGroupStageOnlyCommand,
   updateAwardResultCommand,
   updateMatchScoreCommand
 } from "../interaction";
@@ -35,6 +38,15 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'send-score-prediction':
       await sendScorePredictionCommand(commandInteraction);
+      break;
+    case 'see-results':
+      await seeResultsCommand(commandInteraction);
+      break;
+    case 'send-missing':
+      await sendMissingCommand(commandInteraction);
+      break;
+    case 'set-group-stage-only':
+      await setGroupStageOnlyCommand(commandInteraction);
       break;
   }
 };

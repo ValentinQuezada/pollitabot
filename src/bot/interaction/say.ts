@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 
-export const sayCommand = async (interaction: CommandInteraction) => {
+const sayCommand = async (interaction: CommandInteraction) => {
   if (interaction.user.id !== OWNER_ID) {
     await interaction.reply({
       content: 'You do not have permission for this command',
@@ -21,3 +21,5 @@ export const sayCommand = async (interaction: CommandInteraction) => {
     ephemeral: true
   });
 };
+
+export default sayCommand;
