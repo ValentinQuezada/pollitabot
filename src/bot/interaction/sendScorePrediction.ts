@@ -29,13 +29,13 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             m => m.team1 === response.data.team1 && m.team2 === response.data.team2 && m.hasStarted === false
         );
         if (!match) {
-            await interaction.editReply({ content: "No se encontró el partido para la predicción." });
+            await interaction.editReply({ content: "❌ No se encontró el partido para la predicción." });
             return;
         }
         console.log(match.datetime, new Date());
 
         if (new Date() >= match.datetime) {
-            await interaction.editReply({ content: "Ya no puedes apostar, el partido ya empezó." });
+            await interaction.editReply({ content: "⏰​ Ya no puedes apostar, ¡el partido ya empezó!" });
             return;
         }
 
@@ -82,14 +82,14 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
         if (existingPrediction) {
             existingPrediction.prediction = response.data.score;
             await existingPrediction.save();
-            actionMessage = `*¡<@${interaction.user.id}> ha actualizado sus resultados para ${match.team1} vs ${match.team2}!*`;
+            actionMessage = `*✏️​ ¡<@${interaction.user.id}> ha actualizado sus resultados para **${match.team1} vs. ${match.team2}**!*`;
         } else {
             await Prediction.create({
                 userId: interaction.user.id,
                 matchId: match._id,
                 prediction: response.data.score
             });
-            actionMessage = `*¡<@${interaction.user.id}> ha enviado sus resultados para ${match.team1} vs ${match.team2}!*`;
+            actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado sus resultados para **${match.team1} vs. ${match.team2}**!*`;
 
             const matchFee = getMatchFee(match.matchType);
             const UserStats = db.model("UserStats", UserStatsSchema);
@@ -127,13 +127,13 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             { upsert: true }
         );
 
-        await interaction.editReply({ content: '¡Predicción guardada!' });
+        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**.` });
     } catch (error) {
         console.error('Error in send-score-prediction:', error);
         if (interaction.deferred || interaction.replied) {
-            await interaction.editReply({ content: 'Ocurrió un error al procesar tu predicción.' });
+            await interaction.editReply({ content: '❌ Ocurrió un error al procesar tu predicción.' });
         } else {
-            await interaction.reply({ content: 'Ocurrió un error al procesar tu predicción.', ephemeral: true });
+            await interaction.reply({ content: '❌ Ocurrió un error al procesar tu predicción.', ephemeral: true });
         }
     }
 };

@@ -23,3 +23,19 @@ interface GenContentErrorResponse {
 }
 
 export type GenContentResponse<T> = GenContentSuccessResponse<T> | GenContentErrorResponse;
+
+export type TeamNameType = {
+  team: string;
+};
+
+export const TeamNameSchema = z.object({
+  team: z.enum([
+    "Al Ahly", "Al Ain", "Al Hilal", "Urawa Red Diamonds", "Ulsan HD",
+    "Espérance de Tunis", "Wydad Casablanca", "Mamelodi Sundowns",
+    "Monterrey", "Seattle Sounders", "Pachuca", "Los Angeles FC",
+    "Flamengo", "Palmeiras", "Fluminense", "River Plate", "Boca Juniors", "Botafogo",
+    "Auckland City", "Manchester City", "Chelsea", "Real Madrid", "Bayern München",
+    "Paris Saint-Germain", "Inter Milan", "Benfica", "Porto", "Borussia Dortmund",
+    "Atlético de Madrid", "Red Bull Salzburg", "Juventus", "Inter Miami"
+  ])
+});

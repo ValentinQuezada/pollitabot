@@ -30,11 +30,11 @@ const seeMissing = async (interaction: CommandInteraction) => {
     const missingMatches = matches.filter(m => !predictedMatchIds.has(m._id.toString()));
 
     if (missingMatches.length === 0) {
-      await interaction.reply({ content: "No tienes partidos pendientes por apostar.", ephemeral: true });
+      await interaction.reply({ content: "🆗​ No tienes partidos pendientes por apostar.", ephemeral: true });
       return;
     }
 
-    let message = "Partidos pendientes por apostar:\n";
+    let message = "⌛️ Partidos pendientes por apostar:\n";
     for (const match of missingMatches) {
       message += `- ${match.team1} vs ${match.team2}\n`;
     }

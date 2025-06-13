@@ -15,11 +15,11 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
     const matches = await Match.find({ _id: { $in: matchIds }, isFinished: false });
 
     if (matches.length === 0) {
-      await interaction.reply({ content: "No tienes predicciones pendientes.", ephemeral: true });
+      await interaction.reply({ content: "🆗​ No tienes predicciones pendientes.", ephemeral: true });
       return;
     }
 
-    let message = "Tus predicciones pendientes:\n";
+    let message = "⌛️ Tus predicciones pendientes:\n";
     for (const match of matches) {
       const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
       message += `- ${match.team1} vs ${match.team2}: ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;

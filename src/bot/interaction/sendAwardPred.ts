@@ -5,6 +5,7 @@ import { AwardPredictionSchema } from "../../schemas/awardprediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { getAwardFee } from "../../utils/fee"; // Necesitas crear esta función
 import { ClubWorldCupTeams2025 } from "../events/interactionCreate";
+import { mapTeamName } from "../../gen/client";
 
 const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -18,16 +19,25 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
         const award = awards.find(a => a.name === awardName);
         
         if (!award) {
-            await interaction.editReply({ content: "❌ Award no encontrado." });
+            await interaction.editReply({ content: "❌ Award no encontrado. Introduce el nombre exacto de la award." });
             return;
         }
 
-        const team = ClubWorldCupTeams2025.find(a => a === predictionText);
+        const response = await mapTeamName(
+                    predictionText
+                );
+                if (!response.success) {
+                    await interaction.editReply({ content: response.error });
+                    return;
+                }
+                console.log(response.data);
 
-        if(!team) {
+        if(!response) {
             await interaction.editReply({ content: "❌ Equipo no encontrado." });
             return;
         }
+
+        const teamName: string = response.data.team;
 
         const db = await databaseConnection();
         const AwardPrediction = db.model("AwardPrediction", AwardPredictionSchema);
@@ -44,17 +54,17 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
 
         if (existingPrediction) {
             // Actualizar predicción existente (sin cobrar fee nuevamente)
-            existingPrediction.prediction = predictionText;
+            existingPrediction.prediction = teamName;
             await existingPrediction.save();
-            actionMessage = `✏️ <@${interaction.user.id}> actualizó su predicción para **${award.name}**`;
+            actionMessage = `*✏️ ¡<@${interaction.user.id}> ha actualizado su predicción para **${award.name}**!*`;
         } else {
             // Crear nueva predicción (cobrar fee)
             await AwardPrediction.create({
                 userId: interaction.user.id,
                 awardId: award._id,
-                prediction: predictionText
+                prediction: teamName
             });
-            actionMessage = `🎯 <@${interaction.user.id}> envió una predicción para **${award.name}**`;
+            actionMessage = `*🎯 ¡<@${interaction.user.id}> ha enviado su predicción para **${award.name}**!*`;
 
             // Actualizar estadísticas del usuario con el fee
             await UserStats.updateOne(
@@ -79,7 +89,7 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
             await interaction.channel.send(actionMessage);
         }
 
-        await interaction.editReply({ content: '✅ ¡Predicción para award guardada!' });
+        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para la award **${awardName}**! Elegiste: **${teamName}**` });
     } catch (error) {
         console.error('Error en send-award-prediction:', error);
         await interaction.editReply({ 

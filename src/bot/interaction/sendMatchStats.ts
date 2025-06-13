@@ -51,11 +51,11 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     const medianA = median(scoresA);
     const medianB = median(scoresB);
 
-    let message = `📊 **Estadísticas de apuestas para ${team1} vs ${team2}**\n`;
-    message += `- Jugadores que faltan apostar: ${missingUsers.length} (${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'})\n`;
-    message += `- Total de apuestas: ${predictions.length}\n`;
-    message += `- Media de score: ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
-    message += `- Mediana de score: ${medianA}-${medianB}\n`;
+    let message = `📊 ***Estadísticas pre-partido** para ${team1} vs ${team2}*:\n`;
+    message += `- **Jugadores que faltan apostar:** ${missingUsers.length} (${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'})\n`;
+    message += `- **Total de apuestas:** ${predictions.length}\n`;
+    message += `- **Media de score:** ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
+    message += `- **Mediana de score:** ${medianA}-${medianB}\n`;
 
     if (
         interaction.channel &&

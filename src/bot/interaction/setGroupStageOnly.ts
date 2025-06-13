@@ -13,7 +13,7 @@ const setGroupStageOnlyCommand = async (interaction: CommandInteraction) => {
 
     if (nowUTC >= deadlineLima) {
       await interaction.editReply({
-        content: "Ya no puedes cambiar esta opción. El plazo para elegir terminó."
+        content: "⏰ Ya no puedes cambiar esta opción. El plazo para elegir terminó."
       });
       return;
     }
@@ -29,8 +29,8 @@ const setGroupStageOnlyCommand = async (interaction: CommandInteraction) => {
 
     await interaction.editReply({
       content: onlyGroupStage
-        ? "Has elegido **apostar solo en fase de grupos**. No estarás obligado a apostar en las siguientes fases."
-        : "Has elegido **apostar en todas las fases**. ¡Recuerda que deberás apostar en todos los partidos fuera de grupos!"
+        ? "🏳️‍🌈​ Has elegido **apostar solo en fase de grupos**. No estarás obligado a apostar en las siguientes fases."
+        : "😎 Has elegido **apostar en todas las fases**. ¡Recuerda que deberás apostar en todos los partidos luego de la fase de grupos!"
     });
 };
 

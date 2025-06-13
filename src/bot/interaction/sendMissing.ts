@@ -17,7 +17,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     // search for the match that is not finished and has not started
     const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
     if (!match) {
-      await interaction.reply({ content: "No se encontró el partido pendiente.", ephemeral: true });
+      await interaction.reply({ content: "❌ No se encontró el partido pendiente.", ephemeral: true });
       return;
     }
 
@@ -35,12 +35,12 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     // filter users who have not sent a prediction
     const missingUsers = users.filter(u => !predictedUserIds.has(u.userId));
     if (missingUsers.length === 0) {
-      await interaction.reply({ content: "Todos los jugadores ya enviaron predicción para este partido.", ephemeral: true });
+      await interaction.reply({ content: "☑️​ Todos los jugadores ya enviaron predicción para este partido.", ephemeral: true });
       return;
     }
 
     const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
-    const groupMessage = `Estos jugadores aún no han mandado resultados para ${team1} vs ${team2}: ${mentionList}`;
+    const groupMessage = `*🔘 Estos jugadores aún no han mandado resultados para **${team1} vs ${team2}**:* ${mentionList}.`;
 
     if (
       interaction.channel &&
