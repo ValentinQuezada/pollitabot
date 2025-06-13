@@ -5,10 +5,11 @@ import { fixScoreExtraTime } from "../../gen/client";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { ConversationContext } from "../conversation/context";
 
 const conversationManager = ConversationManager.getInstance();
 
-export const startDMConversation = (userId: string, initialContext: Record<string, any> = {}) => {
+export const startDMConversation = (userId: string, initialContext: ConversationContext) => {
     conversationManager.startConversation(userId, initialContext);
 };
 
@@ -24,7 +25,8 @@ const directMessageEvent = async (message: Message) => {
     try {
         const userMessage = message.content.toLowerCase();
         const userId = message.author.id;
-        const context = conversationManager.getContext(userId) || {};
+        const context = conversationManager.getContext(userId);
+        if (!context) return;
 
         conversationManager.updateLastInteraction(userId);
 
@@ -34,17 +36,17 @@ const directMessageEvent = async (message: Message) => {
             return;
         }
 
-        if (context.reason.content === "fix-score-prediction") {
+        if (context.type === "fix-score-prediction") {
             const predictionQuery = message.content;
-            const fixScoreResponse = await fixScoreExtraTime(predictionQuery, context.reason.prediction);
+            const fixScoreResponse = await fixScoreExtraTime(predictionQuery, context.details.prediction);
             if (!fixScoreResponse.success) {
                 await message.reply("Try again, " + fixScoreResponse.error);
                 return;
             }
 
-            console.log(context.reason.match.datetime, new Date());
+            console.log(context.details.match.datetime, new Date());
 
-            if (new Date() >= context.reason.match.datetime) {
+            if (new Date() >= context.details.match.datetime) {
                 await message.reply("Ya no puedes apostar, el partido ya empezó.");
                 endDMConversation(userId);
                 return;
@@ -60,21 +62,21 @@ const directMessageEvent = async (message: Message) => {
 
             let existingPrediction = await Prediction.findOne({
                 userId: userId,
-                matchId: context.reason.match._id
+                matchId: context.details.match._id
             });
 
             let actionMessage;
             if (existingPrediction) {
                 existingPrediction.prediction = fixScoreResponse.data.score;
                 await existingPrediction.save();
-                actionMessage = `*¡<@${userId}> ha actualizado sus resultados para ${context.reason.match.team1} vs ${context.reason.match.team2}!*`;
+                actionMessage = `*¡<@${userId}> ha actualizado sus resultados para ${context.details.match.team1} vs ${context.details.match.team2}!*`;
             } else {
                 await Prediction.create({
                     userId: userId,
-                    matchId: context.reason.match._id,
+                    matchId: context.details.match._id,
                     prediction: fixScoreResponse.data.score
                 });
-                actionMessage = `*¡<@${userId}> ha enviado sus resultados para ${context.reason.match.team1} vs ${context.reason.match.team2}!*`;
+                actionMessage = `*¡<@${userId}> ha enviado sus resultados para ${context.details.match.team1} vs ${context.details.match.team2}!*`;
             }
 
 

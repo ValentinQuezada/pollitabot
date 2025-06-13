@@ -1,11 +1,4 @@
-interface ConversationMetadata {
-  userId: string;
-  startTime: Date;
-  lastInteraction: Date;
-  context: {
-    [key: string]: any;
-  };
-}
+import { ConversationContext, ConversationMetadata } from "./context";
 
 class ConversationManager {
   private static instance: ConversationManager;
@@ -22,7 +15,7 @@ class ConversationManager {
     return ConversationManager.instance;
   }
 
-  public startConversation(userId: string, initialContext: Record<string, any> = {}): void {
+  public startConversation(userId: string, initialContext: ConversationContext): void {
     const metadata: ConversationMetadata = {
       userId,
       startTime: new Date(),
@@ -40,7 +33,7 @@ class ConversationManager {
     return this.conversations.has(userId);
   }
 
-  public updateContext(userId: string, updates: Record<string, any>): void {
+  public updateContext(userId: string, updates: ConversationContext): void {
     const conversation = this.conversations.get(userId);
     if (conversation) {
       conversation.context = {
@@ -52,7 +45,7 @@ class ConversationManager {
     }
   }
 
-  public getContext(userId: string): Record<string, any> | null {
+  public getContext(userId: string): ConversationContext | null {
     const conversation = this.conversations.get(userId);
     return conversation ? conversation.context : null;
   }

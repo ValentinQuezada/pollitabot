@@ -45,9 +45,9 @@ export const sendScorePredictionCommand = async (interaction: CommandInteraction
                 startDMConversation(interaction.user.id, {
                     channelId: interaction.channelId,
                     guildId: interaction.guildId,
-                    reason: {
-                        content: "fix-score-prediction",
-                        match: match,
+                    type: "fix-score-prediction",
+                    details: {
+                        match: match.toJSON(),
                         prediction: response.data,
                     }
                 });
