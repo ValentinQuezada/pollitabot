@@ -29,7 +29,7 @@ export async function linkMatchScore(query: string, matches: string[]): Promise<
     try {
         const data = extractFromCodeblock(response.text);
 
-        const jsonData = ScorePredictioSchema.parse(data);
+        const jsonData = ScorePredictioSchema.parse(JSON.parse(data));
         return {
             success: true,
             data: jsonData
@@ -65,7 +65,7 @@ export async function fixScoreExtraTime(query: string, wrongScore: ScorePredicti
     try {
         const data = extractFromCodeblock(response.text);
 
-        const jsonData = ScorePredictioSchema.parse(data);
+        const jsonData = ScorePredictioSchema.parse(JSON.parse(data));
         return {
             success: true,
             data: jsonData
