@@ -27,7 +27,7 @@ const format = values.flatMap((value) => {
         console.log(hours)
 
         let datetime = new Date(year, month-1, day, hours);
-        return {team1, team2, datetime, group, matchType: "group-regular" };
+        return {team1, team2, datetime, group, matchType: "group-regular", isFinished: false, hasStarted: false };
     })
     return matches;
 })

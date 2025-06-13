@@ -1,42 +1,106 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "../constant/credentials";
 import { extractFromCodeblock } from "../utils/codeblock";
-import { GenContentResponse, ScorePrediction } from "./interfaces";
+import { GenContentResponse, ScorePredictionType, ScorePredictioSchema } from "./interfaces";
+import { SYSTEM_INSTRUCTIONS } from "./prompts";
 
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY});
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const modelName = "gemini-2.0-flash";
 
-export async function linkMatchScore(query: string, matches: string[]): Promise<GenContentResponse<ScorePrediction>> {
+export async function linkMatchScore(query: string, matches: [string, string][]): Promise<GenContentResponse<ScorePredictionType>> {
     const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    config: {
-        systemInstruction: "From the following list of matches, return the most similar match to the following: " + matches.join("\n") + "\n\nFormat your response as a JSON object with the following structure: { team1: string, team2: string, score: { team1: number, team2: number } }. Every field is required.",
-        maxOutputTokens: 100,
-        temperature: 0.1,
-        responseMimeType: "application/json",
-    },
+        model: modelName,
+        config: {
+            systemInstruction: SYSTEM_INSTRUCTIONS.FINAL_SCORE(
+                matches.map(match => match.join(' vs '))
+            ),
+            maxOutputTokens: 100,
+            temperature: 0.1,
+            responseMimeType: "application/json",
+        },
         contents: query
     });
 
-    if(response.text === undefined) {
+    if (response.text === undefined) {
         return {
             success: false,
             error: "Response text is undefined"
         }
     }
 
-    const data = extractFromCodeblock(response.text);
+    try {
+        const data = extractFromCodeblock(response.text);
+        let jsonData = JSON.parse(data);
+        if (Array.isArray(jsonData)) {
+            jsonData = jsonData[0];
+        }
+        const parsedData = ScorePredictioSchema.parse(jsonData);
 
-    try{
-        const jsonData = JSON.parse(data);
+        const match = matches.find(
+            match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1
+        );
+        if (!match) {
+            return {
+                success: false,
+                error: "No match found"
+            }
+        }
+
+        if (parsedData.team1 === match[1]) {
+            parsedData.team1 = match[0];
+            parsedData.team2 = match[1];
+            parsedData.score.team1 = parsedData.score.team2;
+            parsedData.score.team2 = parsedData.score.team1;
+        }
+
         return {
             success: true,
-            data: jsonData
+            data: parsedData
         };
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return {
             success: false,
-            error: "Invalid JSON"
+            error: `Invalid JSON ${e}`
+        }
+    }
+}
+
+export async function fixScoreExtraTime(query: string, wrongScore: ScorePredictionType): Promise<GenContentResponse<ScorePredictionType>> {
+    const response = await ai.models.generateContent({
+        model: modelName,
+        config: {
+            systemInstruction: SYSTEM_INSTRUCTIONS.EXTRA_TIME_SCORE(wrongScore),
+            maxOutputTokens: 100,
+            temperature: 0.1,
+            responseMimeType: "application/json",
+        },
+        contents: query
+    });
+
+    if (response.text === undefined) {
+        return {
+            success: false,
+            error: "Response text is undefined"
+        }
+    }
+
+    try {
+        const data = extractFromCodeblock(response.text);
+        let jsonData = JSON.parse(data);
+        if (Array.isArray(jsonData)) {
+            jsonData = jsonData[0];
+        }
+        const parsedData = ScorePredictioSchema.parse(jsonData);
+        return {
+            success: true,
+            data: parsedData
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            success: false,
+            error: `Invalid JSON ${e}`
         }
     }
 }

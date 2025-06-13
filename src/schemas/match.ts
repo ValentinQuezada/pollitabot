@@ -37,11 +37,13 @@ const updateMatchScoreSchema = z.object({
     }).optional()
 });
 
-const MatchSchema = createMatchSchema.merge(updateMatchScoreSchema);
+const MatchSchema = createMatchSchema.merge(updateMatchScoreSchema).extend({
+    _id: z.any()
+});
 
 export type MatchType = z.infer<typeof MatchSchema>;
 
-export interface MatchDocument extends MatchType, Document {
+export interface MatchDocument extends Omit<MatchType, "_id">, Document {
     _id: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
