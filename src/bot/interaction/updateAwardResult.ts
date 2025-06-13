@@ -2,6 +2,9 @@ import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 
 const updateAwardResultCommand = async (interaction: CommandInteraction) => {
+
+  await interaction.deferReply({ ephemeral: true });
+
   const name = interaction.options.get('name')?.value as string;
   const result = interaction.options.get('result')?.value as string;
 
