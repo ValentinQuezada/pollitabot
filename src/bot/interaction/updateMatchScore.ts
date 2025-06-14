@@ -5,11 +5,10 @@ import { MatchMongoose } from "../../schemas/match";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { checkRole } from "../events/interactionCreate";
+import { updateAuraPointsForMatch } from "../../utils/updateAuraPoints";
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
-
   const hasRole = await checkRole(interaction, "ADMIN");
-        
   if (!hasRole) {
     await interaction.reply({
       content: `⛔ No tienes permiso para usar este comando.`,
@@ -25,8 +24,6 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const score1 = interaction.options.get('score1')?.value as number;
   const score2 = interaction.options.get('score2')?.value as number;
   const type = interaction.options.get('type')?.value as string;
-  const lategoalhit = interaction.options.get('lategoalhit')?.value as boolean;
-  const upsethit = interaction.options.get('upsethit')?.value as boolean;
 
   const db = await databaseConnection();
   const Match = db.model("Match", MatchMongoose);
@@ -39,7 +36,22 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     return;
   }
 
-  match.score = { team1: score1, team2: score2, lateGoalHit: lategoalhit, upsetHit: upsethit };
+  // update match score
+  match.score = { team1: score1, team2: score2 };
+
+  // only update flag if type is final
+  if (type === 'final') {
+    const specialHit = interaction.options.get('specialhit')?.value as boolean | undefined;
+    const lateGoalHit = interaction.options.get('lategoalhit')?.value as boolean | undefined;
+    const upsetHit = interaction.options.get('upsethit')?.value as boolean | undefined;
+
+    if (typeof specialHit === "boolean") match.specialHit = specialHit;
+    if (typeof lateGoalHit === "boolean") match.lateGoalHit = lateGoalHit;
+    if (typeof upsetHit === "boolean") match.upsetHit = upsetHit;
+
+    match.isFinished = true;
+  }
+
   await match.save();
 
   // get all predictions for this match
@@ -65,11 +77,9 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     function getEmoji(pred: { team1: number; team2: number }): string {
       if (pred.team1 === score1 && pred.team2 === score2) return "✅";
       if (type === 'partial') {
-        // imposible
         if (pred.team1 < score1 || pred.team2 < score2) return "❌";
         return "🟡";
       } else {
-        // only for final
         return "❌";
       }
     }
@@ -151,7 +161,11 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           userStats.streak = (userStats.streak || 0) + 1;
           userStats.gain = (userStats.gain || 0) + gainPerWinner;
           userStats.total = (userStats.total || 0) + gainPerWinner; // add gain
-          userStats
+          
+          //update max streak if current streak is greater
+          if ((userStats.streak || 0) > (userStats.maxStreak || 0)) {
+            userStats.maxStreak = userStats.streak;
+          }
         } else {
           // if no winners, increment noWinnersPredictions
           if (winners.length === 0) {
@@ -165,8 +179,15 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
         }
 
+        // calculate win rate
+        const correct = userStats.correctPredictions || 0;
+        const total = userStats.totalPredictions || 0;
+        userStats.winRate = total > 0 ? correct / total : 0;
+
         await userStats.save();
       }
+      // update aura points for winners
+      await updateAuraPointsForMatch(match._id.toString());
     }
   }
 };
