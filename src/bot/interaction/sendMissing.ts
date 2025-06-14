@@ -17,7 +17,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     // search for the match that is not finished and has not started
     const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
     if (!match) {
-      await interaction.reply({ content: "❌ No se encontró el partido pendiente.", ephemeral: true });
+      await interaction.editReply({ content: "❌ No se encontró el partido pendiente."});
       return;
     }
 
@@ -35,7 +35,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     // filter users who have not sent a prediction
     const missingUsers = users.filter(u => !predictedUserIds.has(u.userId));
     if (missingUsers.length === 0) {
-      await interaction.reply({ content: "☑️​ Todos los jugadores ya enviaron predicción para este partido.", ephemeral: true });
+      await interaction.editReply({ content: "☑️​ **Todos los jugadores** enviaron predicción para este partido."});
       return;
     }
 
@@ -50,7 +50,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
       await interaction.channel.send(groupMessage);
     }
 
-    await interaction.reply({ content: "Mensaje enviado al grupo.", ephemeral: true });
+    await interaction.editReply({ content: "​✅​ Mensaje enviado al grupo."});
 };
 
 export default sendMissingCommand;

@@ -44,7 +44,7 @@ cron.schedule("* * * * *", async () => {
     // announce in the general channel
     const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
     if (channel && "send" in channel) {
-      await channel.send(`¡Comenzó el partido **${match.team1} vs ${match.team2}**! Ya no se aceptan apuestas.`);
+      await channel.send(`🕛​ ¡Empezó el partido **${match.team1} vs ${match.team2}**! Ya no más apuestas 🙅​.`);
     }
   }
 });

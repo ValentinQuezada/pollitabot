@@ -4,8 +4,19 @@ import { getMatchFee } from "../../utils/fee";
 import { MatchMongoose } from "../../schemas/match";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { checkRole } from "../events/interactionCreate";
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
+
+  const hasRole = await checkRole(interaction, "ADMIN");
+        
+  if (!hasRole) {
+    await interaction.reply({
+      content: `⛔ No tienes permiso para usar este comando.`,
+      ephemeral: true
+    });
+    return;
+  }
 
   await interaction.deferReply({ ephemeral: true });
 
@@ -39,8 +50,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   if (type === 'partial' || type === 'final') {
     let message = type === 'partial'
-      ? `¡⏸️ Medio tiempo! Resultado parcial: ${team1} ${score1} - ${score2} ${team2}\n`
-      : `¡🏁 Tiempo completo! Resultado final: ${team1} ${score1} - ${score2} ${team2}\n`;
+      ? `⏸️ **¡Medio tiempo!** Resultado parcial: ${team1} (${score1} - ${score2}) ${team2} \n`
+      : `🏁 **¡Tiempo completo!** Resultado final: ${team1} (${score1} - ${score2}) ${team2}\n`;
 
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};
@@ -54,7 +65,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     function getEmoji(pred: { team1: number; team2: number }): string {
       if (pred.team1 === score1 && pred.team2 === score2) return "✅";
       if (type === 'partial') {
-        // impossble
+        // imposible
         if (pred.team1 < score1 || pred.team2 < score2) return "❌";
         return "🟡";
       } else {

@@ -10,15 +10,15 @@ const anonCommand = async (interaction: CommandInteraction) => {
     : interaction.user.username;
 
   const owner = await BOT_CLIENT.users.fetch(OWNER_ID);
-  await owner.send(`Secret message from ${displayName}:\n${message}`);
+  await owner.send(`Mensaje secreto de **${displayName}**:\n${message}`);
   
   const generalChannel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
   if (generalChannel && 'send' in generalChannel) {
-    await generalChannel.send(`${displayName} said something!`);
+    await generalChannel.send(`🤫​ *¡**${displayName}** envió un mensaje anónimo!*`);
   }
 
   await interaction.reply({
-    content: 'Your message has been sent secretly to the owner!',
+    content: '​✅​ ¡Tu mensaje fue enviado de forma secreta al owner!',
     ephemeral: true
   });
 };

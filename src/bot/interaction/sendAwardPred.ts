@@ -19,7 +19,7 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
         const award = awards.find(a => a.name === awardName);
         
         if (!award) {
-            await interaction.editReply({ content: "❌ Award no encontrado. Introduce el nombre exacto de la award." });
+            await interaction.editReply({ content: "❌ Award no encontrada. Introduce el nombre exacto de la award." });
             return;
         }
 

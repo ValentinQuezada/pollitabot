@@ -5,7 +5,7 @@ import BOT_CLIENT from "../init";
 const sayCommand = async (interaction: CommandInteraction) => {
   if (interaction.user.id !== OWNER_ID) {
     await interaction.reply({
-      content: 'You do not have permission for this command',
+      content: '⛔ No tienes permiso para usar este comando.',
       ephemeral: true
     });
     return;
@@ -17,7 +17,7 @@ const sayCommand = async (interaction: CommandInteraction) => {
     await channel.send(message);
   }
   await interaction.reply({
-    content: 'Message sent!',
+    content: `✅ ¡Mensaje enviado con éxito!`,
     ephemeral: true
   });
 };

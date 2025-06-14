@@ -1,8 +1,19 @@
 import { CommandInteraction } from "discord.js";
 import { MatchTypeEnum } from "../../schemas/match";
 import { createMatch } from "../../database/controllers";
+import { checkRole } from "../events/interactionCreate";
 
 const createMatchCommand = async (interaction: CommandInteraction) => {
+  const hasRole = await checkRole(interaction, "ADMIN");
+    
+  if (!hasRole) {
+    await interaction.reply({
+      content: `⛔ No tienes permiso para usar este comando.`,
+      ephemeral: true
+    });
+    return;
+  }
+  
   const team1 = interaction.options.get('team1')?.value as string;
   const team2 = interaction.options.get('team2')?.value as string;
   const datetime = interaction.options.get('datetime')?.value as string;
@@ -27,7 +38,7 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
   });
 
   await interaction.reply({
-    content: 'Match created!',
+    content: `¡Partido **${team1} vs. ${team2}** creado con éxito!`,
     ephemeral: true
   });
 };
