@@ -34,7 +34,10 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     group,
     matchType,
     isFinished: false,
-    hasStarted: false
+    hasStarted: false,
+    specialHit: false,
+    lateGoalHit: false,
+    upsetHit: false
   });
 
   await interaction.reply({
