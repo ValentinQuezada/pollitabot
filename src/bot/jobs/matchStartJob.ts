@@ -41,10 +41,37 @@ cron.schedule("* * * * *", async () => {
     match.hasStarted = true;
     await match.save();
 
-    // announce in the general channel
+    // all predictions for this match
+    const predictions = await Prediction.find({ matchId: match._id });
+
+    // group predictions by team1-team2
+    const grouped: Record<string, string[]> = {};
+    for (const pred of predictions) {
+    const key = `${pred.prediction.team1}-${pred.prediction.team2}`;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(`<@${pred.userId}>`);
+    }
+
+    // sort keys by team1-team2 in descending order
+    const sortedKeys = Object.keys(grouped).sort((a, b) => {
+    const [a1] = a.split("-").map(Number);
+    const [b1] = b.split("-").map(Number);
+    return b1 - a1;
+    });
+
+    // message with predictions
+    let predictionsMsg = "";
+    for (const key of sortedKeys) {
+    predictionsMsg += `${key}: ${grouped[key].join("/")} ⏺️\n`;
+    }
+
+    // final message
+    let finalMsg = `🕛​ ¡Empezó el partido **${match.team1} vs ${match.team2}**! Ya no más apuestas 🙅​.\n\n**Predicciones:**\n${predictionsMsg}`;
+
+    // Enviar al canal
     const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
     if (channel && "send" in channel) {
-      await channel.send(`🕛​ ¡Empezó el partido **${match.team1} vs ${match.team2}**! Ya no más apuestas 🙅​.`);
+    await channel.send(finalMsg);
     }
   }
 });

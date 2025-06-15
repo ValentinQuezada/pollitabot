@@ -13,7 +13,7 @@ const ATTRIBUTES = [
   { key: "topWinRate", label: "📈" },
   { key: "topStreak", label: "🏅" },
   { key: "awardHit", label: "🏆" },
-  { key: "totalPoints", label: "🧮" }
+  { key: "totalPoints", label: "💠" }
 ];
 
 const auraLeaderboardCommand = {
@@ -25,19 +25,18 @@ const auraLeaderboardCommand = {
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.editReply({ content: "No hay datos de Aura Points aún." });
+      await interaction.reply({ content: "No hay datos de Aura Points aún.", ephemeral: true });
       return;
     }
 
-    // build the leaderboard table header
-    let message = `🏆 **Tabla de Aura Points** 🏆\n\n`;
-    message += `Pos | Usuario | Puntos\n`;
-    message += `:--:|:-------:|:------:\n`;
-    leaderboard.forEach((row, idx) => {
-      message += `**${idx + 1}** | <@${row.userId}> | **${row.totalPoints}**\n`;
-    });
+    // build the leaderboard (simple format)
+    let message = `💠 **Ranking de Aura Points**\n`;
+    for (let idx = 0; idx < leaderboard.length; idx++) {
+      const row = leaderboard[idx];
+      message += `${idx + 1}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+    }
 
-    // top 3 and last 3
+    // top 3 highlights
     const winner = leaderboard[0];
     const second = leaderboard[1];
     const third = leaderboard[2];
@@ -53,27 +52,24 @@ const auraLeaderboardCommand = {
       message += `\n🥉 Y en tercer lugar <@${third.userId}> con **${third.totalPoints}** pts.`;
     }
 
-    if (leaderboard.length > 3) {
-      const lastThree = leaderboard.slice(-3);
-      message += `\n\n😬 Los que se están hundiendo en la tabla:\n`;
-      lastThree.forEach(row => {
-        message += `- <@${row.userId}> (${row.totalPoints} pts)\n`;
-      });
-    }
-
-    // show the user's own breakdown if present
+    // breakdown personal (ephemeral)
     const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
     if (userAura) {
-    message += `\n\n🔎 **Tus Aura Points por atributo:**\n`;
-    ATTRIBUTES.forEach(attr => {
+      let privateMessage = `🔎 **Tus Aura Points por atributo:**\n`;
+      ATTRIBUTES.forEach(attr => {
         if (attr.key !== "totalPoints") {
-        message += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
+          privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
         }
-    });
-    message += `🧮 \`totalPoints\`: **${userAura.totalPoints}**`;
+      });
+      privateMessage += `💠 \`totalPoints\`: **${userAura.totalPoints}**`;
+      await interaction.reply({ content: privateMessage, ephemeral: true });
+    } else {
+      await interaction.reply({ content: message });
+      return;
     }
 
-    await interaction.reply({ content: message });
+    // send the leaderboard to the channel
+    await interaction.channel.send({ content: message });
   }
 };
 
