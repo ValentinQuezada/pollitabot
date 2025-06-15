@@ -71,5 +71,11 @@ export async function updateAuraPointsForMatch(matchId: string, winners: string[
       aura.awardHit;
 
     await aura.save();
-  }
+
+    // Update UserStats with aura points
+    await UserStats.updateOne(
+        { userId: user.userId },
+        { $set: { auraPoints: aura.totalPoints } }
+    );
+    }
 }
