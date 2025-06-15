@@ -12,6 +12,7 @@ import sendMatchStatsCommand from "./sendMatchStats";
 import seeMissingCommand from "./seeMissing";
 import sendAwardPredictionCommand from "./sendAwardPred";
 import auraLeaderboardCommand from "./auraLeaderboard";
+import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 
 export {
     anonCommand,
@@ -27,5 +28,6 @@ export {
     sendMatchStatsCommand,
     seeMissingCommand,
     sendAwardPredictionCommand,
-    auraLeaderboardCommand
+    auraLeaderboardCommand,
+    userStatsLeaderboardCommand
 };

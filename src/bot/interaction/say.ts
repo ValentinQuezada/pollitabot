@@ -1,8 +1,6 @@
 import { CommandInteraction, GuildMember } from "discord.js";
-import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
+import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
-
-const REQUIRED_ROLE = "ADMIN";
 
 const sayCommand = async (interaction: CommandInteraction) => {
   if (!interaction.guild) {
@@ -13,7 +11,7 @@ const sayCommand = async (interaction: CommandInteraction) => {
     return;
   }
 
-  // Comprueba si el usuario tiene el rol requerido
+  // validate if the user is the owner or has the required role
   const member = interaction.member as GuildMember;
   const hasRole = member.roles.cache.some(role => role.name === REQUIRED_ROLE);
 
