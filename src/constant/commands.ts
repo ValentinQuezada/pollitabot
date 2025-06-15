@@ -12,6 +12,8 @@ import seeResultsCommand from "../commands/seeResults";
 import sendMatchStatsCommand from "../commands/sendMatchStats";
 import seeMissingCommand from "../commands/seeMissing";
 import sendAwardPredictionCommand from "../commands/sendAwardPred";
+import auraLeaderboardCommand from "../commands/auraLeaderboard";
+import userStatsLeaderboardCommand from "../commands/userStatsLeaderboard";
 
 const BOT_COMMANDS = [
     anonymousMessageCommand,
@@ -26,8 +28,9 @@ const BOT_COMMANDS = [
     seeResultsCommand,
     sendMatchStatsCommand,
     seeMissingCommand,
-    sendAwardPredictionCommand
-
+    sendAwardPredictionCommand,
+    auraLeaderboardCommand,
+    userStatsLeaderboardCommand,
 ].map(command => command.toJSON());
 
 export default BOT_COMMANDS;

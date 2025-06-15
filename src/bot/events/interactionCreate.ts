@@ -12,7 +12,9 @@ import {
   setGroupStageOnlyCommand,
   updateAwardResultCommand,
   updateMatchScoreCommand,
-  sendAwardPredictionCommand
+  sendAwardPredictionCommand,
+  auraLeaderboardCommand,
+  userStatsLeaderboardCommand,
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -158,6 +160,12 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'send-award-prediction':
       await sendAwardPredictionCommand(commandInteraction);
+      break;
+    case 'aura-leaderboard':
+      await auraLeaderboardCommand.execute(commandInteraction);
+      break;
+    case 'user-stats-leaderboard':
+      await userStatsLeaderboardCommand.execute(commandInteraction);
       break;
   }
 };

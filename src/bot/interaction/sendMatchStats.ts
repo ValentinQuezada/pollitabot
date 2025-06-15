@@ -1,9 +1,22 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, GuildMember} from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
+
 
 const sendMatchStats = async (interaction: CommandInteraction) => {
+    const member = interaction.member as GuildMember;
+    const hasRole = member.roles.cache.some(role => role.name === REQUIRED_ROLE);
+
+    if (!hasRole) {
+    await interaction.reply({
+        content: '⛔ No tienes permiso para usar este comando.',
+        ephemeral: true
+    });
+    return;
+    }
+    
     await interaction.deferReply({ ephemeral: true });
 
     const team1 = interaction.options.get('team1')?.value as string;
@@ -17,7 +30,7 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     // search for the match that is not finished and has not started
     const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
     if (!match) {
-        await interaction.reply({ content: "No se encontró el partido pendiente.", ephemeral: true });
+        await interaction.editReply({ content: "No se encontró el partido pendiente."});
         return;
     }
 
@@ -65,7 +78,7 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
         await interaction.channel.send(message);
     }
 
-    await interaction.reply({ content: "Estadísticas enviadas al canal.", ephemeral: true });
+    await interaction.editReply({ content: "Estadísticas enviadas al canal."});
 }
 
 export default sendMatchStats;

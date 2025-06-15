@@ -27,6 +27,21 @@ const updateMatchScoreCommand = new SlashCommandBuilder()
         { name: 'Partial', value: 'partial' },
         { name: 'Final', value: 'final' }
       )
+  )
+  .addBooleanOption(option =>
+    option.setName('specialhit')
+      .setDescription('¿Hubo special hit? (solo para final)')
+      .setRequired(false)
+  )
+  .addBooleanOption(option =>
+    option.setName('lategoalhit')
+      .setDescription('¿Hubo late goal hit? (solo para final)')
+      .setRequired(false)
+  )
+  .addBooleanOption(option =>
+    option.setName('upsethit')
+      .setDescription('¿Hubo upset hit? (solo para final)')
+      .setRequired(false)
   );
 
 export default updateMatchScoreCommand;

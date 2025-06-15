@@ -11,6 +11,8 @@ import setGroupStageOnlyCommand from "./setGroupStageOnly";
 import sendMatchStatsCommand from "./sendMatchStats";
 import seeMissingCommand from "./seeMissing";
 import sendAwardPredictionCommand from "./sendAwardPred";
+import auraLeaderboardCommand from "./auraLeaderboard";
+import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 
 export {
     anonCommand,
@@ -25,5 +27,7 @@ export {
     setGroupStageOnlyCommand,
     sendMatchStatsCommand,
     seeMissingCommand,
-    sendAwardPredictionCommand
+    sendAwardPredictionCommand,
+    auraLeaderboardCommand,
+    userStatsLeaderboardCommand
 };

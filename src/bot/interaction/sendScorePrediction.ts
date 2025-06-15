@@ -114,19 +114,6 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             await interaction.channel.send(actionMessage);
         }
 
-        const UserStats = db.model("UserStats", UserStatsSchema);
-        await UserStats.updateOne(
-            { userId: interaction.user.id },
-            {
-                $inc: {
-                    totalPredictions: 1,
-                    loss: -5,
-                    total: -5
-                }
-            },
-            { upsert: true }
-        );
-
         await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**.` });
     } catch (error) {
         console.error('Error in send-score-prediction:', error);
