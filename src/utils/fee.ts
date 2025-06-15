@@ -8,6 +8,6 @@ export function getMatchFee(matchType: string, acertaronFinalRegular = true): nu
 
 export function getAwardFee(awardName: string): number {
     // console.log(`Calculating fee for award type: ${awardName}`);
-  if (awardName === "campeon") return 10;
+  if (awardName.toLowerCase() === "campeón") return 10;
   return 5; // for all other award types
 }

@@ -15,7 +15,7 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
     const matches = await Match.find({ _id: { $in: matchIds }, isFinished: false });
 
     if (matches.length === 0) {
-      await interaction.reply({ content: "🆗​ No tienes predicciones pendientes.", ephemeral: true });
+      await interaction.editReply({ content: "🆗​ No tienes predicciones pendientes." });
       return;
     }
 
@@ -25,7 +25,7 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
       message += `- ${match.team1} vs ${match.team2}: ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
     }
 
-    await interaction.reply({ content: message, ephemeral: true });
+    await interaction.editReply({ content: message });
 };
 
 export default seeResultsCommand;

@@ -62,8 +62,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   if (type === 'partial' || type === 'final') {
     let message = type === 'partial'
-      ? `⏸️ **¡Medio tiempo!** Resultado parcial: ${team1} (${score1} - ${score2}) ${team2} \n`
-      : `🏁 **¡Tiempo completo!** Resultado final: ${team1} (${score1} - ${score2}) ${team2}\n`;
+      ? `⏸️ **¡MEDIO TIEMPO!** Resultado parcial: ${team1} (${score1} - ${score2}) ${team2} \n`
+      : `🏁 **¡TIEMPO COMPLETO!** Resultado final: ${team1} (${score1} - ${score2}) ${team2}\n`;
 
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};
@@ -75,10 +75,10 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     // determine the emoji for each prediction
     function getEmoji(pred: { team1: number; team2: number }): string {
-      if (pred.team1 === score1 && pred.team2 === score2) return "✅";
+      if (pred.team1 === score1 && pred.team2 === score2) return "✴️​";
       if (type === 'partial') {
         if (pred.team1 < score1 || pred.team2 < score2) return "❌";
-        return "🟡";
+        return "⏺️​";
       } else {
         return "❌";
       }
@@ -104,12 +104,12 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     // winners
     if (winners.length > 0) {
       message += type === 'partial'
-        ? `\nGanando por el momento: ${winners.map(p => `<@${p.userId}>`).join(', ')}`
-        : `\nGanador(es): ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+        ? `\n❇️​ *Ganador(es) por ahora:* ${winners.map(p => `<@${p.userId}>`).join(', ')}`
+        : `\n✴️​ ***¡Bravo!** Ganador(es):* ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
     } else {
       message += type === 'partial'
-        ? `\nNadie ha atinado por ahora.`
-        : `\nNadie atinó el resultado.`;
+        ? `\n⏺️​ *Nadie ha atinado por ahora.*`
+        : `\n⏺️​ ***¡No Winner!** Nadie atinó el resultado.*`;
     }
 
     if (
@@ -122,8 +122,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     await interaction.editReply({
       content: type === 'partial'
-        ? "Partial result updated and announced."
-        : "Final result updated, announced, and stats updated."
+        ? "✅ Resultado parcial anunciado."
+        : "✅ Resultado final anunciado, stats actualizados."
     });
 
     // if final, update user stats

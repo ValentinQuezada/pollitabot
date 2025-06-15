@@ -50,7 +50,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     }
 
     const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
-    const groupMessage = `*🔘 Estos jugadores aún no han mandado resultados para **${team1} vs ${team2}**:* ${mentionList}.`;
+    const groupMessage = `*🔘 Estos jugadores aún no han enviado resultados para **${team1} vs ${team2}**:* ${mentionList}.`;
 
     if (
       interaction.channel &&
