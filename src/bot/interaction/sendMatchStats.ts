@@ -63,12 +63,16 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     }
     const medianA = median(scoresA);
     const medianB = median(scoresB);
+    const fullPredictions = predictions.length + missingUsers.length
+    // const var = /predictions.length
 
-    let message = `📊 ***Estadísticas pre-partido** para ${team1} vs ${team2}*:\n`;
-    message += `- **Jugadores que faltan apostar:** ${missingUsers.length} (${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'})\n`;
-    message += `- **Total de apuestas:** ${predictions.length}\n`;
+    let message = `📊 ***Estadísticas pre-partido***:\n`;
+    message += `- *${team1} vs. ${team2}*\n`;
+    message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}\n`;
+    message += `- *Falta apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'}\n`;
     message += `- **Media de score:** ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
     message += `- **Mediana de score:** ${medianA}-${medianB}\n`;
+    // message += `- **Varianza:** ${var}\n`;
 
     if (
         interaction.channel &&
