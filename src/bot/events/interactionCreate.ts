@@ -12,7 +12,8 @@ import {
   setGroupStageOnlyCommand,
   updateAwardResultCommand,
   updateMatchScoreCommand,
-  sendAwardPredictionCommand
+  sendAwardPredictionCommand,
+  auraLeaderboardCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -158,6 +159,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'send-award-prediction':
       await sendAwardPredictionCommand(commandInteraction);
+      break;
+    case 'aura-leaderboard':
+      await auraLeaderboardCommand.execute(commandInteraction);
       break;
   }
 };

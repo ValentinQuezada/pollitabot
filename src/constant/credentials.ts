@@ -11,3 +11,5 @@ export const CLIENT_ID = process.env.CLIENT_ID!;
 export const GUILD_ID = process.env.GUILD_ID!;
 
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+
+export const REQUIRED_ROLE = process.env.REQUIRED_ROLE || "ADMIN";

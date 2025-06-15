@@ -1,9 +1,23 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, GuildMember } from "discord.js";
 import { GENERAL_CHANNEL_ID, OWNER_ID } from "../../constant/credentials";
 import BOT_CLIENT from "../init";
 
+const REQUIRED_ROLE = "ADMIN";
+
 const sayCommand = async (interaction: CommandInteraction) => {
-  if (interaction.user.id !== OWNER_ID) {
+  if (!interaction.guild) {
+    await interaction.reply({
+      content: '⛔ Este comando solo puede usarse en un servidor.',
+      ephemeral: true
+    });
+    return;
+  }
+
+  // Comprueba si el usuario tiene el rol requerido
+  const member = interaction.member as GuildMember;
+  const hasRole = member.roles.cache.some(role => role.name === REQUIRED_ROLE);
+
+  if (!hasRole) {
     await interaction.reply({
       content: '⛔ No tienes permiso para usar este comando.',
       ephemeral: true

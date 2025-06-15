@@ -2,6 +2,8 @@ import { CommandInteraction } from "discord.js";
 import { MatchTypeEnum } from "../../schemas/match";
 import { createMatch } from "../../database/controllers";
 import { checkRole } from "../events/interactionCreate";
+import BOT_CLIENT from "../init";
+import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
 
 const createMatchCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -34,8 +36,28 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     group,
     matchType,
     isFinished: false,
-    hasStarted: false
+    hasStarted: false,
+    specialHit: false,
+    lateGoalHit: false,
+    upsetHit: false
   });
+
+  const announceMsg = `📢 ¡Nuevo partido creado!\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con \`/send-score-prediction\``;
+
+  // send announcement to the general channel
+  try {
+    const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
+    if (channel && 'send' in channel) {
+      await channel.send(announceMsg);
+    }
+  } catch (e) {
+    console.error("Error al enviar el mensaje al canal general:", e);
+    await interaction.reply({
+      content: "❌ No se pudo enviar el mensaje de anuncio al canal general.",
+      ephemeral: true
+    });
+    return;
+  }
 
   await interaction.reply({
     content: `¡Partido **${team1} vs. ${team2}** creado con éxito!`,

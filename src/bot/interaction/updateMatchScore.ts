@@ -25,6 +25,11 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const score2 = interaction.options.get('score2')?.value as number;
   const type = interaction.options.get('type')?.value as string;
 
+  // flags
+  const specialHit = interaction.options.get('specialhit')?.value as boolean;
+  const lateGoalHit = interaction.options.get('lategoalhit')?.value as boolean;
+  const upsetHit = interaction.options.get('upsethit')?.value as boolean;
+
   const db = await databaseConnection();
   const Match = db.model("Match", MatchMongoose);
   const Prediction = db.model("Prediction", PredictionSchema);
@@ -32,23 +37,18 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   const match = await Match.findOne({ team1, team2, hasStarted: true, isFinished: false });
   if (!match) {
-    await interaction.reply({ content: "Match not found.", ephemeral: true });
+    await interaction.editReply({ content: "Match not found." });
     return;
   }
 
   // update match score
   match.score = { team1: score1, team2: score2 };
 
-  // only update flag if type is final
+  // only update flags if type is 'final'
   if (type === 'final') {
-    const specialHit = interaction.options.get('specialhit')?.value as boolean | undefined;
-    const lateGoalHit = interaction.options.get('lategoalhit')?.value as boolean | undefined;
-    const upsetHit = interaction.options.get('upsethit')?.value as boolean | undefined;
-
-    if (typeof specialHit === "boolean") match.specialHit = specialHit;
-    if (typeof lateGoalHit === "boolean") match.lateGoalHit = lateGoalHit;
-    if (typeof upsetHit === "boolean") match.upsetHit = upsetHit;
-
+    match.specialHit = specialHit;
+    match.lateGoalHit = lateGoalHit;
+    match.upsetHit = upsetHit;
     match.isFinished = true;
   }
 
@@ -120,11 +120,10 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       await interaction.channel.send(message);
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: type === 'partial'
         ? "Partial result updated and announced."
-        : "Final result updated, announced, and stats updated.",
-      ephemeral: true
+        : "Final result updated, announced, and stats updated."
     });
 
     // if final, update user stats
@@ -156,6 +155,21 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         // update user stats
         // userStats.totalPredictions = (userStats.totalPredictions || 0) + 1;
 
+        // reset streak if user did not bet
+        if(winners.length > 0) {
+          // users who did not bet on this match
+          const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+          const userIdsWithPrediction = predictions.map(p => p.userId);
+          const nonBettors = nonGroupStageUsers
+          .filter(u => !userIdsWithPrediction.includes(u.userId))
+          .map(u => u.userId);
+          for (const userId of nonBettors) {
+            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+            userStats.streak = 0;
+            await userStats.save();
+          }
+        }
+
         if (isWinner) {
           userStats.correctPredictions = (userStats.correctPredictions || 0) + 1;
           userStats.streak = (userStats.streak || 0) + 1;
@@ -169,6 +183,19 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         } else {
           // if no winners, increment noWinnersPredictions
           if (winners.length === 0) {
+            // users who did not bet on this match
+            const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+            const userIdsWithPrediction = predictions.map(p => p.userId);
+            const nonBettors = nonGroupStageUsers
+            .filter(u => !userIdsWithPrediction.includes(u.userId))
+            .map(u => u.userId);
+            for (const userId of nonBettors) {
+              const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+              userStats.loss = (userStats.loss || 0) + matchFee;
+              userStats.total = (userStats.total || 0) + matchFee;
+              await userStats.save();
+            }
+
             userStats.noWinnersPredictions = (userStats.noWinnersPredictions || 0) + 1;
             userStats.loss = (userStats.loss || 0) + matchFee; // no gain, but no loss either
             userStats.total = (userStats.total || 0) + matchFee; // deduct match fee
@@ -186,8 +213,11 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
         await userStats.save();
       }
+      const winners_id = predictions
+      .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
+      .map(p => p.userId);
       // update aura points for winners
-      await updateAuraPointsForMatch(match._id.toString());
+      await updateAuraPointsForMatch(match._id.toString(), winners_id);
     }
   }
 };

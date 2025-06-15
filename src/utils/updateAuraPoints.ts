@@ -4,7 +4,7 @@ import { UserStatsSchema } from "../schemas/user";
 import { MatchMongoose } from "../schemas/match";
 import mongoose from "mongoose";
 
-export async function updateAuraPointsForMatch(matchId: string) {
+export async function updateAuraPointsForMatch(matchId: string, winners: string[]) {
   const db = await mongoose.connection;
   const AuraPoints = db.model("AuraPoints", AuraPointsSchema);
   const UserStats = db.model("UserStats", UserStatsSchema);
@@ -42,14 +42,19 @@ export async function updateAuraPointsForMatch(matchId: string) {
     aura.topStreak = (user.maxStreak || 0) === maxStreak && maxStreak > 0 ? AURA_POINTS_VALUES.topStreak : 0;
 
     // specialHit, lateGoalHit, upsetHit: add points based on match properties
-    if (match.specialHit) {
-      aura.specialHit += AURA_POINTS_VALUES.specialHit;
-    }
-    if (match.lateGoalHit) {
-      aura.lateGoalHit += AURA_POINTS_VALUES.lateGoalHit;
-    }
-    if (match.upsetHit) {
-      aura.upsetHit += AURA_POINTS_VALUES.upsetHit;
+    if (winners.includes(user.userId)) {
+      if (match.specialHit) {
+        aura.specialHit += AURA_POINTS_VALUES.specialHit;
+      }
+      if (match.lateGoalHit) {
+        aura.lateGoalHit += AURA_POINTS_VALUES.lateGoalHit;
+      }
+      if (match.upsetHit) {
+        aura.upsetHit += AURA_POINTS_VALUES.upsetHit;
+      }
+      if (winners.length === 1) {
+        aura.uniqueHit += AURA_POINTS_VALUES.uniqueHit;
+      }
     }
 
     // totalPoints calculation

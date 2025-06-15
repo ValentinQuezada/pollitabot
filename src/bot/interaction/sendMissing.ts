@@ -2,8 +2,18 @@ import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { checkRole } from "../events/interactionCreate";
 
 const sendMissingCommand = async (interaction: CommandInteraction) => {
+    const hasRole = await checkRole(interaction, "ADMIN");
+          
+      if (!hasRole) {
+        await interaction.reply({
+          content: `⛔ No tienes permiso para usar este comando.`,
+          ephemeral: true
+        });
+        return;
+      }
     await interaction.deferReply({ ephemeral: true });
 
     const team1 = interaction.options.get('team1')?.value as string;
