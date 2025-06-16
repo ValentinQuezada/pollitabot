@@ -61,11 +61,11 @@ cron.schedule("* * * * *", async () => {
     // message with predictions
     let predictionsMsg = "";
     for (const key of sortedKeys) {
-    predictionsMsg += `${key}: ${grouped[key].join("/")} ⏺️\n`;
+    predictionsMsg += `${key}: ${grouped[key].join("/")}\n`;
     }
 
     // final message
-    let finalMsg = `🕛​ ¡EMPEZÓ EL PARTIDO **${match.team1} vs. ${match.team2}**! Ya no más apuestas 🙅​.\n${predictionsMsg}`;
+    let finalMsg = `🕛​ **¡EMPEZÓ EL PARTIDO!**\n***${match.team1} vs. ${match.team2}***\n*Ya no más apuestas* 🙅​\n${predictionsMsg}`;
 
     // Enviar al canal
     const guild = BOT_CLIENT.guilds.cache.first(); // O usa el ID de tu guild si tienes varios

@@ -5,6 +5,8 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { checkRole } from "../events/interactionCreate";
 import { updateAuraPointsForMatch } from "../../utils/updateAuraPoints";
+import BOT_CLIENT from "../init";
+import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -61,8 +63,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   if (type === 'partial' || type === 'final') {
     let message = type === 'partial'
-      ? `⏸️ **¡MEDIO TIEMPO!** Resultado parcial: ${team1} (${score1} - ${score2}) ${team2} \n`
-      : `🏁 **¡TIEMPO COMPLETO!** Resultado final: ${team1} (${score1} - ${score2}) ${team2}\n`;
+      ? `⏸️ **¡MEDIO TIEMPO!**\n***${team1} vs. ${team2}***\n**Resultado parcial: (${score1} - ${score2})**\n`
+      : `🏁 **¡TIEMPO COMPLETO!**\n***${team1} vs. ${team2}***\n**Resultado final: (${score1} - ${score2})**\n`;
 
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};
@@ -74,12 +76,17 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     // determine the emoji for each prediction
     function getEmoji(pred: { team1: number; team2: number }): string {
-      if (pred.team1 === score1 && pred.team2 === score2) return "✴️​";
       if (type === 'partial') {
+        if (pred.team1 === score1 && pred.team2 === score2) return "❇️";
         if (pred.team1 < score1 || pred.team2 < score2) return "❌";
         return "⏺️​";
       } else {
-        return "❌";
+        if (winners.length > 0){
+          if (pred.team1 === score1 && pred.team2 === score2) return "✴️​";
+          return "❌";
+        } else {
+          return "⏹️";
+        }
       }
     }
 
@@ -108,15 +115,18 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     } else {
       message += type === 'partial'
         ? `\n⏺️​ *Nadie ha atinado por ahora.*`
-        : `\n⏺️​ ***¡No Winner!** Nadie atinó el resultado.*`;
+        : `\n⏹️​ ***¡No Winner!** Nadie atinó el resultado.*`;
     }
 
-    if (
-      interaction.channel &&
-      'send' in interaction.channel &&
-      typeof interaction.channel.send === 'function'
-    ) {
-      await interaction.channel.send(message);
+    // Enviar al canal
+    const guild = BOT_CLIENT.guilds.cache.first(); // O usa el ID de tu guild si tienes varios
+    if (guild) {
+        const announceChannel = guild.channels.cache.find(
+            ch => ch.type === 0 && ch.name.toLowerCase() === "anuncios"
+        );
+        if (announceChannel && "send" in announceChannel) {
+            await announceChannel.send(message);
+        }
     }
 
     await interaction.editReply({
@@ -238,7 +248,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       auraDiffs.sort((a, b) => b.diff - a.diff);
 
       // message for aura points
-      let auraMsg = "💠 **Aura Points ganados en este partido:**\n";
+      let auraMsg = "💠 ***Aura Points** ganados:*\n";
       auraDiffs.forEach((a, idx) => {
         auraMsg += `• <@${a.userId}> ganó +**${a.diff}** 💠 (total: ${a.total})\n`;
       }); //${idx + 1}. 
