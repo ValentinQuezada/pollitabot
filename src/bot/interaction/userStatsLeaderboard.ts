@@ -5,7 +5,7 @@ import databaseConnection from "../../database/connection";
 const COLS = [
   { key: "totalPredictions", label: "🎲" },
   { key: "correctPredictions", label: "✅" },
-  { key: "noWinnersPredictions", label: "🟡" },
+  { key: "noWinnersPredictions", label: "⏺️" },
   { key: "incorrectPredictions", label: "❌" },
   { key: "winRate", label: "📈" },
   { key: "auraPoints", label: "💠" },
@@ -39,7 +39,7 @@ const userStatsLeaderboardCommand = {
     }
 
     // list
-    let message = `🏆 **User Stats** 🏆\n\n`;
+    let message = `🏆 **User Stats** 🏆\n`;
     leaderboard.forEach((row, idx) => {
       const username = userMap[row.userId];
       const total = row.total ?? 0;
