@@ -60,6 +60,12 @@ export const ClubWorldCupTeams2025 = [
   "Mamelodi Sundowns (SUN)"
 ];
 
+export function horaSimpleConHrs(date: Date): string {
+  const horas = date.getHours().toString().padStart(2, '0');
+  const minutos = date.getMinutes().toString().padStart(2, '0');
+  return `${horas}:${minutos} hrs`;
+}
+
 export async function checkRole(interaction: CommandInteraction, roleName: string): Promise<boolean> {
   if (!interaction.inGuild()) return false;
 

@@ -2,6 +2,7 @@ import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { horaSimpleConHrs } from "../events/interactionCreate";
 
 const seeMissing = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -34,9 +35,9 @@ const seeMissing = async (interaction: CommandInteraction) => {
       return;
     }
 
-    let message = "⌛️ Partidos pendientes por apostar:\n";
+    let message = "⌛️ **Partidos pendientes por apostar:**\n";
     for (const match of missingMatches) {
-      message += `- ${match.team1} vs ${match.team2}\n`;
+      message += `- **${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs ${match.team2}\n`;
     }
 
     await interaction.editReply({ content: message });

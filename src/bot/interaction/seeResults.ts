@@ -1,6 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
+import { horaSimpleConHrs } from "../events/interactionCreate";
 
 const seeResultsCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -19,10 +20,10 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
       return;
     }
 
-    let message = "🎲 Tus predicciones activas:\n";
+    let message = "🎲 **Tus predicciones activas:**\n";
     for (const match of matches) {
       const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
-      message += `- ${match.team1} vs ${match.team2}: ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
+      message += `- **${match.team1} vs. ${match.team2}** (${horaSimpleConHrs(match.datetime)}): ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
     }
 
     await interaction.editReply({ content: message });

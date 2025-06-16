@@ -3,6 +3,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { checkRole } from "../events/interactionCreate";
+import { horaSimpleConHrs } from "../events/interactionCreate";
 
 const sendMissingCommand = async (interaction: CommandInteraction) => {
     const hasRole = await checkRole(interaction, "ADMIN");
@@ -50,7 +51,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
     }
 
     const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
-    const groupMessage = `*​🧿​ Estos jugadores aún no han enviado resultados para **${team1} vs. ${team2}**:* ${mentionList}`;
+    const groupMessage = `*​🧿​ Estos jugadores aún no han enviado resultados para **${team1} vs. ${team2}** (${horaSimpleConHrs(match.datetime)}):* ${mentionList}`;
 
     if (
       interaction.channel &&

@@ -96,15 +96,15 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const [b1, b2] = b.split('-').map(Number);
       const totalA = a1 + a2;
       const totalB = b1 + b2;
-      if (totalA !== totalB) return totalA - totalB;
-      return a1 - b1;
+      if (totalA !== totalB) return totalB - totalA;
+      return b1 - a1;
     });
 
     // list predictions by score
     for (const score of sortedScores) {
       const [pred1, pred2] = score.split('-').map(Number);
       const emoji = getEmoji({ team1: pred1, team2: pred2 });
-      message += `- ${score}: ${predictionsByScore[score].join('/')} ${emoji}\n`;
+      message += `${score}: ${predictionsByScore[score].join('/')} ${emoji}\n`;
     }
 
     // winners
