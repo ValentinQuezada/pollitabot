@@ -91,7 +91,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             });
             actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado sus resultados para **${match.team1} vs. ${match.team2}**!*`;
 
-            const matchFee = getMatchFee(match.matchType);
+            const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
             await UserStats.updateOne(
                 { userId: interaction.user.id },

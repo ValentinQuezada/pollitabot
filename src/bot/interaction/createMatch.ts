@@ -4,6 +4,7 @@ import { createMatch } from "../../database/controllers";
 import { checkRole } from "../events/interactionCreate";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
+import { getMatchFee } from "../../utils/fee";
 
 const createMatchCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -21,6 +22,7 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
   const datetime = interaction.options.get('datetime')?.value as string;
   const group = interaction.options.get('group')?.value as string;
   const matchType = interaction.options.get('matchtype')?.value as MatchTypeEnum;
+  const halvefee = interaction.options.get('halvefee')?.value as boolean;
 
   function limaToUTC(dateString: string) {
     const [date, time] = dateString.split(" ");
@@ -39,10 +41,11 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     hasStarted: false,
     specialHit: false,
     lateGoalHit: false,
-    upsetHit: false
+    upsetHit: false,
+    fee: getMatchFee(matchType, halvefee)
   });
 
-  const announceMsg = `📢 ¡Nuevo partido creado!\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con \`/send-score-prediction\``;
+  const announceMsg = `📢 *¡Nuevo partido creado!\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\``;
 
   // send announcement to the general channel
   try {

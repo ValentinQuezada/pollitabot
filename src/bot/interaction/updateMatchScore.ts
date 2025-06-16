@@ -139,7 +139,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const winnerIds = new Set(winners.map(w => w.userId));
       const allUserIds = predictions.map(p => p.userId);
 
-      const matchFee = getMatchFee(match.matchType);
+      const matchFee = match.fee;
 
       // calculate the pool and gain per winner
       const pool = allUserIds.length * matchFee;

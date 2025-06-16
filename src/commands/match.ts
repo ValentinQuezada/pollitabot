@@ -34,6 +34,11 @@ const createMatchCommand = new SlashCommandBuilder()
           { name: 'Final Regular', value: 'final-regular' },
           { name: 'Final Extra', value: 'final-extra' }
         )
+    )
+    .addBooleanOption(option =>
+      option.setName('halvefee')
+        .setDescription('Fee is halved?')
+        .setRequired(true)
     );
 
 export default createMatchCommand;
