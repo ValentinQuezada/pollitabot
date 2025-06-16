@@ -68,7 +68,7 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     const variance = predictions.length > 0 ? (uniquePredictions.size / predictions.length) : 0;
 
     let message = `📊 ***Estadísticas pre-partido***\n`;
-    message += `***${team1} vs. ${team2}** (Hora: ${match.datetime})*\n`;
+    message += `***${team1} vs. ${team2}***\n`;
     message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}`;
     message += ` (*Sin apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || '*Ninguno*'})\n`;
     message += `- **Media de score:** ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
