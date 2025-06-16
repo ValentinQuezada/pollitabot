@@ -24,7 +24,7 @@ const userStatsLeaderboardCommand = {
     const leaderboard = await UserStats.find({}).sort({ total: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.editReply({ content: "No hay datos de User Stats aún." });
+      await interaction.editReply({ content: "​📂​ No hay datos de **User Stats** aún." });
       return;
     }
 
@@ -48,16 +48,18 @@ const userStatsLeaderboardCommand = {
       else if (total < 0) statusEmoji = "🔻";
       if (idx === 0) statusEmoji = "👑";
 
-      const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(1)}%` : "0.00%";
-      message += `${idx + 1}. ${statusEmoji} ${username}\t| 🎲 ${row.totalPredictions ?? 0} | ✴️ ​${row.correctPredictions ?? 0} | ⏹️ ​${row.noWinnersPredictions ?? 0} | ❌ ${row.incorrectPredictions ?? 0} | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ ${total}\n`;
+      const USERNAME_WIDTH = 16;
+      const paddedUsername = username.padEnd(USERNAME_WIDTH, ' ');
+      const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(2)}%` : "0.00%";
+      message += `${idx + 1}. ${statusEmoji} **${paddedUsername}** | 🎲 ${row.totalPredictions ?? 0} | ✅ ​${row.correctPredictions ?? 0} | ⏹️ ​${row.noWinnersPredictions ?? 0} | ❌ ${row.incorrectPredictions ?? 0} | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ ${total}\n`;
     });
 
     // sent message to the channel
     if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
       await interaction.channel.send(message);
-      await interaction.editReply({ content: "Listado enviado al canal.", ephemeral: true });
+      await interaction.editReply({ content: "✅ Listado enviado al canal.", ephemeral: true });
     } else {
-      await interaction.editReply({ content: "No se pudo enviar el listado al canal.", ephemeral: true });
+      await interaction.editReply({ content: "❌ No se pudo enviar el listado al canal.", ephemeral: true });
     }
   }
 };

@@ -25,7 +25,7 @@ const auraLeaderboardCommand = {
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.reply({ content: "No hay datos de Aura Points aún.", ephemeral: true });
+      await interaction.reply({ content: "​📂​ No hay datos de **Aura Points** aún.", ephemeral: true });
       return;
     }
 

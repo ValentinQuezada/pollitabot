@@ -82,7 +82,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         return "⏺️​";
       } else {
         if (winners.length > 0){
-          if (pred.team1 === score1 && pred.team2 === score2) return "✴️​";
+          if (pred.team1 === score1 && pred.team2 === score2) return "✅​​";
           return "❌";
         } else {
           return "⏹️";
@@ -111,7 +111,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     if (winners.length > 0) {
       message += type === 'partial'
         ? `\n❇️​ *Ganador(es) por ahora:* ${winners.map(p => `<@${p.userId}>`).join(', ')}`
-        : `\n✴️​ ***¡Bravo!** Ganador(es):* ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
+        : `\n✅​​ ***¡Bravo!** Ganador(es):* ${winners.map(p => `<@${p.userId}>`).join(', ')}`;
     } else {
       message += type === 'partial'
         ? `\n⏺️​ *Nadie ha atinado por ahora.*`
