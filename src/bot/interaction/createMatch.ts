@@ -15,6 +15,8 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     });
     return;
   }
+
+  await interaction.deferReply({ ephemeral: true });
   
   const team1 = interaction.options.get('team1')?.value as string;
   const team2 = interaction.options.get('team2')?.value as string;
@@ -54,16 +56,14 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     }
   } catch (e) {
     console.error("Error al enviar el mensaje al canal general:", e);
-    await interaction.reply({
-      content: "❌ No se pudo enviar el mensaje de anuncio al canal general.",
-      ephemeral: true
+    await interaction.editReply({
+      content: "❌ No se pudo enviar el mensaje de anuncio al canal general."
     });
     return;
   }
 
-  await interaction.reply({
-    content: `¡Partido **${team1} vs. ${team2}** creado con éxito!`,
-    ephemeral: true
+  await interaction.editReply({
+    content: `¡Partido **${team1} vs. ${team2}** creado con éxito!`
   });
 };
 
