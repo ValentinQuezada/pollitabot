@@ -24,9 +24,12 @@ const sayCommand = async (interaction: CommandInteraction) => {
   }
 
   const message = interaction.options.get('message')?.value as string;
-  const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
-  if (channel && 'send' in channel) {
-    await channel.send(message);
+  if (
+      interaction.channel &&
+      'send' in interaction.channel &&
+      typeof interaction.channel.send === 'function'
+  ) {
+      await interaction.channel.send(message);
   }
   await interaction.reply({
     content: `✅ ¡Mensaje enviado con éxito!`,
