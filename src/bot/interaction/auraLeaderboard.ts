@@ -30,7 +30,7 @@ const auraLeaderboardCommand = {
     }
 
     // build the leaderboard (simple format)
-    let message = `💠 **Ranking de Aura Points**\n`;
+    let message = `​💎 **RANKING DE AURA POINTS**\n`;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
       message += `${idx + 1}. <@${row.userId}> ${row.totalPoints} 💠\n`;
@@ -43,25 +43,25 @@ const auraLeaderboardCommand = {
 
     if (winner && second) {
       const diff = winner.totalPoints - second.totalPoints;
-      message += `\n🥇 <@${winner.userId}> lidera la tabla por **${diff}** punto${diff === 1 ? '' : 's'}.`;
+      message += `\n🥇 *¡<@${winner.userId}> lidera la tabla por **${diff}** 💠!*`;
     }
     if (second) {
-      message += `\n🥈 Luego le sigue <@${second.userId}> con **${second.totalPoints}** pts.`;
+      message += `\n🥈 *En 2do lugar, <@${second.userId}> con **${second.totalPoints}** 💠.*`;
     }
     if (third) {
-      message += `\n🥉 Y en tercer lugar <@${third.userId}> con **${third.totalPoints}** pts.`;
+      message += `\n🥉 *En 3er lugar, <@${third.userId}> con **${third.totalPoints}** 💠.*`;
     }
 
     // breakdown personal (ephemeral)
     const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
     if (userAura) {
-      let privateMessage = `🔎 **Tus Aura Points por atributo:**\n`;
+      let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
       ATTRIBUTES.forEach(attr => {
         if (attr.key !== "totalPoints") {
           privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
         }
       });
-      privateMessage += `💠 \`totalPoints\`: **${userAura.totalPoints}**`;
+      privateMessage += `💠 **totales: ${userAura.totalPoints}**`;
       await interaction.reply({ content: privateMessage, ephemeral: true });
     } else {
       await interaction.reply({ content: message });

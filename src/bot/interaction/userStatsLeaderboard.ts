@@ -39,7 +39,7 @@ const userStatsLeaderboardCommand = {
     }
 
     // list
-    let message = `🏆 **TABLA DE POSICIONES:**\n`;
+    let message = `🏆 **TABLA DE POSICIONES**\n`;
     leaderboard.forEach((row, idx) => {
       const username = userMap[row.userId];
       const total = row.total ?? 0.00;

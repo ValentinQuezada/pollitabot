@@ -118,15 +118,12 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         : `\n⏹️​ ***¡No Winner!** Nadie atinó el resultado.*`;
     }
 
-    // Enviar al canal
-    const guild = BOT_CLIENT.guilds.cache.first(); // O usa el ID de tu guild si tienes varios
-    if (guild) {
-        const announceChannel = guild.channels.cache.find(
-            ch => ch.type === 0 && ch.name.toLowerCase() === "anuncios"
-        );
-        if (announceChannel && "send" in announceChannel) {
-            await announceChannel.send(message);
-        }
+    if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+    ) {
+        await interaction.channel.send(message);
     }
 
     await interaction.editReply({

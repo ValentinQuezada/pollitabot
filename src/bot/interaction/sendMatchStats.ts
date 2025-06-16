@@ -30,7 +30,7 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     // search for the match that is not finished and has not started
     const match = await Match.findOne({ team1, team2, isFinished: false, hasStarted: false });
     if (!match) {
-        await interaction.editReply({ content: "No se encontró el partido pendiente."});
+        await interaction.editReply({ content: "❌ No se encontró el partido pendiente."});
         return;
     }
 
@@ -67,13 +67,13 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     const uniquePredictions = new Set(predictions.map(p => `${p.prediction.team1}-${p.prediction.team2}`));
     const variance = predictions.length > 0 ? (uniquePredictions.size / predictions.length) : 0;
 
-    let message = `📊 ***Estadísticas pre-partido***:\n`;
-    message += `*${team1} vs. ${team2}*\n`;
-    message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}\n`;
-    message += `- *Falta apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || 'Ninguno'}\n`;
+    let message = `📊 ***ESTADÍSTICAS PRE-PARTIDO***\n`;
+    message += `***${team1} vs. ${team2}***\n`;
+    message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}`;
+    message += `(*Falta apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || '*Ninguno*'})\n`;
     message += `- **Media de score:** ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
     message += `- **Mediana de score:** ${medianA}-${medianB}\n`;
-    message += `- **Varianza:** ${(variance * 100).toFixed(1)}%\n`;
+    message += `- **Varianza:** ${(variance * 100).toFixed(2)}%\n`;
 
     if (
         interaction.channel &&
@@ -83,7 +83,7 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
         await interaction.channel.send(message);
     }
 
-    await interaction.editReply({ content: "Estadísticas enviadas al canal."});
+    await interaction.editReply({ content: "✅ Estadísticas enviadas al canal."});
 }
 
 export default sendMatchStats;
