@@ -2,16 +2,16 @@ import { SlashCommandBuilder } from "discord.js";
 
 const sendAwardPredictionCommand = new SlashCommandBuilder()
     .setName('send-award-prediction')
-    .setDescription('Send a prediction for an award')
+    .setDescription('Envía tu predicción para un award')
     .addStringOption(option =>
       option.setName('award')
-        .setDescription('Name of the award')
+        .setDescription('Nombre del award')
         .setRequired(true)
         .setAutocomplete(true) // <-- Activa el autocomplete
     )
     .addStringOption(option =>
       option.setName('prediction')
-        .setDescription('Type your award prediction in any format you want')
+        .setDescription('Escribe tu predicción en el formato que desees')
         .setRequired(true)
         .setAutocomplete(true)
     );

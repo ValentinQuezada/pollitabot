@@ -4,3 +4,4 @@ config.json
 dist
 test.js
 .vscode
+.env.config

@@ -2,10 +2,10 @@ import { SlashCommandBuilder } from "discord.js";
 
 const anonymousMessageCommand = new SlashCommandBuilder()
     .setName('anon')
-    .setDescription('Send a secret message to the owner')
+    .setDescription('Envía un mensaje secreto al owner')
     .addStringOption(option =>
     option.setName('message')
-        .setDescription('Your secret message')
+        .setDescription('Tu mensaje')
         .setRequired(true));
 
 export default anonymousMessageCommand;

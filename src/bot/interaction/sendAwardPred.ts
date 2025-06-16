@@ -23,19 +23,12 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
             return;
         }
 
-        const response = await mapTeamName(
-                    predictionText
-                );
-                if (!response.success) {
-                    await interaction.editReply({ content: response.error });
-                    return;
-                }
-                console.log(response.data);
-
-        if(!response) {
+        const response = await mapTeamName(predictionText);
+        if (!response.success) {
             await interaction.editReply({ content: "❌ Equipo no encontrado." });
             return;
         }
+        console.log(response.data);
 
         const teamName: string = response.data.team;
 

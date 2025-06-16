@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 const updateAwardResultCommand = new SlashCommandBuilder()
   .setName('update-award-result')
-  .setDescription('Update the result of an award')
+  .setDescription('UActualiza el resultado de un award')
   .addStringOption(option =>
     option.setName('name')
       .setDescription('Award name')
@@ -11,7 +11,7 @@ const updateAwardResultCommand = new SlashCommandBuilder()
   )
   .addStringOption(option =>
     option.setName('result')
-      .setDescription('New result for the award')
+      .setDescription('Nuevo resultado')
       .setRequired(true)
       .setAutocomplete(true)
   );
