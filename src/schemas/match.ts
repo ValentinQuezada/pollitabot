@@ -27,7 +27,8 @@ const createMatchSchema = z.object({
     hasStarted: z.boolean().default(false),
     specialHit: z.boolean().default(false),
     lateGoalHit: z.boolean().default(false),
-    upsetHit: z.boolean().default(false)
+    upsetHit: z.boolean().default(false),
+    fee: z.number().min(0).max(20)
 });
 
 export type CreateMatchType = z.infer<typeof createMatchSchema>;
@@ -58,6 +59,7 @@ export interface MatchDocument extends Omit<MatchType, "_id">, Document {
     specialHit: boolean;
     lateGoalHit: boolean;
     upsetHit: boolean;
+    fee: number;
 }
 
 // Mongoose schema for Match (no extraTimeScore or penaltyScore)
@@ -79,7 +81,8 @@ export const MatchMongoose = new Schema<MatchDocument>({
     hasStarted: { type: Boolean, default: false },
     specialHit: { type: Boolean, default: false },
     lateGoalHit: { type: Boolean, default: false },
-    upsetHit: { type: Boolean, default: false }
+    upsetHit: { type: Boolean, default: false },
+    fee: { type: Number, default: 5}
 }, {
     timestamps: true
 });
