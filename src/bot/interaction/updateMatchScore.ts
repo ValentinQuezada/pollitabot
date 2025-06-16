@@ -216,8 +216,38 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const winners_id = predictions
       .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
       .map(p => p.userId);
+
+      // save aura points before updating
+      const AuraPoints = db.model("AuraPoints", require("../../schemas/aura").AuraPointsSchema);
+      const beforeAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
+      const beforeAuraMap: Record<string, number> = {};
+      beforeAura.forEach(a => { beforeAuraMap[a.userId] = a.totalPoints || 0; });
+
+
       // update aura points for winners
       await updateAuraPointsForMatch(match._id.toString(), winners_id);
+
+      // calculate aura points difference
+      const afterAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
+      const auraDiffs = afterAura.map(a => ({
+        userId: a.userId,
+        diff: (a.totalPoints || 0) - (beforeAuraMap[a.userId] || 0),
+        total: a.totalPoints || 0
+      }));
+
+      // sort by difference
+      auraDiffs.sort((a, b) => b.diff - a.diff);
+
+      // message for aura points
+      let auraMsg = "💠 **Aura Points ganados en este partido:**\n";
+      auraDiffs.forEach((a, idx) => {
+        auraMsg += `• <@${a.userId}> ganó +**${a.diff}** 💠 (total: ${a.total})\n`;
+      }); //${idx + 1}. 
+
+      // send aura points message
+      if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
+        await interaction.channel.send(auraMsg);
+      }
     }
   }
 };

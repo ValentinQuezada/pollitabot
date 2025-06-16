@@ -1,5 +1,4 @@
 import { Schema, Document } from "mongoose";
-
 export interface UserStatsDocument extends Document {
   userId: string;
   totalPredictions: number;
@@ -12,8 +11,9 @@ export interface UserStatsDocument extends Document {
   loss: number;
   gain: number;
   total: number;
-  onlyGroupStage: boolean; // true = only group stage
-  missedNonGroupPredictions: number; // matches missed in non-group stages
+  onlyGroupStage: boolean;
+  missedNonGroupPredictions: number;
+  auraPoints?: number;
 }
 
 export const UserStatsSchema = new Schema<UserStatsDocument>({
@@ -29,5 +29,6 @@ export const UserStatsSchema = new Schema<UserStatsDocument>({
   gain: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
   onlyGroupStage: { type: Boolean, default: true },
-  missedNonGroupPredictions: { type: Number, default: 0 }
+  missedNonGroupPredictions: { type: Number, default: 0 },
+  auraPoints: { type: Number, default: 0 }
 });

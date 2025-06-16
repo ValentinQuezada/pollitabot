@@ -1,105 +1,76 @@
 import mongoose from "mongoose";
-import { UserStatsSchema } from "../../schemas/user";
+import { AuraPointsSchema } from "../../schemas/aura";
 import databaseConnection from "../../database/connection";
 
-const USER_STATS_ATTRS = [
-  { key: "totalPredictions", label: "🎲" },
-  { key: "correctPredictions", label: "✅" },
-  { key: "incorrectPredictions", label: "❌" },
-  { key: "noWinnersPredictions", label: "🟡" },
-  { key: "streak", label: "🔥" },
-  { key: "maxStreak", label: "🏅" },
-  { key: "winRate", label: "📈" },
-  { key: "loss", label: "🔻" },
-  { key: "gain", label: "🟢" },
-  { key: "total", label: "💰" }
+const ATTRIBUTES = [
+  { key: "matchesHit", label: "🎯" },
+  { key: "uniqueHit", label: "🦄" },
+  { key: "specialHit", label: "⭐" },
+  { key: "lateGoalHit", label: "⏰" },
+  { key: "upsetHit", label: "⚡" },
+  { key: "streak3plus", label: "🔥" },
+  { key: "topProfit", label: "💰" },
+  { key: "topWinRate", label: "📈" },
+  { key: "topStreak", label: "🏅" },
+  { key: "awardHit", label: "🏆" },
+  { key: "totalPoints", label: "💠" }
 ];
 
-const MAX_ROWS = 10;
-
-const userStatsLeaderboardCommand = {
+const auraLeaderboardCommand = {
   async execute(interaction: any) {
-    try {
-      await databaseConnection();
-      const UserStats = mongoose.model("UserStats", UserStatsSchema);
+    await databaseConnection();
+    const AuraPoints = mongoose.model("AuraPoints", AuraPointsSchema);
 
-      await interaction.deferReply({ ephemeral: true });
+    // sorts the leaderboard by totalPoints in descending order
+    const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
 
-      // sort by total net points
-      const allUsers = await UserStats.find({}).sort({ total: -1 }).lean();
-      if (!allUsers.length) {
-        await interaction.editReply({ content: "No hay datos de User Stats aún." });
-        return;
-      }
-
-      const leaderboard = allUsers.slice(0, MAX_ROWS);
-
-      // build table header
-      let message = `🏆 **Tabla de User Stats (Total Neto) - Top ${MAX_ROWS}** 🏆\n\n`;
-      message += `Pos | Usuario `;
-      USER_STATS_ATTRS.forEach(attr => {
-        message += `| ${attr.label}`;
-      });
-      message += `\n`;
-
-      message += `:--:|:-------:`;
-      USER_STATS_ATTRS.forEach(() => {
-        message += `|:---:`;
-      });
-      message += `\n`;
-
-      // build table rows
-      leaderboard.forEach((row, idx) => {
-        message += `**${idx + 1}** | <@${row.userId}>`;
-        USER_STATS_ATTRS.forEach(attr => {
-          let value = (row as any)[attr.key];
-          // format values
-          if (attr.key === "winRate") {
-            value = typeof value === "number" ? `${(value * 100).toFixed(1)}%` : "0%";
-          }
-          message += ` | **${value ?? 0}**`;
-        });
-        message += `\n`;
-      });
-
-      if (allUsers.length > MAX_ROWS) {
-        message += `\n_Mostrando solo los primeros ${MAX_ROWS} usuarios por total neto._`;
-      }
-
-      // top 3 users
-      const winner = leaderboard[0];
-      const second = leaderboard[1];
-      const third = leaderboard[2];
-
-      if (winner && second) {
-        const diff = winner.total - second.total;
-        message += `\n🥇 <@${winner.userId}> lidera la tabla por **${diff}** punto${diff === 1 ? '' : 's'}.`;
-      }
-      if (second) {
-        message += `\n🥈 Luego le sigue <@${second.userId}> con **${second.total}** pts.`;
-      }
-      if (third) {
-        message += `\n🥉 Y en tercer lugar <@${third.userId}> con **${third.total}** pts.`;
-      }
-
-      if (allUsers.length > 3) {
-        const lastThree = allUsers.slice(-3);
-        message += `\n\n😬 Los que se están hundiendo en la tabla:\n`;
-        lastThree.forEach(row => {
-          message += `- <@${row.userId}> (${row.total} pts)\n`;
-        });
-      }
-
-      await interaction.editReply({ content: message });
-    } catch (err) {
-      console.error("Error en userStatsLeaderboardCommand:", err);
-      if (interaction.deferred || interaction.replied) {
-        await interaction.editReply({ content: "Ocurrió un error al mostrar la tabla." });
-      } else {
-        await interaction.reply({ content: "Ocurrió un error al mostrar la tabla.", ephemeral: true });
-      }
+    if (!leaderboard.length) {
+      await interaction.reply({ content: "No hay datos de Aura Points aún.", ephemeral: true });
+      return;
     }
+
+    // build the leaderboard (simple format)
+    let message = `💠 **Ranking de Aura Points**\n`;
+    for (let idx = 0; idx < leaderboard.length; idx++) {
+      const row = leaderboard[idx];
+      message += `${idx + 1}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+    }
+
+    // top 3 highlights
+    const winner = leaderboard[0];
+    const second = leaderboard[1];
+    const third = leaderboard[2];
+
+    if (winner && second) {
+      const diff = winner.totalPoints - second.totalPoints;
+      message += `\n🥇 <@${winner.userId}> lidera la tabla por **${diff}** punto${diff === 1 ? '' : 's'}.`;
+    }
+    if (second) {
+      message += `\n🥈 Luego le sigue <@${second.userId}> con **${second.totalPoints}** pts.`;
+    }
+    if (third) {
+      message += `\n🥉 Y en tercer lugar <@${third.userId}> con **${third.totalPoints}** pts.`;
+    }
+
+    // breakdown personal (ephemeral)
+    const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
+    if (userAura) {
+      let privateMessage = `🔎 **Tus Aura Points por atributo:**\n`;
+      ATTRIBUTES.forEach(attr => {
+        if (attr.key !== "totalPoints") {
+          privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
+        }
+      });
+      privateMessage += `💠 \`totalPoints\`: **${userAura.totalPoints}**`;
+      await interaction.reply({ content: privateMessage, ephemeral: true });
+    } else {
+      await interaction.reply({ content: message });
+      return;
+    }
+
+    // send the leaderboard to the channel
+    await interaction.channel.send({ content: message });
   }
 };
 
-export default userStatsLeaderboardCommand;
+export default auraLeaderboardCommand;
