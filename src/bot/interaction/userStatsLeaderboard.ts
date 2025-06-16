@@ -1,76 +1,50 @@
+// filepath: [userStatsLeaderboard.ts](http://_vscodecontentref_/0)
 import mongoose from "mongoose";
-import { AuraPointsSchema } from "../../schemas/aura";
+import { UserStatsSchema } from "../../schemas/user";
 import databaseConnection from "../../database/connection";
 
-const ATTRIBUTES = [
-  { key: "matchesHit", label: "🎯" },
-  { key: "uniqueHit", label: "🦄" },
-  { key: "specialHit", label: "⭐" },
-  { key: "lateGoalHit", label: "⏰" },
-  { key: "upsetHit", label: "⚡" },
-  { key: "streak3plus", label: "🔥" },
-  { key: "topProfit", label: "💰" },
-  { key: "topWinRate", label: "📈" },
-  { key: "topStreak", label: "🏅" },
-  { key: "awardHit", label: "🏆" },
-  { key: "totalPoints", label: "💠" }
+const USER_STATS_ATTRS = [
+  { key: "totalPredictions", label: "🎲", name: "Apuestas totales" },
+  { key: "correctPredictions", label: "✅", name: "Apuestas ganadas" },
+  { key: "noWinnersPredictions", label: "🟡", name: "Apuestas no winners" },
+  { key: "incorrectPredictions", label: "❌", name: "Apuestas perdidas" },
+  { key: "winRate", label: "📈", name: "Win Rate" },
+  { key: "total", label: "💰", name: "Total" },
+  { key: "auraPoints", label: "💠", name: "Aura points" },
+  { key: "streak", label: "🔥", name: "Streak" }
 ];
 
-const auraLeaderboardCommand = {
+const userStatsLeaderboardCommand = {
   async execute(interaction: any) {
     await databaseConnection();
-    const AuraPoints = mongoose.model("AuraPoints", AuraPointsSchema);
+    const UserStats = mongoose.model("UserStats", UserStatsSchema);
 
-    // sorts the leaderboard by totalPoints in descending order
-    const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
+    await interaction.deferReply({ ephemeral: true });
+
+    // Ordena por total neto descendente
+    const leaderboard = await UserStats.find({}).sort({ total: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.reply({ content: "No hay datos de Aura Points aún.", ephemeral: true });
+      await interaction.editReply({ content: "No hay datos de User Stats aún." });
       return;
     }
 
-    // build the leaderboard (simple format)
-    let message = `💠 **Ranking de Aura Points**\n`;
-    for (let idx = 0; idx < leaderboard.length; idx++) {
-      const row = leaderboard[idx];
-      message += `${idx + 1}. <@${row.userId}> ${row.totalPoints} 💠\n`;
-    }
+    // Tabla principal
+    let message = `🏆 **Tabla de User Stats** 🏆\n\n`;
+    // Cabecera
+    message += `Pos | Usuario        | 🎲 | ✅ | 🟡 | ❌ | 📈    | 💰    | 💠 | 🔥\n`;
+    message += `:--:|:--------------|:--:|:--:|:--:|:--:|:-----:|:-----:|:--:|:--:\n`;
 
-    // top 3 highlights
-    const winner = leaderboard[0];
-    const second = leaderboard[1];
-    const third = leaderboard[2];
+    leaderboard.forEach((row, idx) => {
+      const userTag = `<@${row.userId}>`.padEnd(14, " ");
+      const total = row.total ?? 0;
+      const totalStr = total >= 0 ? `✅ ${total}` : `❌ ${total}`;
+      const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(1)}%` : "0%";
+      message += `${(idx + 1).toString().padEnd(3)}| ${userTag} | ${(row.totalPredictions ?? 0).toString().padEnd(2)} | ${(row.correctPredictions ?? 0).toString().padEnd(2)} | ${(row.noWinnersPredictions ?? 0).toString().padEnd(2)} | ${(row.incorrectPredictions ?? 0).toString().padEnd(2)} | ${winRate.padEnd(6)} | ${totalStr.padEnd(6)} | ${(row.auraPoints ?? 0).toString().padEnd(2)} | ${(row.streak ?? 0).toString().padEnd(2)}\n`;
+    });
 
-    if (winner && second) {
-      const diff = winner.totalPoints - second.totalPoints;
-      message += `\n🥇 <@${winner.userId}> lidera la tabla por **${diff}** punto${diff === 1 ? '' : 's'}.`;
-    }
-    if (second) {
-      message += `\n🥈 Luego le sigue <@${second.userId}> con **${second.totalPoints}** pts.`;
-    }
-    if (third) {
-      message += `\n🥉 Y en tercer lugar <@${third.userId}> con **${third.totalPoints}** pts.`;
-    }
-
-    // breakdown personal (ephemeral)
-    const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
-    if (userAura) {
-      let privateMessage = `🔎 **Tus Aura Points por atributo:**\n`;
-      ATTRIBUTES.forEach(attr => {
-        if (attr.key !== "totalPoints") {
-          privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
-        }
-      });
-      privateMessage += `💠 \`totalPoints\`: **${userAura.totalPoints}**`;
-      await interaction.reply({ content: privateMessage, ephemeral: true });
-    } else {
-      await interaction.reply({ content: message });
-      return;
-    }
-
-    // send the leaderboard to the channel
-    await interaction.channel.send({ content: message });
+    await interaction.editReply({ content: "```markdown\n" + message + "```" });
   }
 };
 
-export default auraLeaderboardCommand;
+export default userStatsLeaderboardCommand;

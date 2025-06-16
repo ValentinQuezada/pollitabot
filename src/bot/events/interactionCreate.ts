@@ -164,9 +164,8 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     case 'aura-leaderboard':
       await auraLeaderboardCommand.execute(commandInteraction);
       break;
-    case 'user-stats-leaderboard':
+    case 'userstats-leaderboard':
       await userStatsLeaderboardCommand.execute(commandInteraction);
-      break;
   }
 };
 
