@@ -35,10 +35,12 @@ const createMatchCommand = new SlashCommandBuilder()
           { name: 'Final Extra', value: 'final-extra' }
         )
     )
-    .addBooleanOption(option =>
-      option.setName('halvefee')
-        .setDescription('Fee is halved?')
+    .addIntegerOption(option =>
+      option.setName('fee')
+        .setDescription('Fee del partido (por defecto 5)')
         .setRequired(true)
+        .setMinValue(1)
+        .setMaxValue(100)
     );
 
 export default createMatchCommand;

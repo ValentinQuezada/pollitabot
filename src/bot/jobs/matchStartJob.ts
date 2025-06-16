@@ -5,7 +5,6 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
-import { getMatchFee } from "../../utils/fee";
 
 cron.schedule("* * * * *", async () => {
   const db = await databaseConnection();
@@ -28,7 +27,7 @@ cron.schedule("* * * * *", async () => {
     for (const user of users) {
       const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
       if (!prediction && match.matchType !== "group-regular") {
-        const fee = getMatchFee(match.matchType);
+        const fee = match.fee;
         const penalty = fee / 2;
         user.loss -= penalty;
         user.missedNonGroupPredictions += 1;
@@ -66,7 +65,7 @@ cron.schedule("* * * * *", async () => {
     }
 
     // final message
-    let finalMsg = `🕛​ ¡Empezó el partido **${match.team1} vs ${match.team2}**! Ya no más apuestas 🙅​.\n\n**Predicciones:**\n${predictionsMsg}`;
+    let finalMsg = `🕛​ ¡EMPEZÓ EL PARTIDO **${match.team1} vs. ${match.team2}**! Ya no más apuestas 🙅​.\n${predictionsMsg}`;
 
     // Enviar al canal
     const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);

@@ -1,6 +1,5 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
-import { getMatchFee } from "../../utils/fee";
 import { MatchMongoose } from "../../schemas/match";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";

@@ -1,4 +1,3 @@
-// filepath: [userStatsLeaderboard.ts](http://_vscodecontentref_/0)
 import mongoose from "mongoose";
 import { UserStatsSchema } from "../../schemas/user";
 import databaseConnection from "../../database/connection";
@@ -19,13 +18,11 @@ const userStatsLeaderboardCommand = {
     await databaseConnection();
     const UserStats = mongoose.model("UserStats", UserStatsSchema);
 
-    await interaction.deferReply({ ephemeral: true });
-
     // Ordena por total neto descendente
     const leaderboard = await UserStats.find({}).sort({ total: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.editReply({ content: "No hay datos de User Stats aún." });
+      await interaction.reply({ content: "No hay datos de User Stats aún." });
       return;
     }
 
@@ -43,7 +40,13 @@ const userStatsLeaderboardCommand = {
       message += `${(idx + 1).toString().padEnd(3)}| ${userTag} | ${(row.totalPredictions ?? 0).toString().padEnd(2)} | ${(row.correctPredictions ?? 0).toString().padEnd(2)} | ${(row.noWinnersPredictions ?? 0).toString().padEnd(2)} | ${(row.incorrectPredictions ?? 0).toString().padEnd(2)} | ${winRate.padEnd(6)} | ${totalStr.padEnd(6)} | ${(row.auraPoints ?? 0).toString().padEnd(2)} | ${(row.streak ?? 0).toString().padEnd(2)}\n`;
     });
 
-    await interaction.editReply({ content: "```markdown\n" + message + "```" });
+    // Envía la tabla como mensaje público al canal
+    if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
+      await interaction.channel.send("```markdown\n" + message + "```");
+      await interaction.reply({ content: "Tabla enviada al canal.", ephemeral: true });
+    } else {
+      await interaction.reply({ content: "No se pudo enviar la tabla al canal.", ephemeral: true });
+    }
   }
 };
 
