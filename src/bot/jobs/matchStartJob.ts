@@ -68,9 +68,14 @@ cron.schedule("* * * * *", async () => {
     let finalMsg = `🕛​ ¡EMPEZÓ EL PARTIDO **${match.team1} vs. ${match.team2}**! Ya no más apuestas 🙅​.\n${predictionsMsg}`;
 
     // Enviar al canal
-    const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
-    if (channel && "send" in channel) {
-    await channel.send(finalMsg);
+    const guild = BOT_CLIENT.guilds.cache.first(); // O usa el ID de tu guild si tienes varios
+    if (guild) {
+        const announceChannel = guild.channels.cache.find(
+            ch => ch.type === 0 && ch.name.toLowerCase() === "anuncios"
+        );
+        if (announceChannel && "send" in announceChannel) {
+            await announceChannel.send(finalMsg);
+        }
     }
   }
 });

@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 import { UserStatsSchema } from "../../schemas/user";
 import databaseConnection from "../../database/connection";
 
-const USER_STATS_ATTRS = [
-  { key: "totalPredictions", label: "🎲", name: "Apuestas totales" },
-  { key: "correctPredictions", label: "✅", name: "Apuestas ganadas" },
-  { key: "noWinnersPredictions", label: "🟡", name: "Apuestas no winners" },
-  { key: "incorrectPredictions", label: "❌", name: "Apuestas perdidas" },
-  { key: "winRate", label: "📈", name: "Win Rate" },
-  { key: "total", label: "💰", name: "Total" },
-  { key: "auraPoints", label: "💠", name: "Aura points" },
-  { key: "streak", label: "🔥", name: "Streak" }
+const COLS = [
+  { key: "totalPredictions", label: "🎲" },
+  { key: "correctPredictions", label: "✅" },
+  { key: "noWinnersPredictions", label: "🟡" },
+  { key: "incorrectPredictions", label: "❌" },
+  { key: "winRate", label: "📈" },
+  { key: "auraPoints", label: "💠" },
+  { key: "streak", label: "🔥" },
+  { key: "total", label: "💰" }
 ];
 
 const userStatsLeaderboardCommand = {
@@ -18,34 +18,45 @@ const userStatsLeaderboardCommand = {
     await databaseConnection();
     const UserStats = mongoose.model("UserStats", UserStatsSchema);
 
-    // Ordena por total neto descendente
+    await interaction.deferReply({ ephemeral: true });
+
+    // sort leaderboard by total
     const leaderboard = await UserStats.find({}).sort({ total: -1 }).lean();
 
     if (!leaderboard.length) {
-      await interaction.reply({ content: "No hay datos de User Stats aún." });
+      await interaction.editReply({ content: "No hay datos de User Stats aún." });
       return;
     }
 
-    // Tabla principal
-    let message = `🏆 **Tabla de User Stats** 🏆\n\n`;
-    // Cabecera
-    message += `Pos | Usuario        | 🎲 | ✅ | 🟡 | ❌ | 📈    | 💰    | 💠 | 🔥\n`;
-    message += `:--:|:--------------|:--:|:--:|:--:|:--:|:-----:|:-----:|:--:|:--:\n`;
+    const userMap: Record<string, string> = {};
+    for (const row of leaderboard) {
+      try {
+        const member = await interaction.guild.members.fetch(row.userId);
+        userMap[row.userId] = `@${member.displayName}`;
+      } catch {
+        userMap[row.userId] = `<@${row.userId}>`;
+      }
+    }
 
+    // list
+    let message = `🏆 **User Stats** 🏆\n\n`;
     leaderboard.forEach((row, idx) => {
-      const userTag = `<@${row.userId}>`.padEnd(14, " ");
+      const username = userMap[row.userId];
       const total = row.total ?? 0;
-      const totalStr = total >= 0 ? `✅ ${total}` : `❌ ${total}`;
+      let statusEmoji = "⚪️";
+      if (total > 0) statusEmoji = "✅";
+      else if (total < 0) statusEmoji = "❌";
+
       const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(1)}%` : "0%";
-      message += `${(idx + 1).toString().padEnd(3)}| ${userTag} | ${(row.totalPredictions ?? 0).toString().padEnd(2)} | ${(row.correctPredictions ?? 0).toString().padEnd(2)} | ${(row.noWinnersPredictions ?? 0).toString().padEnd(2)} | ${(row.incorrectPredictions ?? 0).toString().padEnd(2)} | ${winRate.padEnd(6)} | ${totalStr.padEnd(6)} | ${(row.auraPoints ?? 0).toString().padEnd(2)} | ${(row.streak ?? 0).toString().padEnd(2)}\n`;
+      message += `${idx + 1}. ${statusEmoji} ${username} | 🎲${row.totalPredictions ?? 0} | ✅${row.correctPredictions ?? 0} | 🟡${row.noWinnersPredictions ?? 0} | ❌${row.incorrectPredictions ?? 0} | 📈${winRate} | 💠${row.auraPoints ?? 0} | 🔥${row.streak ?? 0} | 💰${total}\n`;
     });
 
-    // Envía la tabla como mensaje público al canal
+    // sent message to the channel
     if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
-      await interaction.channel.send("```markdown\n" + message + "```");
-      await interaction.reply({ content: "Tabla enviada al canal.", ephemeral: true });
+      await interaction.channel.send(message);
+      await interaction.editReply({ content: "Listado enviado al canal.", ephemeral: true });
     } else {
-      await interaction.reply({ content: "No se pudo enviar la tabla al canal.", ephemeral: true });
+      await interaction.editReply({ content: "No se pudo enviar el listado al canal.", ephemeral: true });
     }
   }
 };
