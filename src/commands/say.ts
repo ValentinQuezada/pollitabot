@@ -2,10 +2,10 @@ import { SlashCommandBuilder } from "discord.js";
 
 const sayCommand = new SlashCommandBuilder()
     .setName('say')
-    .setDescription('Send a message through the bot (Owner only)')
+    .setDescription('Envía un mensaje a través del bot (sólo para el owner)')
     .addStringOption(option =>
       option.setName('message')
-        .setDescription('Message to send')
+        .setDescription('Mensaje a enviar')
         .setRequired(true))
 
 export default sayCommand;

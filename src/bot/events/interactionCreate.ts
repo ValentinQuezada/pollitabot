@@ -83,7 +83,12 @@ const interactionCreateEvent = async (interaction: Interaction) => {
   
   // --- Manejo de Autocomplete ---
   if (interaction.isAutocomplete()){
-    if(interaction.commandName === 'send-award-prediction' || interaction.commandName === 'update-award-result' ) {
+    if(interaction.commandName === 'send-award-prediction'
+      || interaction.commandName === 'update-award-result'
+      || interaction.commandName === 'update-match-score'
+      || interaction.commandName === 'send-match-stats'
+      || interaction.commandName === 'create-match'
+      || interaction.commandName === 'send-missing') {
       const focusedOption = interaction.options.getFocused(true); // Obtén el campo enfocado
       const focusedValue = focusedOption.value;
       const focusedField = focusedOption.name;
@@ -100,7 +105,10 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         }));
 
         await interaction.respond(choices);
-      } else if (focusedField === 'prediction' || focusedField === 'result') {
+      } else if (focusedField === 'prediction'
+        || focusedField === 'result'
+        || focusedField === 'team1'
+        || focusedField === 'team2') {
         const filteredTeams = ClubWorldCupTeams2025
           .filter(team => team.toLowerCase().includes(focusedValue))
           .slice(0,25)

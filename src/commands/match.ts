@@ -2,26 +2,28 @@ import { SlashCommandBuilder } from "discord.js";
 
 const createMatchCommand = new SlashCommandBuilder()
     .setName('create-match')
-    .setDescription('Create a match to post results in a channel')
+    .setDescription('Crea un partido para predecir resultados')
     .addStringOption(option =>
       option.setName('team1')
-        .setDescription('Team 1 Name')
-        .setRequired(true))
+        .setDescription('Equipo 1')
+        .setRequired(true)
+        .setAutocomplete(true))
     .addStringOption(option =>
       option.setName('team2')
-        .setDescription('Team 2 Name')
-        .setRequired(true))
+        .setDescription('Equipo 2')
+        .setRequired(true)
+        .setAutocomplete(true))
     .addStringOption(option =>
       option.setName('datetime')
-        .setDescription('Match datetime (YYYY-MM-DD HH:MM)')
+        .setDescription('Fecha del partido (YYYY-MM-DD HH:MM)')
         .setRequired(true))
     .addStringOption(option =>
       option.setName('group')
-        .setDescription('Group Phase Letter(A, B, C, etc.)')
+        .setDescription('Letra del grupo (A, B, C, etc.)')
         .setRequired(true))
     .addStringOption(option =>
       option.setName('matchtype')
-        .setDescription('Type of match')
+        .setDescription('Tipo de partido')
         .setRequired(true)
         .addChoices(
           { name: 'Group Regular', value: 'group-regular' },
@@ -37,7 +39,7 @@ const createMatchCommand = new SlashCommandBuilder()
     )
     .addBooleanOption(option =>
       option.setName('halvefee')
-        .setDescription('Fee is halved?')
+        .setDescription('¿Se reduce a la mitad el costo?')
         .setRequired(true)
     );
 
