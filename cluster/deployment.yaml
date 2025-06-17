@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollitabot-service
+  labels:
+    app: pollitabot-service
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollitabot-service
+  template:
+    metadata:
+      labels:
+        app: pollitabot-service
+    spec:
+      containers:
+      - name: pollitabot-service
+        image: "${DOCKER_REGISTRY}/pollitabot:latest"
+        imagePullPolicy: Always
+        envFrom:
+          - secretRef:
+              name: pollitabot-env-secrets
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
