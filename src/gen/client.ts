@@ -3,6 +3,7 @@ import { GEMINI_API_KEY } from "../constant/credentials";
 import { extractFromCodeblock } from "../utils/codeblock";
 import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
+import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const modelName = "gemini-2.0-flash";
@@ -12,7 +13,7 @@ export async function linkMatchScore(query: string, matches: [string, string][])
         model: modelName,
         config: {
             systemInstruction: SYSTEM_INSTRUCTIONS.FINAL_SCORE(
-                matches.map(match => match.join(' vs '))
+                matches.map(match => match.join(' vs. '))
             ),
             maxOutputTokens: 100,
             temperature: 0.1,
@@ -42,7 +43,7 @@ export async function linkMatchScore(query: string, matches: [string, string][])
         if (!match) {
             return {
                 success: false,
-                error: "No match found"
+                error: "​❌ No se encontró el partido. ¿Puedes ser un poco más exacto?"
             }
         }
 
@@ -120,15 +121,7 @@ export async function mapTeamName(
         properties: {
           team: {
             type: "string",
-            enum: [
-              "Al Ahly", "Al Ain", "Al Hilal", "Urawa Red Diamonds", "Ulsan HD",
-              "Espérance de Tunis", "Wydad Casablanca", "Mamelodi Sundowns",
-              "Monterrey", "Seattle Sounders", "Pachuca", "Los Angeles FC",
-              "Flamengo", "Palmeiras", "Fluminense", "River Plate", "Boca Juniors", "Botafogo",
-              "Auckland City", "Manchester City", "Chelsea", "Real Madrid", "Bayern München",
-              "Paris Saint-Germain", "Inter Milan", "Benfica", "Porto", "Borussia Dortmund",
-              "Atlético de Madrid", "Red Bull Salzburg", "Juventus", "Inter Miami"
-            ]
+            enum: ClubWorldCupTeams2025
           }
         },
         required: ["team"]
