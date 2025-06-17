@@ -213,6 +213,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
             userStats.incorrectPredictions = (userStats.incorrectPredictions || 0) + 1;
             userStats.streak = 0;
           }
+          return;
         }
 
         // calculate win rate
