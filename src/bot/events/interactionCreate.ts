@@ -9,6 +9,7 @@ import {
   sendMatchStatsCommand,
   sendMissingCommand,
   sendScorePredictionCommand,
+  sendOtherPredictionCommand,
   setGroupStageOnlyCommand,
   updateAwardResultCommand,
   updateMatchScoreCommand,
@@ -159,7 +160,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await sendScorePredictionCommand(commandInteraction);
       break;
     case 'send-other-prediction':
-      await sendScorePredictionCommand(commandInteraction);
+      await sendOtherPredictionCommand(commandInteraction);
       break;
     case 'see-results':
       await seeResultsCommand(commandInteraction);
