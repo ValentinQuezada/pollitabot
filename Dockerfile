@@ -20,4 +20,4 @@ RUN npm ci --omit=dev --silent
 
 COPY --from=build /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "container-start"]
