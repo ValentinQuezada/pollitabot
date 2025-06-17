@@ -39,18 +39,13 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
         console.log(response.data);
 
         const match = matches.find(
-            m => m.team1 === response.data.team1 && m.team2 === response.data.team2 && m.hasStarted === false
+            m => m.team1 === response.data.team1 && m.team2 === response.data.team2
         );
         if (!match) {
             await interaction.editReply({ content: "❌ No se encontró el partido para la predicción." });
             return;
         }
         console.log(match.datetime, new Date());
-
-        if (new Date() >= match.datetime) {
-            await interaction.editReply({ content: "⏰​ Ya no puedes apostar, ¡el partido ya empezó!" });
-            return;
-        }
 
         if ((match.matchType === "quarterfinal-extra" || match.matchType === "semifinal-extra" || match.matchType === "final-extra") && response.data.score.team1 === response.data.score.team2) {
             try {
