@@ -10,8 +10,8 @@ const seeMatches = async (interaction: CommandInteraction) => {
     const db = await databaseConnection();
     const Match = db.model("Match");
 
-    // search for all matches that are not finished and have not started
-    let matchFilter: any = { isFinished: false, hasStarted: false };
+    // search for all matches that are not finished
+    let matchFilter: any = { isFinished: false };
     const matches = await Match.find(matchFilter);
 
     if (matches.length === 0) {
