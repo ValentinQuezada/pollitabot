@@ -20,4 +20,6 @@ RUN npm ci --omit=dev --silent
 
 COPY --from=build /app/dist ./dist
 
+RUN npm run deploy
+
 CMD ["node", "dist/index.js"]
