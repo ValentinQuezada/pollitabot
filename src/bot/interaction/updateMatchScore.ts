@@ -142,6 +142,9 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const winners = predictions.filter(p =>
         p.prediction.team1 === score1 && p.prediction.team2 === score2
       );
+      const losers = predictions.filter(p =>
+        p.prediction.team1 != score1 || p.prediction.team2 != score2
+      );
       const winnerIds = new Set(winners.map(w => w.userId));
       const allUserIds = predictions.map(p => p.userId);
 
@@ -222,6 +225,17 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const winners_id = predictions
       .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
       .map(p => p.userId);
+
+      // send winner message
+      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
+
+      if (
+          interaction.channel &&
+          'send' in interaction.channel &&
+          typeof interaction.channel.send === 'function'
+      ) {
+          await interaction.channel.send(winnerMsg);
+      }
 
       // save aura points before updating
       const AuraPoints = db.model("AuraPoints", require("../../schemas/aura").AuraPointsSchema);

@@ -60,9 +60,10 @@ export const ClubWorldCupTeams2025 = [
   "Mamelodi Sundowns (SUN)"
 ];
 
-export function horaSimpleConHrs(date: Date): string {
-  const horas = date.getHours().toString().padStart(2, '0');
-  const minutos = date.getMinutes().toString().padStart(2, '0');
+export function horaSimpleConHrs(date: Date, timeZone: string = 'America/Bogota'): string {
+  const [horas, minutos] = date
+    .toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone })
+    .split(':');
   return `${horas}:${minutos} hrs`;
 }
 
