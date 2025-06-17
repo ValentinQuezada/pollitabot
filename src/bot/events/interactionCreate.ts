@@ -16,7 +16,8 @@ import {
   sendAwardPredictionCommand,
   auraLeaderboardCommand,
   userStatsLeaderboardCommand,
-  seeMatches
+  seeMatches,
+  sendMatches
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -172,6 +173,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await seeMissingCommand(commandInteraction);
       break;
     case 'see-matches':
+      await seeMatches(commandInteraction);
+      break;
+    case 'send-matches':
       await seeMatches(commandInteraction);
       break;
     case 'send-award-prediction':

@@ -1,0 +1,82 @@
+import { CommandInteraction, GuildMember } from "discord.js";
+import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
+import databaseConnection from "../../database/connection";
+import { PredictionSchema } from "../../schemas/prediction";
+import { UserStatsSchema } from "../../schemas/user";
+import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
+
+const sendMatches = async (interaction: CommandInteraction) => {
+    await interaction.deferReply({ ephemeral: true });
+
+    // validate if the user is the owner or has the required role
+    const member = interaction.member as GuildMember;
+    const hasRole = member.roles.cache.some(role => role.name === REQUIRED_ROLE);
+  
+    if (!hasRole) {
+      await interaction.reply({
+        content: '⛔ No tienes permiso para usar este comando.',
+        ephemeral: true
+      });
+      return;
+    }
+
+    const rev = interaction.options.get('revelar')?.value as boolean;
+    const db = await databaseConnection();
+    const Match = db.model("Match");
+    const Prediction = db.model("Prediction", PredictionSchema);
+
+    // search for all matches that are not finished
+    let matchFilter: any = { isFinished: false };
+    const matches = await Match.find(matchFilter);
+
+    if (matches.length === 0) {
+      await interaction.editReply({ content: "📂​ No hay partidos activos."});
+      return;
+    }
+
+    let message = "🎲​ **Partidos activos:**\n";
+    for (const match of matches) {
+      if(rev){
+        message += "*(incluyendo resultados)*\n\n"
+        message += `\n***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
+        const predictions = await Prediction.find({ matchId: match._id });
+
+        // group predictions by team1-team2
+        const grouped: Record<string, string[]> = {};
+        for (const pred of predictions) {
+        const key = `${pred.prediction.team1}-${pred.prediction.team2}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(`<@${pred.userId}>`);
+        }
+
+        // sort keys by team1-team2 in descending order
+        const sortedKeys = Object.keys(grouped).sort((a, b) => {
+        const [a1] = a.split("-").map(Number);
+        const [b1] = b.split("-").map(Number);
+        return b1 - a1;
+        });
+
+        // message with predictions
+        let predictionsMsg = "";
+        for (const key of sortedKeys) {
+        predictionsMsg += `${key}: ${grouped[key].join("/")}\n`;
+        }
+
+        message += predictionsMsg + "\n";
+      } else {
+        message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}\n`;
+      }
+    }
+
+    if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+    ) {
+        await interaction.channel.send(message);
+    }
+
+    await interaction.editReply({ content: "✅ Partidos enviados al canal."});
+}
+
+export default sendMatches;
