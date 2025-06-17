@@ -22,7 +22,7 @@
     "start:dev": "npm run prestart && npm run deploy:dev && dotenv -- node dist/index.js",
     "start": "npm run deploy && node dist/index.js",
     "deploy:dev": "dotenv -- tsx src/deploy-commands.ts",
-    "deploy": "node src/deploy-commands.js",
+    "deploy": "node dist/deploy-commands.js",
     "watch": "tsc -w"
   }
 }
