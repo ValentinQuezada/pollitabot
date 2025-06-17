@@ -90,14 +90,14 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
         if (existingPrediction) {
             existingPrediction.prediction = response.data.score;
             await existingPrediction.save();
-            actionMessage = `*✏️​ ¡<@${interaction.user.id}> ha actualizado el resultado de @${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
+            actionMessage = `*✏️​ ¡<@${interaction.user.id}> ha actualizado el resultado de <@${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
         } else {
             await Prediction.create({
                 userId: user_id,
                 matchId: match._id,
                 prediction: response.data.score
             });
-            actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado el resultado de @${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
+            actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado el resultado de <@${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
 
             const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
