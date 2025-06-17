@@ -16,7 +16,8 @@ import {
   sendAwardPredictionCommand,
   auraLeaderboardCommand,
   userStatsLeaderboardCommand,
-  seeMatches
+  seeMatches,
+  assignAuraTopBonusesCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -182,6 +183,10 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'userstats-leaderboard':
       await userStatsLeaderboardCommand.execute(commandInteraction);
+      break;
+    case 'assign-aura-top-bonuses':
+      await assignAuraTopBonusesCommand(commandInteraction);
+      break;
   }
 };
 

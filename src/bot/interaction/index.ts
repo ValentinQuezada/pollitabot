@@ -15,6 +15,7 @@ import auraLeaderboardCommand from "./auraLeaderboard";
 import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 import sendOtherPredictionCommand from "./sendOtherPrediction";
 import seeMatches from "./seeMatches";
+import assignAuraTopBonusesCommand from "./assignAuraTopBonuses";
 
 export {
     anonCommand,
@@ -33,5 +34,6 @@ export {
     auraLeaderboardCommand,
     userStatsLeaderboardCommand,
     sendOtherPredictionCommand,
-    seeMatches
+    seeMatches,
+    assignAuraTopBonusesCommand,
 };
