@@ -113,8 +113,8 @@ export async function mapTeamName(
     model: modelName,
     config: {
       systemInstruction: SYSTEM_INSTRUCTIONS.TEAM_MAPPING,
-      maxOutputTokens: 50,
-      temperature: 0,
+      maxOutputTokens: 100,
+      temperature: 0.1,
       responseMimeType: "application/json",
       responseSchema: {
         type: "object",

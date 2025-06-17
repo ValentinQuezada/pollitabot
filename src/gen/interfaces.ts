@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
 
 export const ScorePredictioSchema = z.object({
     team1: z.string(),
@@ -29,13 +30,5 @@ export type TeamNameType = {
 };
 
 export const TeamNameSchema = z.object({
-  team: z.enum([
-    "Al Ahly", "Al Ain", "Al Hilal", "Urawa Red Diamonds", "Ulsan HD",
-    "Espérance de Tunis", "Wydad Casablanca", "Mamelodi Sundowns",
-    "Monterrey", "Seattle Sounders", "Pachuca", "Los Angeles FC",
-    "Flamengo", "Palmeiras", "Fluminense", "River Plate", "Boca Juniors", "Botafogo",
-    "Auckland City", "Manchester City", "Chelsea", "Real Madrid", "Bayern München",
-    "Paris Saint-Germain", "Inter Milan", "Benfica", "Porto", "Borussia Dortmund",
-    "Atlético de Madrid", "Red Bull Salzburg", "Juventus", "Inter Miami"
-  ])
+  team: z.enum([...ClubWorldCupTeams2025] as [string, ...string[]])
 });
