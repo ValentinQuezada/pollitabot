@@ -35,6 +35,7 @@ jobs:
               
     - name: Set up kubectl
       run: |
+        mkdir -p $HOME/.kube
         echo "${{ secrets.CLUSTER_CONFIG }}" | base64 -d > $HOME/.kube/config
 
     - name: Update deployment image
