@@ -14,6 +14,7 @@ import sendAwardPredictionCommand from "./sendAwardPred";
 import auraLeaderboardCommand from "./auraLeaderboard";
 import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 import sendOtherPredictionCommand from "./sendOtherPrediction";
+import seeMatches from "./seeMatches";
 
 export {
     anonCommand,
@@ -31,5 +32,6 @@ export {
     sendAwardPredictionCommand,
     auraLeaderboardCommand,
     userStatsLeaderboardCommand,
-    sendOtherPredictionCommand
+    sendOtherPredictionCommand,
+    seeMatches
 };

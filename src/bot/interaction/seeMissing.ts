@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
-import { horaSimpleConHrs } from "../events/interactionCreate";
+import { horaSimpleConHrs } from "../../utils/timestamp";
 
 const seeMissing = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -31,7 +31,7 @@ const seeMissing = async (interaction: CommandInteraction) => {
     const missingMatches = matches.filter(m => !predictedMatchIds.has(m._id.toString()));
 
     if (missingMatches.length === 0) {
-      await interaction.editReply({ content: "🆗​ No tienes partidos pendientes por apostar."});
+      await interaction.editReply({ content: "📂​ No tienes partidos pendientes por apostar."});
       return;
     }
 

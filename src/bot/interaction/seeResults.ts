@@ -1,7 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
-import { horaSimpleConHrs } from "../events/interactionCreate";
+import { horaSimpleConHrs } from "../../utils/timestamp";
 
 const seeResultsCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });

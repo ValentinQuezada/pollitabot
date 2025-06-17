@@ -3,7 +3,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
-import { horaSimpleConHrs } from "../events/interactionCreate";
+import { horaSimpleConHrs } from "../../utils/timestamp";
 import { mapTeamName } from "../../gen/client";
 
 

@@ -15,6 +15,7 @@ import sendAwardPredictionCommand from "../commands/sendAwardPred";
 import auraLeaderboardCommand from "../commands/auraLeaderboard";
 import userStatsLeaderboardCommand from "../commands/userStatsLeaderboard";
 import sendMatchOtherPredictionCommand from "../commands/otherPrediction";
+import seeMatchesCommand from "../commands/seeMatches";
 
 const BOT_COMMANDS = [
     anonymousMessageCommand,
@@ -29,6 +30,7 @@ const BOT_COMMANDS = [
     seeResultsCommand,
     sendMatchStatsCommand,
     seeMissingCommand,
+    seeMatchesCommand,
     sendAwardPredictionCommand,
     auraLeaderboardCommand,
     userStatsLeaderboardCommand,

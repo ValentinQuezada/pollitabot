@@ -16,6 +16,7 @@ import {
   sendAwardPredictionCommand,
   auraLeaderboardCommand,
   userStatsLeaderboardCommand,
+  seeMatches
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -60,13 +61,6 @@ export const ClubWorldCupTeams2025 = [
   "Wydad Casablanca (WYD)",
   "Mamelodi Sundowns (SUN)"
 ];
-
-export function horaSimpleConHrs(date: Date, timeZone: string = 'America/Bogota'): string {
-  const [horas, minutos] = date
-    .toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone })
-    .split(':');
-  return `${horas}:${minutos} hrs`;
-}
 
 export async function checkRole(interaction: CommandInteraction, roleName: string): Promise<boolean> {
   if (!interaction.inGuild()) return false;
@@ -176,6 +170,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'see-missing':
       await seeMissingCommand(commandInteraction);
+      break;
+    case 'see-matches':
+      await seeMatches(commandInteraction);
       break;
     case 'send-award-prediction':
       await sendAwardPredictionCommand(commandInteraction);
