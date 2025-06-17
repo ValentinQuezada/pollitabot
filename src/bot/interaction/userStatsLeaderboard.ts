@@ -52,7 +52,7 @@ const userStatsLeaderboardCommand = {
       const USERNAME_WIDTH = 16;
       const paddedUsername = username.padEnd(USERNAME_WIDTH, ' ');
       const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(2)}%` : "0.00%";
-      message += `${idx + 1}. ${statusEmoji} **${paddedUsername}** 🎲 **${row.totalPredictions ?? 0}** = ✅ **​${row.correctPredictions ?? 0}** + ⏹️ **​${row.noWinnersPredictions ?? 0}** + ❌ **${row.incorrectPredictions ?? 0}** | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ **${totalFormateado}**\n`;
+      message += `${idx + 1}. ${statusEmoji} **${paddedUsername}** | 🎲 **${row.totalPredictions ?? 0}** = ✅ **​${row.correctPredictions ?? 0}** + ⏹️ **​${row.noWinnersPredictions ?? 0}** + ❌ **${row.incorrectPredictions ?? 0}** | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ **${totalFormateado}**\n`;
     });
 
     // sent message to the channel
