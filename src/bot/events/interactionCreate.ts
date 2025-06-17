@@ -158,6 +158,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     case 'send-score-prediction':
       await sendScorePredictionCommand(commandInteraction);
       break;
+    case 'send-other-prediction':
+      await sendScorePredictionCommand(commandInteraction);
+      break;
     case 'see-results':
       await seeResultsCommand(commandInteraction);
       break;

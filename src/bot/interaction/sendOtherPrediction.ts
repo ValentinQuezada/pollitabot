@@ -1,4 +1,5 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, GuildMember } from "discord.js";
+import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
 import { linkMatchScore } from "../../gen/client";
 import { retrieveMatches } from "../../database/controllers";
 import databaseConnection from "../../database/connection";
@@ -6,10 +7,23 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
 
-const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
+const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
+    const member = interaction.member as GuildMember;
+    const hasRole = member.roles.cache.some(role => role.name === REQUIRED_ROLE);
+
+    if (!hasRole) {
+    await interaction.reply({
+        content: '⛔ No tienes permiso para usar este comando.',
+        ephemeral: true
+    });
+    return;
+    }
+
+    
     await interaction.deferReply({ ephemeral: true });
 
     try {
+        const user_id = interaction.options.get('user-id')?.value as string;
         const predictionText = interaction.options.get('prediction')?.value as string;
         const matches = await retrieveMatches();
         // console.log('Matches retrieved:', matches);
@@ -73,7 +87,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
         const Prediction = db.model("Prediction", PredictionSchema);
 
         let existingPrediction = await Prediction.findOne({
-            userId: interaction.user.id,
+            userId: user_id,
             matchId: match._id
         });
 
@@ -81,19 +95,19 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
         if (existingPrediction) {
             existingPrediction.prediction = response.data.score;
             await existingPrediction.save();
-            actionMessage = `*✏️​ ¡<@${interaction.user.id}> ha actualizado su resultado para **${match.team1} vs. ${match.team2}**!*`;
+            actionMessage = `*✏️​ ¡<@${interaction.user.id}> ha actualizado el resultado de @${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
         } else {
             await Prediction.create({
-                userId: interaction.user.id,
+                userId: user_id,
                 matchId: match._id,
                 prediction: response.data.score
             });
-            actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado su resultado para **${match.team1} vs. ${match.team2}**!*`;
+            actionMessage = `*🎯​ ¡<@${interaction.user.id}> ha enviado el resultado de @${user_id}> para **${match.team1} vs. ${match.team2}**!*`;
 
             const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
             await UserStats.updateOne(
-                { userId: interaction.user.id },
+                { userId: user_id },
                 {
                     $inc: {
                         totalPredictions: 1,
@@ -124,4 +138,4 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     }
 };
 
-export default sendScorePredictionCommand;
+export default sendOtherPredictionCommand;

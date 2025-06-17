@@ -13,6 +13,7 @@ import seeMissingCommand from "./seeMissing";
 import sendAwardPredictionCommand from "./sendAwardPred";
 import auraLeaderboardCommand from "./auraLeaderboard";
 import userStatsLeaderboardCommand from "./userStatsLeaderboard";
+import sendMatchOtherPredictionCommand from "../../commands/otherPrediction";
 
 export {
     anonCommand,
@@ -29,5 +30,6 @@ export {
     seeMissingCommand,
     sendAwardPredictionCommand,
     auraLeaderboardCommand,
-    userStatsLeaderboardCommand
+    userStatsLeaderboardCommand,
+    sendMatchOtherPredictionCommand
 };
