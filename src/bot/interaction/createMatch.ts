@@ -4,6 +4,7 @@ import { createMatch } from "../../database/controllers";
 import { checkRole } from "../events/interactionCreate";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
+import { mapTeamName } from "../../gen/client";
 
 const createMatchCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -18,8 +19,23 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
 
   await interaction.deferReply({ ephemeral: true });
   
-  const team1 = interaction.options.get('team1')?.value as string;
-  const team2 = interaction.options.get('team2')?.value as string;
+  let team1 = interaction.options.get('team1')?.value as string;
+  let team2 = interaction.options.get('team2')?.value as string;
+
+  const response1 = await mapTeamName(team1);
+  if (!response1.success) {
+      await interaction.editReply({ content: "❌ Equipo no encontrado." });
+      return;
+  }
+  console.log(response1.data);
+
+  const response2 = await mapTeamName(team2);
+  if (!response2.success) {
+      await interaction.editReply({ content: "❌ Equipo no encontrado." });
+      return;
+  }
+  console.log(response2.data);
+
   const datetime = interaction.options.get('datetime')?.value as string;
   const group = interaction.options.get('group')?.value as string;
   const matchType = interaction.options.get('matchtype')?.value as MatchTypeEnum;

@@ -118,7 +118,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
         || focusedField === 'team1'
         || focusedField === 'team2') {
         const filteredTeams = ClubWorldCupTeams2025
-          .filter(team => team.toLowerCase().includes(focusedValue))
+          .filter(team => team.toLowerCase().includes(focusedValue.toLowerCase()))
           .slice(0,25)
           .map(team => ({
             name: team,
