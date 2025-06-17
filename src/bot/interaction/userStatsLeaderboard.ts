@@ -43,7 +43,7 @@ const userStatsLeaderboardCommand = {
     leaderboard.forEach((row, idx) => {
       const username = userMap[row.userId];
       const total = row.total ?? 0.00;
-      const totalFormateado = total >= 0 ? `S/.${total.toFixed(2)}` : `-S/.${Math.abs(total).toFixed(2)}`;
+      const totalFormateado = total >= 0 ? `+S/.${total.toFixed(2)}` : `-S/.${Math.abs(total).toFixed(2)}`;
       let statusEmoji = "🔸​";
       if (total > 0) statusEmoji = "🔺";
       else if (total < 0) statusEmoji = "🔻";

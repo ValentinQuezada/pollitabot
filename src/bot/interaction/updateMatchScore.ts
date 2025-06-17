@@ -230,7 +230,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       .map(p => p.userId);
 
       // send winner message
-      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
+      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner-matchFee})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
 
       if (
           interaction.channel &&
