@@ -176,7 +176,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await seeMatches(commandInteraction);
       break;
     case 'send-matches':
-      await seeMatches(commandInteraction);
+      await sendMatches(commandInteraction);
       break;
     case 'send-award-prediction':
       await sendAwardPredictionCommand(commandInteraction);
