@@ -213,7 +213,6 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
             userStats.incorrectPredictions = (userStats.incorrectPredictions || 0) + 1;
             userStats.streak = 0;
           }
-          return;
         }
 
         // calculate win rate
@@ -223,6 +222,9 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
         await userStats.save();
       }
+
+      if(winners.length === 0){ return;}
+
       const winners_id = predictions
       .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
       .map(p => p.userId);
