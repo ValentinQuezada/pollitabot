@@ -4,6 +4,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
 import { horaSimpleConHrs } from "../events/interactionCreate";
+import { mapTeamName } from "../../gen/client";
 
 
 const sendMatchStats = async (interaction: CommandInteraction) => {
@@ -20,8 +21,25 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     
     await interaction.deferReply({ ephemeral: true });
 
-    const team1 = interaction.options.get('team1')?.value as string;
-    const team2 = interaction.options.get('team2')?.value as string;
+    let team1 = interaction.options.get('team1')?.value as string;
+    let team2 = interaction.options.get('team2')?.value as string;
+
+    const response1 = await mapTeamName(team1);
+    if (!response1.success) {
+        await interaction.editReply({ content: "❌ Equipo no encontrado." });
+        return;
+    }
+    console.log(response1.data);
+
+    const response2 = await mapTeamName(team2);
+    if (!response2.success) {
+        await interaction.editReply({ content: "❌ Equipo no encontrado." });
+        return;
+    }
+    console.log(response2.data);
+
+    team1 = response1.data.team;
+    team2 = response2.data.team;
 
     const db = await databaseConnection();
     const Match = db.model("Match");
