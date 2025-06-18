@@ -86,17 +86,17 @@ const directMessageEvent = async (message: Message) => {
             }
 
             const UserStats = db.model("UserStats", UserStatsSchema);
-            await UserStats.updateOne(
-                { userId: userId },
-                {
-                    $inc: {
-                        totalPredictions: 1,
-                        loss: -5,
-                        total: -5
-                    }
-                },
-                { upsert: true }
-            );
+            // await UserStats.updateOne(
+            //     { userId: userId },
+            //     {
+            //         $inc: {
+            //             totalPredictions: 1,
+            //             loss: -5,
+            //             total: -5
+            //         }
+            //     },
+            //     { upsert: true }
+            // );
 
             endDMConversation(userId);
             await message.reply({ content: '¡Predicción guardada!' });

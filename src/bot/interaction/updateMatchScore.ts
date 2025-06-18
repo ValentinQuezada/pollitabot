@@ -172,6 +172,36 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const pool = allUserIds.length * matchFee;
       const gainPerWinner = winners.length > 0 ? pool / winners.length : 0;
 
+      // nonBettors are users who did not bet on this match
+      const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+      const userIdsWithPrediction = predictions.map(p => p.userId);
+      const nonBettors = nonGroupStageUsers
+      .filter(u => !userIdsWithPrediction.includes(u.userId))
+      .map(u => u.userId);
+
+      // const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
+      if (match.matchType !== "group-regular") {
+        if(winners.length > 0) {
+          // users who did not bet on this match
+          for (const userId of nonBettors) {
+            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+            userStats.streak = 0; // reset streak if user did not bet
+            userStats.loss = (userStats.loss || 0) - matchFee / 2;
+            userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
+            userStats.total = userStats.gain + userStats.loss;
+            await userStats.save();
+          }
+        }
+        else {
+          for (const userId of nonBettors) {
+            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+            userStats.streak = 0; // reset streak if user did not bet
+            userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
+            await userStats.save();
+          }
+        }
+      }
+
       // for each prediction, update user stats
       for (const prediction of predictions) {
         const userId = prediction.userId;
@@ -180,28 +210,12 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
 
         // update user stats
-        // userStats.totalPredictions = (userStats.totalPredictions || 0) + 1;
-
-        // reset streak if user did not bet
-        if(winners.length > 0) {
-          // users who did not bet on this match
-          const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
-          const userIdsWithPrediction = predictions.map(p => p.userId);
-          const nonBettors = nonGroupStageUsers
-          .filter(u => !userIdsWithPrediction.includes(u.userId))
-          .map(u => u.userId);
-          for (const userId of nonBettors) {
-            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
-            userStats.streak = 0;
-            await userStats.save();
-          }
-        }
+        userStats.totalPredictions = (userStats.totalPredictions || 0) + 1;
 
         if (isWinner) {
           userStats.correctPredictions = (userStats.correctPredictions || 0) + 1;
           userStats.streak = (userStats.streak || 0) + 1;
           userStats.gain = (userStats.gain || 0) + gainPerWinner;
-          userStats.total = (userStats.total || 0) + gainPerWinner; // add gain
           
           //update max streak if current streak is greater
           if ((userStats.streak || 0) > (userStats.maxStreak || 0)) {
@@ -210,29 +224,16 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         } else {
           // if no winners, increment noWinnersPredictions
           if (winners.length === 0) {
-            // users who did not bet on this match
-            const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
-            const userIdsWithPrediction = predictions.map(p => p.userId);
-            const nonBettors = nonGroupStageUsers
-            .filter(u => !userIdsWithPrediction.includes(u.userId))
-            .map(u => u.userId);
-            for (const userId of nonBettors) {
-              const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
-              userStats.loss = (userStats.loss || 0) + matchFee;
-              userStats.total = (userStats.total || 0) + matchFee;
-              await userStats.save();
-            }
-
             userStats.noWinnersPredictions = (userStats.noWinnersPredictions || 0) + 1;
-            userStats.loss = (userStats.loss || 0) + matchFee; // no gain, but no loss either
-            userStats.total = (userStats.total || 0) + matchFee; // deduct match fee
             // streak remains the same
           } else {
             userStats.incorrectPredictions = (userStats.incorrectPredictions || 0) + 1;
+            userStats.loss = (userStats.loss || 0) - matchFee;
             userStats.streak = 0;
           }
         }
-
+        userStats.total = userStats.gain + userStats.loss;
+        
         // calculate win rate
         const correct = userStats.correctPredictions || 0;
         const total = userStats.totalPredictions || 0;

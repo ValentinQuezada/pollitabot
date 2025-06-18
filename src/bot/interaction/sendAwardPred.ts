@@ -60,17 +60,17 @@ const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {
             actionMessage = `*🎯 ¡<@${interaction.user.id}> ha enviado su predicción para **${award.name}**!*`;
 
             // Actualizar estadísticas del usuario con el fee
-            await UserStats.updateOne(
-                { userId: interaction.user.id },
-                {
-                    $inc: {
-                        totalPredictions: 1,
-                        loss: -awardFee,
-                        total: -awardFee
-                    }
-                },
-                { upsert: true }
-            );
+            // await UserStats.updateOne(
+            //     { userId: interaction.user.id },
+            //     {
+            //         $inc: {
+            //             totalPredictions: 1,
+            //             loss: -awardFee,
+            //             total: -awardFee
+            //         }
+            //     },
+            //     { upsert: true }
+            // );
         }
 
         // Anunciar en el canal

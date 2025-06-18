@@ -23,18 +23,18 @@ cron.schedule("* * * * *", async () => {
 
   for (const match of matches) {
     // penalize users who did not predict
-    const users = await UserStats.find({ onlyGroupStage: false });
-    for (const user of users) {
-      const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
-      if (!prediction && match.matchType !== "group-regular") {
-        const fee = match.fee;
-        const penalty = fee / 2;
-        user.loss -= penalty;
-        user.missedNonGroupPredictions += 1;
-        user.total -= penalty;
-        await user.save();
-      }
-    }
+    // const users = await UserStats.find({ onlyGroupStage: false });
+    // for (const user of users) {
+    //   const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
+    //   if (!prediction && match.matchType !== "group-regular") {
+    //     const fee = match.fee;
+    //     const penalty = fee / 2;
+    //     user.loss -= penalty;
+    //     user.missedNonGroupPredictions += 1;
+    //     user.total -= penalty;
+    //     await user.save();
+    //   }
+    // }
 
     // mark the match as started
     match.hasStarted = true;

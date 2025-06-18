@@ -101,17 +101,17 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
 
             const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
-            await UserStats.updateOne(
-                { userId: user_id },
-                {
-                    $inc: {
-                        totalPredictions: 1,
-                        loss: -matchFee,
-                        total: -matchFee
-                    }
-                },
-                { upsert: true }
-            );
+            // await UserStats.updateOne(
+            //     { userId: user_id },
+            //     {
+            //         $inc: {
+            //             totalPredictions: 1,
+            //             loss: -matchFee,
+            //             total: -matchFee
+            //         }
+            //     },
+            //     { upsert: true }
+            // );
         }
 
         if (

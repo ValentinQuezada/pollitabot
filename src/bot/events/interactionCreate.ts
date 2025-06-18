@@ -17,7 +17,8 @@ import {
   auraLeaderboardCommand,
   userStatsLeaderboardCommand,
   seeMatches,
-  assignAuraTopBonusesCommand
+  assignAuraTopBonusesCommand,
+  sendMatches
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
