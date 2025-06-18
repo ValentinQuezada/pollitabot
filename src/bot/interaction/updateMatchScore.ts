@@ -114,7 +114,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       const [b1, b2] = b.split('-').map(Number);
       const totalA = a1 + a2;
       const totalB = b1 + b2;
-      if (totalA !== totalB) return totalB - totalA;
+      if (totalA != totalB) return totalB - totalA;
       return b1 - a1;
     });
 
