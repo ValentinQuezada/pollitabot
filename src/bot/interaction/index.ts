@@ -15,6 +15,7 @@ import auraLeaderboardCommand from "./auraLeaderboard";
 import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 import sendOtherPredictionCommand from "./sendOtherPrediction";
 import seeMatches from "./seeMatches";
+import assignAuraTopBonusesCommand from "./assignAuraTopBonuses";
 import sendMatches from "./sendMatches";
 
 export {
@@ -35,5 +36,6 @@ export {
     userStatsLeaderboardCommand,
     sendOtherPredictionCommand,
     seeMatches,
+    assignAuraTopBonusesCommand,
     sendMatches
 };

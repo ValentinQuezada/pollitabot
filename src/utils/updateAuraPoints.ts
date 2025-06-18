@@ -33,13 +33,13 @@ export async function updateAuraPointsForMatch(matchId: string, winners: string[
     aura.streak3plus += streak >= 3 ? (streak - 2) * AURA_POINTS_VALUES.streak3plus : 0;
 
     // topProfit
-    aura.topProfit = (user.total || 0) === maxProfit && maxProfit > 0 ? AURA_POINTS_VALUES.topProfit : 0;
+    // aura.topProfit = (user.total || 0) === maxProfit && maxProfit > 0 ? AURA_POINTS_VALUES.topProfit : 0;
 
     // topWinRate
-    aura.topWinRate = (user.winRate || 0) === maxWinRate && maxWinRate > 0 ? AURA_POINTS_VALUES.topWinRate : 0;
+    // aura.topWinRate = (user.winRate || 0) === maxWinRate && maxWinRate > 0 ? AURA_POINTS_VALUES.topWinRate : 0;
 
     // topStreak
-    aura.topStreak = (user.maxStreak || 0) === maxStreak && maxStreak > 0 ? AURA_POINTS_VALUES.topStreak : 0;
+    // aura.topStreak = (user.maxStreak || 0) === maxStreak && maxStreak > 0 ? AURA_POINTS_VALUES.topStreak : 0;
 
     // specialHit, lateGoalHit, upsetHit: add points based on match properties
     if (winners.includes(user.userId)) {
