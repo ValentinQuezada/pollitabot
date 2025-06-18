@@ -35,10 +35,10 @@ const sendMatches = async (interaction: CommandInteraction) => {
     }
 
     let message = "🎲​ **Partidos activos:**\n";
+    if(rev){message += "*(incluyendo resultados)*\n\n"};
     for (const match of matches) {
       if(rev){
-        message += "*(incluyendo resultados)*\n\n"
-        message += `\n***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
+        message += `***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });
 
         // group predictions by team1-team2
@@ -51,9 +51,12 @@ const sendMatches = async (interaction: CommandInteraction) => {
 
         // sort keys by team1-team2 in descending order
         const sortedKeys = Object.keys(grouped).sort((a, b) => {
-        const [a1] = a.split("-").map(Number);
-        const [b1] = b.split("-").map(Number);
-        return b1 - a1;
+          const [a1, a2] = a.split('-').map(Number);
+          const [b1, b2] = b.split('-').map(Number);
+          const totalA = a1 + a2;
+          const totalB = b1 + b2;
+          if (totalA != totalB) return totalB - totalA;
+          return b1 - a1;
         });
 
         // message with predictions

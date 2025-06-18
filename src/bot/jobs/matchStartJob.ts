@@ -53,9 +53,12 @@ cron.schedule("* * * * *", async () => {
 
     // sort keys by team1-team2 in descending order
     const sortedKeys = Object.keys(grouped).sort((a, b) => {
-    const [a1] = a.split("-").map(Number);
-    const [b1] = b.split("-").map(Number);
-    return b1 - a1;
+      const [a1, a2] = a.split("-").map(Number);
+      const [b1, b2] = b.split("-").map(Number);
+      const totalA = a1 + a2;
+      const totalB = b1 + b2;
+      if (totalA != totalB) return totalB - totalA;
+      return b1 - a1;
     });
 
     // message with predictions
