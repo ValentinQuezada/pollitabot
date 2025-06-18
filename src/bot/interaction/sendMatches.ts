@@ -38,7 +38,7 @@ const sendMatches = async (interaction: CommandInteraction) => {
     if(rev){message += "*(incluyendo resultados)*\n\n"};
     for (const match of matches) {
       if(rev){
-        message += `\n***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
+        message += `***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });
 
         // group predictions by team1-team2
