@@ -43,7 +43,7 @@ const auraLeaderboardCommand = {
 
     if (winner && second) {
       const diff = winner.totalPoints - second.totalPoints;
-      message += `\n🥇 *¡<@${winner.userId}> lidera la tabla con **${winner.totalPoints}**!*`;
+      message += `\n🥇 *¡<@${winner.userId}> lidera la tabla con **${winner.totalPoints}** 💠!*`;
     }
     if (second) {
       message += `\n🥈 *En 2do lugar, <@${second.userId}> con **${second.totalPoints}** 💠.*`;
