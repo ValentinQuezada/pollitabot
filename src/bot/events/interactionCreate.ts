@@ -19,7 +19,7 @@ import {
   seeMatches,
   assignAuraTopBonusesCommand,
   sendMatches,
-  dailySummaryCommand
+  // dailySummaryCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
 
@@ -192,9 +192,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
     case 'assign-aura-top-bonuses':
       await assignAuraTopBonusesCommand(commandInteraction);
       break;
-    case 'daily-summary':
-      await dailySummaryCommand(commandInteraction);
-      break;
+    // case 'daily-summary':
+    //   await dailySummaryCommand(commandInteraction);
+    //   break;
   }
 };
 
