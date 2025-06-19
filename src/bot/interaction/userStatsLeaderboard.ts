@@ -20,8 +20,18 @@ const userStatsLeaderboardCommand = {
 
     await interaction.deferReply({ ephemeral: true });
 
-    // sort leaderboard by total
-    const leaderboard = await UserStats.find({}).sort({ total: -1 }).lean();
+    // sort leaderboard by total, winRate, correctPredictions, less totalPredictions
+    const leaderboard = await UserStats.find({}).lean();
+    leaderboard.sort((a, b) => {
+      // 1. total (desc)
+      if ((b.total ?? 0) !== (a.total ?? 0)) return (b.total ?? 0) - (a.total ?? 0);
+      // 2. winRate (desc)
+      if ((b.winRate ?? 0) !== (a.winRate ?? 0)) return (b.winRate ?? 0) - (a.winRate ?? 0);
+      // 3. correctPredictions (desc)
+      if ((b.correctPredictions ?? 0) !== (a.correctPredictions ?? 0)) return (b.correctPredictions ?? 0) - (a.correctPredictions ?? 0);
+      // 4. totalPredictions (asc)
+      return (a.totalPredictions ?? 0) - (b.totalPredictions ?? 0);
+    });
 
     if (!leaderboard.length) {
       await interaction.editReply({ content: "​📂​ No hay datos de **User Stats** aún." });

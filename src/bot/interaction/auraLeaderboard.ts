@@ -29,11 +29,22 @@ const auraLeaderboardCommand = {
       return;
     }
 
-    // build the leaderboard (simple format)
+    // build the leaderboard (ties are handled)
     let message = `​💎 **RANKING DE AURA POINTS**\n`;
+    let lastPoints = null;
+    let lastRank = 0;
+    let realRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
-      message += `${idx + 1}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+      realRank++;
+      if (lastPoints === row.totalPoints) {
+        // same points as last, keep the same rank
+        message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+      } else {
+        lastRank = realRank;
+        message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+        lastPoints = row.totalPoints;
+      }
     }
 
     // top 3 highlights
