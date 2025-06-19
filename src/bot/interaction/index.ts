@@ -17,6 +17,7 @@ import sendOtherPredictionCommand from "./sendOtherPrediction";
 import seeMatches from "./seeMatches";
 import assignAuraTopBonusesCommand from "./assignAuraTopBonuses";
 import sendMatches from "./sendMatches";
+import dailySummaryCommand from "./dailySummary";
 
 export {
     anonCommand,
@@ -37,5 +38,6 @@ export {
     sendOtherPredictionCommand,
     seeMatches,
     assignAuraTopBonusesCommand,
-    sendMatches
+    sendMatches,
+    dailySummaryCommand
 };
