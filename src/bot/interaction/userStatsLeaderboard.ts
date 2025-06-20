@@ -62,7 +62,7 @@ const userStatsLeaderboardCommand = {
         statusEmoji = "🔻";
         totalFormateado = `-S/.${Math.abs(total).toFixed(2)}`;
       } else {
-        statusEmoji = "⚪️";
+        statusEmoji = "🔸​";
         totalFormateado = `*S/.0.00*`;
       }
       if (idx === 0) statusEmoji = "👑";
