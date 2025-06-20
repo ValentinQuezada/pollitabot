@@ -23,14 +23,14 @@ const totalEmojisNeg = ["🫠", "☹️", "🤕", "😓", "😰", "🤯", "🤐"
 const totalThresholdsNeg = [-10, -25, -45, -70, -100, -135, -175, -220, -270, -325, -385, -450];
 
 function getTotalEmoji(total: number) {
-  if (total > 0) {
+  if (total >= 10) {
     for (let i = totalThresholdsPos.length - 1; i >= 0; i--) {
       if (total >= totalThresholdsPos[i]) {
         return totalEmojisPos[i];
       }
     }
     return totalEmojisPos[0];
-  } else if (total < 0) {
+  } else if (total <= -10) {
     for (let i = totalThresholdsNeg.length - 1; i >= 0; i--) {
       if (total <= totalThresholdsNeg[i]) {
         return totalEmojisNeg[i];
