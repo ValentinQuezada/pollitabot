@@ -13,6 +13,34 @@ const COLS = [
   { key: "total", label: "💰" }
 ];
 
+// emojis for total points
+const totalEmojisPos = ["😌", "😏", "😄", "😋", "🥳", "😎", "🤩", "🤑", "😈", "🦈", "🐐", "🦅"];
+
+const totalThresholdsPos = [10, 25, 45, 70, 100, 135, 175, 220, 270, 325, 385, 450];
+
+const totalEmojisNeg = ["🫠", "☹️", "🤕", "😓", "😰", "🤯", "🤐", "🥶", "🤬", "💀", "👻", "👼"];
+
+const totalThresholdsNeg = [-10, -25, -45, -70, -100, -135, -175, -220, -270, -325, -385, -450];
+
+function getTotalEmoji(total: number) {
+  if (total > 0) {
+    for (let i = totalThresholdsPos.length - 1; i >= 0; i--) {
+      if (total >= totalThresholdsPos[i]) {
+        return totalEmojisPos[i];
+      }
+    }
+    return totalEmojisPos[0];
+  } else if (total < 0) {
+    for (let i = totalThresholdsNeg.length - 1; i >= 0; i--) {
+      if (total <= totalThresholdsNeg[i]) {
+        return totalEmojisNeg[i];
+      }
+    }
+    return totalEmojisNeg[0];
+  }
+  return "🙂";
+}
+
 const userStatsLeaderboardCommand = {
   async execute(interaction: any) {
     await databaseConnection();
@@ -70,7 +98,9 @@ const userStatsLeaderboardCommand = {
       const USERNAME_WIDTH = 16;
       const paddedUsername = username.padEnd(USERNAME_WIDTH, ' ');
       const winRate = typeof row.winRate === "number" ? `${(row.winRate * 100).toFixed(2)}%` : "0.00%";
-      message += `${idx + 1}. ${statusEmoji} **${paddedUsername}**   🎲 **${row.totalPredictions ?? 0}** = (✅ ​${row.correctPredictions ?? 0} / ⏹️ ​${row.noWinnersPredictions ?? 0} / ❌ ${row.incorrectPredictions ?? 0}) | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ ${totalFormateado}\n`;
+      const emojiTotal = getTotalEmoji(total);
+
+      message += `${idx + 1}. ${statusEmoji} **${paddedUsername}**   🎲 **${row.totalPredictions ?? 0}** = (✅ ​${row.correctPredictions ?? 0} / ⏹️ ​${row.noWinnersPredictions ?? 0} / ❌ ${row.incorrectPredictions ?? 0}) | ⭐ ${winRate} | 💠 ${row.auraPoints ?? 0} | 🔥 ${row.streak ?? 0} | 🪙​ ${totalFormateado}${emojiTotal ? " " + emojiTotal : ""}\n`;
     });
 
     // sent message to the channel
