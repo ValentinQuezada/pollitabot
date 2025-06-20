@@ -170,7 +170,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
       // calculate the pool and gain per winner
       const pool = allUserIds.length * matchFee;
-      const gainPerWinner = winners.length > 0 ? pool / losers.length: 0;
+      const gainPerWinner = winners.length > 0 ? pool / allUserIds.length - matchFee: 0;
 
       // nonBettors are users who did not bet on this match
       const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
@@ -249,7 +249,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       .map(p => p.userId);
 
       // send winner message
-      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner-matchFee})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
+      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
 
       if (
           interaction.channel &&
