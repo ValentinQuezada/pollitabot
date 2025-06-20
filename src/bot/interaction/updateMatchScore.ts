@@ -170,7 +170,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
       // calculate the pool and gain per winner
       const pool = allUserIds.length * matchFee;
-      const gainPerWinner = winners.length > 0 ? pool / winners.length : 0;
+      const gainPerWinner = winners.length > 0 ? pool / winners.length - matchFee: 0;
 
       // nonBettors are users who did not bet on this match
       const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
@@ -233,7 +233,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
         }
         userStats.total = userStats.gain + userStats.loss;
-        
+
         // calculate win rate
         const correct = userStats.correctPredictions || 0;
         const total = userStats.totalPredictions || 0;
