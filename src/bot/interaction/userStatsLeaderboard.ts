@@ -38,6 +38,9 @@ function getTotalEmoji(total: number) {
     }
     return totalEmojisNeg[0];
   }
+  else if (total === 0) {
+    return "😶" ;
+  }
   return "🙂";
 }
 
