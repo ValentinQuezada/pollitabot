@@ -19,6 +19,7 @@ import seeMatchesCommand from "../commands/seeMatches";
 import sendMatchesCommand from "../commands/sendMatches";
 import assignAuraTopBonusesCommand from "../commands/assignAuraTopBonuses";
 // import dailySummaryCommand from "../commands/dailySummary";
+import groupStageStatusCommand from "../commands/groupStageStatus";
 
 const BOT_COMMANDS = [
     anonymousMessageCommand,
@@ -40,6 +41,7 @@ const BOT_COMMANDS = [
     userStatsLeaderboardCommand,
     sendMatchOtherPredictionCommand,
     assignAuraTopBonusesCommand,
+    groupStageStatusCommand
     // dailySummaryCommand
 ].map(command => command.toJSON());
 

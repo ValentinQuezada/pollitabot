@@ -18,6 +18,7 @@ import seeMatches from "./seeMatches";
 import assignAuraTopBonusesCommand from "./assignAuraTopBonuses";
 import sendMatches from "./sendMatches";
 // import dailySummaryCommand from "./dailySummary";
+import groupStageStatus from "./groupStageStatus";
 
 export {
     anonCommand,
@@ -39,5 +40,6 @@ export {
     seeMatches,
     assignAuraTopBonusesCommand,
     sendMatches,
+    groupStageStatus
     // dailySummaryCommand
 };

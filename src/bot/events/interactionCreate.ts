@@ -19,6 +19,7 @@ import {
   seeMatches,
   assignAuraTopBonusesCommand,
   sendMatches,
+  groupStageStatus
   // dailySummaryCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
@@ -191,6 +192,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'assign-aura-top-bonuses':
       await assignAuraTopBonusesCommand(commandInteraction);
+      break;
+    case 'group-stage-status':
+      await groupStageStatus(commandInteraction);
       break;
     // case 'daily-summary':
     //   await dailySummaryCommand(commandInteraction);
