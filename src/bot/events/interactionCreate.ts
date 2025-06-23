@@ -18,8 +18,8 @@ import {
   userStatsLeaderboardCommand,
   seeMatches,
   assignAuraTopBonusesCommand,
-  sendMatches,
-  groupStageStatus
+  sendMatchesCommand,
+  groupStageStatusCommand
   // dailySummaryCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
@@ -179,7 +179,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await seeMatches(commandInteraction);
       break;
     case 'send-matches':
-      await sendMatches(commandInteraction);
+      await sendMatchesCommand(commandInteraction);
       break;
     case 'send-award-prediction':
       await sendAwardPredictionCommand(commandInteraction);
@@ -194,7 +194,7 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       await assignAuraTopBonusesCommand(commandInteraction);
       break;
     case 'group-stage-status':
-      await groupStageStatus(commandInteraction);
+      await groupStageStatusCommand(commandInteraction);
       break;
     // case 'daily-summary':
     //   await dailySummaryCommand(commandInteraction);
