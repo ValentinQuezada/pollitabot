@@ -15,34 +15,34 @@ cron.schedule("* * * * *", async () => {
 
   const nowUTC = new Date();
 
-  const tenMinutesLater = new Date(nowUTC.getTime() + 10 * 60 * 1000);
-  const matchesSoon = await Match.find({
-    isFinished: false,
-    hasStarted: { $ne: true },
-    datetime: { $gt: nowUTC, $lte: tenMinutesLater },
-    statsAnnounced: { $ne: true } // do not repeat announcements
-  });
+  // const tenMinutesLater = new Date(nowUTC.getTime() + 10 * 60 * 1000);
+  // const matchesSoon = await Match.find({
+  //   isFinished: false,
+  //   hasStarted: { $ne: true },
+  //   datetime: { $gt: nowUTC, $lte: tenMinutesLater },
+  //   statsAnnounced: { $ne: true } // do not repeat announcements
+  // });
 
-  for (const match of matchesSoon) {
-    // get general channel
-    const guild = BOT_CLIENT.guilds.cache.first();
-    if (guild) {
-      const generalChannel = guild.channels.cache.get(GENERAL_CHANNEL_ID);
-      if (generalChannel && "send" in generalChannel) {
-        // call sendMatchStats
-        await sendMatchStats({
-          channel: generalChannel,
-          matchId: match._id,
-          reply: async ({ content }: { content: string }) => {
-            await generalChannel.send(content);
-          }
-        } as any);
-      }
-    }
-    // mark the match as stats announced
-    match.statsAnnounced = true;
-    await match.save();
-  }
+  // for (const match of matchesSoon) {
+  //   // get general channel
+  //   const guild = BOT_CLIENT.guilds.cache.first();
+  //   if (guild) {
+  //     const generalChannel = guild.channels.cache.get(GENERAL_CHANNEL_ID);
+  //     if (generalChannel && "send" in generalChannel) {
+  //       // call sendMatchStats
+  //       await sendMatchStats({
+  //         channel: generalChannel,
+  //         matchId: match._id,
+  //         reply: async ({ content }: { content: string }) => {
+  //           await generalChannel.send(content);
+  //         }
+  //       } as any);
+  //     }
+  //   }
+  //   // mark the match as stats announced
+  //   match.statsAnnounced = true;
+  //   await match.save();
+  // }
 
   // search for matches that have started but not finished
   const matches = await Match.find({
