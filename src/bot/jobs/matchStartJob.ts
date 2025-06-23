@@ -5,7 +5,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
-import sendMatchStats from "../interaction/sendMatchStats";
+// import sendMatchStats from "../interaction/sendMatchStats";
 
 cron.schedule("* * * * *", async () => {
   const db = await databaseConnection();
