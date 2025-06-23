@@ -16,9 +16,9 @@ import userStatsLeaderboardCommand from "./userStatsLeaderboard";
 import sendOtherPredictionCommand from "./sendOtherPrediction";
 import seeMatches from "./seeMatches";
 import assignAuraTopBonusesCommand from "./assignAuraTopBonuses";
-import sendMatches from "./sendMatches";
+import sendMatchesCommand from "./sendMatches";
 // import dailySummaryCommand from "./dailySummary";
-import groupStageStatus from "./groupStageStatus";
+import groupStageStatusCommand from "./groupStageStatus";
 
 export {
     anonCommand,
@@ -39,7 +39,7 @@ export {
     sendOtherPredictionCommand,
     seeMatches,
     assignAuraTopBonusesCommand,
-    sendMatches,
-    groupStageStatus
+    sendMatchesCommand,
+    groupStageStatusCommand
     // dailySummaryCommand
 };
