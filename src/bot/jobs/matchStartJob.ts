@@ -5,6 +5,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
+import sendMatchStats from "../interaction/sendMatchStats";
 
 cron.schedule("* * * * *", async () => {
   const db = await databaseConnection();
@@ -14,6 +15,35 @@ cron.schedule("* * * * *", async () => {
 
   const nowUTC = new Date();
 
+  const tenMinutesLater = new Date(nowUTC.getTime() + 10 * 60 * 1000);
+  const matchesSoon = await Match.find({
+    isFinished: false,
+    hasStarted: { $ne: true },
+    datetime: { $gt: nowUTC, $lte: tenMinutesLater },
+    statsAnnounced: { $ne: true } // do not repeat announcements
+  });
+
+  for (const match of matchesSoon) {
+    // get general channel
+    const guild = BOT_CLIENT.guilds.cache.first();
+    if (guild) {
+      const generalChannel = guild.channels.cache.get(GENERAL_CHANNEL_ID);
+      if (generalChannel && "send" in generalChannel) {
+        // call sendMatchStats
+        await sendMatchStats({
+          channel: generalChannel,
+          matchId: match._id,
+          reply: async ({ content }: { content: string }) => {
+            await generalChannel.send(content);
+          }
+        } as any);
+      }
+    }
+    // mark the match as stats announced
+    match.statsAnnounced = true;
+    await match.save();
+  }
+
   // search for matches that have started but not finished
   const matches = await Match.find({
     isFinished: false,
@@ -22,20 +52,6 @@ cron.schedule("* * * * *", async () => {
   });
 
   for (const match of matches) {
-    // penalize users who did not predict
-    // const users = await UserStats.find({ onlyGroupStage: false });
-    // for (const user of users) {
-    //   const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
-    //   if (!prediction && match.matchType !== "group-regular") {
-    //     const fee = match.fee;
-    //     const penalty = fee / 2;
-    //     user.loss -= penalty;
-    //     user.missedNonGroupPredictions += 1;
-    //     user.total -= penalty;
-    //     await user.save();
-    //   }
-    // }
-
     // mark the match as started
     match.hasStarted = true;
     await match.save();

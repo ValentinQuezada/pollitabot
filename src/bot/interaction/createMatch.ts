@@ -59,7 +59,8 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     specialHit: false,
     lateGoalHit: false,
     upsetHit: false,
-    fee: 5
+    fee: 5,
+    statsAnnounced: false
   });
 
   const announceMsg = `📢 *¡Nuevo partido creado!\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\``;
