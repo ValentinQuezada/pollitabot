@@ -30,7 +30,7 @@ export async function updateAuraPointsForMatch(matchId: string, winners: string[
     aura.matchesHit = (user.correctPredictions || 0) * AURA_POINTS_VALUES.matchesHit;
 
     const streak = user.streak || 0;
-    aura.streak3plus += streak >= 2 ? (streak - 1) * AURA_POINTS_VALUES.streak3plus : 0;
+    
 
     // topProfit
     // aura.topProfit = (user.total || 0) === maxProfit && maxProfit > 0 ? AURA_POINTS_VALUES.topProfit : 0;
@@ -43,6 +43,7 @@ export async function updateAuraPointsForMatch(matchId: string, winners: string[
 
     // specialHit, lateGoalHit, upsetHit: add points based on match properties
     if (winners.includes(user.userId)) {
+      aura.streak3plus += streak >= 2 ? (streak - 1) * AURA_POINTS_VALUES.streak3plus : 0;
       if (match.specialHit) {
         aura.specialHit += AURA_POINTS_VALUES.specialHit;
       }
