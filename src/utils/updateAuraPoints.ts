@@ -29,7 +29,7 @@ export async function updateAuraPointsForMatch(matchId: string, winners: string[
     // matchesHit: correctPredictions * AURA_POINTS_VALUES.matchesHit
     aura.matchesHit = (user.correctPredictions || 0) * AURA_POINTS_VALUES.matchesHit;
 
-    const streak = user.maxStreak || 0;
+    const streak = user.streak || 0;
     aura.streak3plus += streak >= 2 ? (streak - 1) * AURA_POINTS_VALUES.streak3plus : 0;
 
     // topProfit
