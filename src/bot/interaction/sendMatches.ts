@@ -3,6 +3,8 @@ import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/cred
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
+import { CreateMatchType, MatchDocument } from "../../schemas/match";
+import { MatchMongoose } from "../../schemas/match";
 import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
 import { retrieveMatches } from "../../database/controllers";
 import { linkMatch } from "../../gen/client";
@@ -28,18 +30,25 @@ const sendMatches = async (interaction: CommandInteraction) => {
     const Match = db.model("Match");
     const Prediction = db.model("Prediction", PredictionSchema);
 
+    let matches = await retrieveMatches();
 
-    const matches = await retrieveMatches();
-
-    const response = await linkMatch(
-        par,
-        matches
-    );
-    if (!response.success) {
-        await interaction.editReply({ content: response.error });
-        return;
+    if(par){
+      const response = await linkMatch(
+          par,
+          matches
+      );
+      if (!response.success) {
+          await interaction.editReply({ content: response.error });
+          return;
+      }
+      console.log(response.data);
+      const dbClient = await databaseConnection();
+      matches = await dbClient.model<MatchDocument>("Match", MatchMongoose)
+        .find({isFinished: false})
+        .select(response.data)
+        .limit(1)
+        .sort({datetime: 1})
     }
-    console.log(response.data);
 
     if (matches.length === 0) {
       await interaction.editReply({ content: "📂​ No hay partidos activos."});

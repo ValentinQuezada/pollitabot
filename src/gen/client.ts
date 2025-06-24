@@ -4,7 +4,7 @@ import { extractFromCodeblock } from "../utils/codeblock";
 import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
 import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
-import { MatchType } from "../schemas/match";
+import { MatchDocument, MatchType } from "../schemas/match";
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 const modelName = "gemini-2.0-flash";
@@ -153,7 +153,7 @@ export async function mapTeamName(
   }
 }
 
-export async function linkMatch(query: string, matches: MatchType[]): Promise<GenContentResponse<MatchType>> {
+export async function linkMatch(query: string, matches: MatchDocument[]): Promise<GenContentResponse<MatchType>> {
     const response = await ai.models.generateContent({
         model: modelName,
         config: {
