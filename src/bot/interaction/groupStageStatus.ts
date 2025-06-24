@@ -31,12 +31,14 @@ const groupStageStatus = async (interaction: CommandInteraction) => {
         message += "_Ninguno_\n";
     }
 
-    message += `\n*🏳️‍🌈 Jugadores que **NO** continuarán:*\n`;
+    message += `*🏳️‍🌈 Jugadores que **NO** continuarán:*\n`;
     if (doNotStay.length) {
         message += doNotStay.map(u => `<@${u.userId}>`).join(', ');
     } else {
-        message += "_Ninguno_";
+        message += "_Ninguno_\n";
     }
+
+    message += `*(Recuerda actualizar tu **status** con \`/set-group-stage-only\`.)*`
 
     await interaction.editReply({ content: message });
 };
