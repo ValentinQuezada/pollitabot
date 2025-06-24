@@ -290,6 +290,14 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
         await interaction.channel.send(auraMsg);
       }
+
+      //update prediction status
+      for (const pred of winners){
+        pred.isWinner = true;
+        auraDiffs.forEach((a, idx) => {
+          if(a.userId === pred.userId) {pred.auraGiven = a.diff};
+        });
+      }
     }
   }
 };

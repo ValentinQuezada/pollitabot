@@ -8,6 +8,7 @@ export interface PredictionDocument extends Document {
     team2: number;
   };
   isWinner: boolean;
+  auraGiven: number;
   createdAt: Date;
 }
 
@@ -19,5 +20,6 @@ export const PredictionSchema = new Schema<PredictionDocument>({
     team2: { type: Number, required: true }
   },
   isWinner: { type: Boolean, default: false },
+  auraGiven: { type: Number, default: 0},
   createdAt: { type: Date, default: Date.now }
 });
