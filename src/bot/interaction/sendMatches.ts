@@ -42,8 +42,7 @@ const sendMatches = async (interaction: CommandInteraction) => {
           return;
       }
       console.log(response.data);
-      const dbClient = await databaseConnection();
-      matches = await dbClient.model<MatchDocument>("Match", MatchMongoose)
+      matches = await db.model<MatchDocument>("Match", MatchMongoose)
         .find({isFinished: false})
         .select(response.data)
         .limit(1)
