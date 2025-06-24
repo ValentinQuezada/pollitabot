@@ -4,6 +4,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
+import { retrieveMatches } from "../../database/controllers";
 
 const sendMatches = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -25,9 +26,8 @@ const sendMatches = async (interaction: CommandInteraction) => {
     const Match = db.model("Match");
     const Prediction = db.model("Prediction", PredictionSchema);
 
-    // search for all matches that are not finished
-    let matchFilter: any = { isFinished: false };
-    const matches = await Match.find(matchFilter);
+
+    const matches = await retrieveMatches();
 
     if (matches.length === 0) {
       await interaction.editReply({ content: "📂​ No hay partidos activos."});
