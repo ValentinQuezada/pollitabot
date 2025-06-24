@@ -24,14 +24,14 @@ const groupStageStatus = async (interaction: CommandInteraction) => {
     const stay = users.filter(u => u.onlyGroupStage === false);
     const doNotStay = users.filter(u => u.onlyGroupStage !== false);
 
-    let message = `**Jugadores que continúan después de la fase de grupos:**\n`;
+    let message = `***💥 FASES DE LLAVES***\n*Inicio: Sábado 28/06, 11:00 hrs*\n*😎 Jugadores que continuarán en las **fases de llaves:***\n`;
     if (stay.length) {
         message += stay.map(u => `<@${u.userId}>`).join(', ') + "\n";
     } else {
         message += "_Ninguno_\n";
     }
 
-    message += `\n**Jugadores que NO continúan:**\n`;
+    message += `\n*🏳️‍🌈 Jugadores que **NO** continuarán:*\n`;
     if (doNotStay.length) {
         message += doNotStay.map(u => `<@${u.userId}>`).join(', ');
     } else {
