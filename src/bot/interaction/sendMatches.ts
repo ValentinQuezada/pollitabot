@@ -36,7 +36,17 @@ const sendMatches = async (interaction: CommandInteraction) => {
 
     let message = "🎲​ **Partidos activos:**\n";
     if(rev){message += "*(incluyendo resultados)*\n\n"};
+
+    if (
+        interaction.channel &&
+        'send' in interaction.channel &&
+        typeof interaction.channel.send === 'function'
+    ) {
+        await interaction.channel.send(message);
+    }
+
     for (const match of matches) {
+      let message = ""
       if(rev){
         message += `***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });
@@ -69,14 +79,15 @@ const sendMatches = async (interaction: CommandInteraction) => {
       } else {
         message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}\n`;
       }
-    }
 
-    if (
-        interaction.channel &&
-        'send' in interaction.channel &&
-        typeof interaction.channel.send === 'function'
-    ) {
-        await interaction.channel.send(message);
+      if (
+          interaction.channel &&
+          'send' in interaction.channel &&
+          typeof interaction.channel.send === 'function'
+      ) {
+          await interaction.channel.send(message);
+      }
+
     }
 
     await interaction.editReply({ content: "✅ Partidos enviados al canal."});
