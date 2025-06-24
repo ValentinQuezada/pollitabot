@@ -42,11 +42,9 @@ const sendMatches = async (interaction: CommandInteraction) => {
           return;
       }
       console.log(response.data);
-      matches = await db.model<MatchDocument>("Match", MatchMongoose)
-        .find({isFinished: false})
-        .select(response.data)
-        .limit(1)
-        .sort({datetime: 1})
+      matches = matches.filter(match => 
+        match._id.toString() === response.data._id.toString()
+      );
     }
 
     if (matches.length === 0) {
