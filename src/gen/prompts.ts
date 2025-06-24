@@ -2,6 +2,7 @@ import { ScorePredictionType } from "./interfaces";
 import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
 
 export const SYSTEM_INSTRUCTIONS = {
+    MATCH_MAPPING: (matches: string[]) => `From the following list of matches, return the most similar match to the following:\n" + ${matches.join("\n")} + "\n\nFormat your response as a JSON object with the following structure: { \"team1\": string, \"team2\": string }, where team1 and team2 are written exactly as seen in: ${ClubWorldCupTeams2025.join(', ')}. Every field is required.`,
     EXTRA_TIME_SCORE: (wrongScore: ScorePredictionType) => "The following score prediction json is wrong because one team should have more goals than the other: " + JSON.stringify(wrongScore) + "\n\nYou will receive a new score result query. Modify the score json to match the new score result. Return the modified json { \"team1\": string, \"team2\": string, \"score\": { \"team1\": number, \"team2\": number }}. Every field is required.",
     FINAL_SCORE: (matches: string[]) => `From the following list of matches, return the most similar match to the following:\n" + ${matches.join("\n")} + "\n\nFormat your response as a JSON object with the following structure: { \"team1\": string, \"team2\": string, \"score\": { \"team1\": number, \"team2\": number }}, where team1 and team2 are written exactly as seen in: ${ClubWorldCupTeams2025.join(', ')}. Every field is required.`,
     TEAM_MAPPING: {

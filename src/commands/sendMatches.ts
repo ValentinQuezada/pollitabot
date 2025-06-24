@@ -6,7 +6,11 @@ const sendMatchesCommand = new SlashCommandBuilder()
   .addBooleanOption(option =>
         option.setName('revelar')
             .setDescription('⚠️​ ¿Revelar los resultados de todos?')
-            .setRequired(true)
-    );;
+            .setRequired(true))
+  .addStringOption(option =>
+        option.setName('partido')
+            .setDescription('Escoge un partido a filtrar (opcional)')
+            .setRequired(false)
+  );;
 
 export default sendMatchesCommand;

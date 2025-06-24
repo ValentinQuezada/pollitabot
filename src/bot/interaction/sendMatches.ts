@@ -5,6 +5,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
 import { retrieveMatches } from "../../database/controllers";
+import { linkMatch } from "../../gen/client";
 
 const sendMatches = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -22,12 +23,23 @@ const sendMatches = async (interaction: CommandInteraction) => {
     }
 
     const rev = interaction.options.get('revelar')?.value as boolean;
+    const par = interaction.options.get('partido')?.value as string;
     const db = await databaseConnection();
     const Match = db.model("Match");
     const Prediction = db.model("Prediction", PredictionSchema);
 
 
     const matches = await retrieveMatches();
+
+    const response = await linkMatch(
+        par,
+        matches
+    );
+    if (!response.success) {
+        await interaction.editReply({ content: response.error });
+        return;
+    }
+    console.log(response.data);
 
     if (matches.length === 0) {
       await interaction.editReply({ content: "📂​ No hay partidos activos."});
