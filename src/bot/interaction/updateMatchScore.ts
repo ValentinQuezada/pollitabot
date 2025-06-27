@@ -196,27 +196,42 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       .map(u => u.userId);
 
       // const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
-      if (match.matchType !== "group-regular") {
-        if(winners.length > 0) {
-          // users who did not bet on this match
-          for (const userId of nonBettors) {
-            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+      if (
+        (match.matchType === "round-of-16-extra" ||
+          match.matchType === "quarterfinal-extra" ||
+          match.matchType === "semifinal-extra" ||
+          match.matchType === "final-extra") &&
+        Array.isArray((match as any).allowedToBet)
+      ) {
+        const allowedToBet: string[] = (match as any).allowedToBet;
+        const userIdsWithPrediction = predictions.map(p => p.userId);
+        const nonBettors = allowedToBet.filter(uid => !userIdsWithPrediction.includes(uid));
+
+        for (const userId of nonBettors) {
+          const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+          userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
+          if (winners.length > 0) {
             userStats.streak = 0; // reset streak if user did not bet
-            userStats.loss = (userStats.loss || 0) - matchFee / 2;
-            userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
-            userStats.total = userStats.gain + userStats.loss;
-            await userStats.save();
+            userStats.loss = (userStats.loss || 0) - match.fee / 2; // loss half the fee
+            userStats.total = (userStats.gain || 0) + (userStats.loss || 0);
           }
-        }
-        else {
-          for (const userId of nonBettors) {
-            const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
-            userStats.streak = 0; // reset streak if user did not bet
-            userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
-            await userStats.save();
-          }
+          await userStats.save();
         }
       }
+      else if (match.matchType !== "group-regular") {
+        // users who did not bet on this match
+        for (const userId of nonBettors) {
+          const userStats = await UserStats.findOne({ userId }) || new UserStats({ userId });
+          userStats.missedNonGroupPredictions = (userStats.missedNonGroupPredictions || 0) + 1;
+          if(winners.length > 0) {
+            userStats.streak = 0; // reset streak if user did not bet
+            userStats.loss = (userStats.loss || 0) - matchFee / 2;
+            userStats.total = userStats.gain + userStats.loss;
+          }
+          await userStats.save();
+        }
+      }
+
 
       // for each prediction, update user stats
       for (const prediction of predictions) {
@@ -322,6 +337,10 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         || match.matchType === "semifinal-regular"
         || match.matchType === "final-regular")
         && match.score.team1 === match.score.team2){
+          const nonGroupUsers = (await UserStats.find({ onlyGroupStage: false })).map(u => u.userId);
+          const allowedUserIds = predictions
+            .filter(p => nonGroupUsers.includes(p.userId))
+            .map(p => p.userId);
           const newtype = match.matchType.replace("-regular", "-extra") as MatchTypeEnum;
           const newMatch = {
             team1: match.team1,
@@ -335,7 +354,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
             specialHit: false,
             lateGoalHit: false,
             upsetHit: false,
-            statsAnnounced: false
+            statsAnnounced: false,
+            allowedToBet: allowedUserIds
           }
           await createMatch(newMatch);
           

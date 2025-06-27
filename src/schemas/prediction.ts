@@ -10,6 +10,7 @@ export interface PredictionDocument extends Document {
   isWinner: boolean;
   auraGiven: number;
   createdAt: Date;
+  allowedToBet?: string[];
 }
 
 export const PredictionSchema = new Schema<PredictionDocument>({
@@ -21,5 +22,6 @@ export const PredictionSchema = new Schema<PredictionDocument>({
   },
   isWinner: { type: Boolean, default: false },
   auraGiven: { type: Number, default: 0},
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  allowedToBet: [{ type: String }]
 });

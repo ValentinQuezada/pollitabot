@@ -16,3 +16,6 @@ dev:
 	
 tests:
 	npx ts-node test.ts
+
+date:
+	npm install date-fns date-fns-tz

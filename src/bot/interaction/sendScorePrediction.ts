@@ -45,6 +45,14 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             || match.matchType === "semifinal-extra"
             || match.matchType === "final-extra")
             && response.data.score.team1 === response.data.score.team2) {
+            // if user did not bet in regular time, they cannot bet in extra time
+            const allowedToBet = (match as any).allowedToBet;
+            if (Array.isArray(allowedToBet) && !allowedToBet.includes(interaction.user.id)) {
+                await interaction.editReply({
+                    content: "⛔ No puedes apostar en este partido de tiempo extra."
+                });
+                return;
+            }
             try {
                 const dmChannel = await interaction.user.createDM();
 
@@ -99,17 +107,6 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
 
             const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
-            // await UserStats.updateOne(
-            //     { userId: interaction.user.id },
-            //     {
-            //         $inc: {
-            //             totalPredictions: 1,
-            //             loss: -matchFee,
-            //             total: -matchFee
-            //         }
-            //     },
-            //     { upsert: true }
-            // );
         }
 
         if (
