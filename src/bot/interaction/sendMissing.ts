@@ -68,8 +68,17 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
       return;
     }
 
+    let sup = "";
+    if (
+        match.matchType === "round-of-16-extra" ||
+        match.matchType === "quarterfinal-extra" ||
+        match.matchType === "semifinal-extra" ||
+        match.matchType === "final-extra"
+      ){
+        sup += " (sup.)";
+      }
     const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
-    const groupMessage = `*​🧿​ Estos jugadores aún no han enviado resultados para **${team1} vs. ${team2}** (${horaSimpleConHrs(match.datetime)}):* ${mentionList}`;
+    const groupMessage = `*​🧿​ Estos jugadores aún no han enviado resultados para **${team1} vs. ${team2}${sup}** (${horaSimpleConHrs(match.datetime)}):* ${mentionList}`;
 
     if (
       interaction.channel &&

@@ -65,8 +65,17 @@ const sendMatches = async (interaction: CommandInteraction) => {
 
     for (const match of matches) {
       let message = ""
+      let sup = "";
+      if (
+        match.matchType === "round-of-16-extra" ||
+        match.matchType === "quarterfinal-extra" ||
+        match.matchType === "semifinal-extra" ||
+        match.matchType === "final-extra"
+      ){
+        sup += " (sup.)";
+      }
       if(rev){
-        message += `***${match.team1} vs. ${match.team2}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
+        message += `***${match.team1} vs. ${match.team2}${sup}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });
 
         // group predictions by team1-team2
@@ -95,7 +104,7 @@ const sendMatches = async (interaction: CommandInteraction) => {
 
         message += predictionsMsg + "\n";
       } else {
-        message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}\n`;
+        message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}${sup}\n`;
       }
 
       if (

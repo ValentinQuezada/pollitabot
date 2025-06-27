@@ -67,6 +67,33 @@ cron.schedule("* * * * *", async () => {
     grouped[key].push(`<@${pred.userId}>`);
     }
 
+    // missed users
+    let missedUserIds: string[] = [];
+    // announce message
+    let announceMsg = `🕛​ **¡EMPEZÓ EL PARTIDO!**\n***${match.team1} vs. ${match.team2}***\n*Ya no más apuestas* 🙅`
+
+    if (
+      match.matchType === "round-of-16-extra" ||
+      match.matchType === "quarterfinal-extra" ||
+      match.matchType === "semifinal-extra" ||
+      match.matchType === "final-extra"
+    ) {
+      // change message
+      announceMsg = `🕧​ **¡EMPEZÓ EL SUPLEMENTARIO!**\n***${match.team1} vs. ${match.team2} (sup.)***\n*Ya no más apuestas* 🙅`
+
+      // allowedToBet
+      const allowedToBet: string[] = (match as any).allowedToBet || [];
+      const userIdsWithPrediction = predictions.map(p => p.userId);
+      missedUserIds = allowedToBet.filter(uid => !userIdsWithPrediction.includes(uid));
+    } else {
+      // only group stage users
+      const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+      const userIdsWithPrediction = predictions.map(p => p.userId);
+      missedUserIds = nonGroupStageUsers
+        .filter(u => !userIdsWithPrediction.includes(u.userId))
+        .map(u => u.userId);
+    }
+
     // sort keys by team1-team2 in descending order
     const sortedKeys = Object.keys(grouped).sort((a, b) => {
       const [a1, a2] = a.split("-").map(Number);
@@ -83,8 +110,13 @@ cron.schedule("* * * * *", async () => {
     predictionsMsg += `${key}: ${grouped[key].join("/")}\n`;
     }
 
+    let missedMsg = "";
+    if (missedUserIds.length) {
+      missedMsg = `❌: ${missedUserIds.map(uid => `<@${uid}>`).join(" / ")}\n`;
+    }
+
     // final message
-    let finalMsg = `🕛​ **¡EMPEZÓ EL PARTIDO!**\n***${match.team1} vs. ${match.team2}***\n*Ya no más apuestas* 🙅​\n${predictionsMsg}`;
+    let finalMsg = `${announceMsg}​\n${predictionsMsg}${missedMsg}`;
 
     // Enviar al canal
     const guild = BOT_CLIENT.guilds.cache.first(); // O usa el ID de tu guild si tienes varios

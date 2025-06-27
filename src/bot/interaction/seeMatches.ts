@@ -21,7 +21,16 @@ const seeMatches = async (interaction: CommandInteraction) => {
 
     let message = "🎲​ **Partidos activos:**\n";
     for (const match of matches) {
-      message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}\n`;
+      let sup = "";
+      if (
+        match.matchType === "round-of-16-extra" ||
+        match.matchType === "quarterfinal-extra" ||
+        match.matchType === "semifinal-extra" ||
+        match.matchType === "final-extra"
+      ){
+        sup += " (sup.)";
+      }
+      message += `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}${sup}\n`;
     }
 
     await interaction.editReply({ content: message });
