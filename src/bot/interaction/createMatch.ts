@@ -63,7 +63,7 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     statsAnnounced: false
   });
 
-  const announceMsg = `📢 *¡Nuevo partido creado!\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\``;
+  const announceMsg = `📢 ***¡Nuevo partido creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza el ${datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\``;
 
   // send announcement to the general channel
   try {
@@ -80,7 +80,7 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
   }
 
   await interaction.editReply({
-    content: `¡Partido **${team1} vs. ${team2}** creado con éxito!`
+    content: `✅​ ¡Partido **${team1} vs. ${team2}** creado con éxito!`
   });
 };
 

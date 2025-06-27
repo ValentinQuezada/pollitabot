@@ -7,8 +7,8 @@ const setGroupStageOnlyCommand = async (interaction: CommandInteraction) => {
 
     const onlyGroupStage = interaction.options.get('solo_grupos')?.value as boolean;
 
-    // Limit June 28, 2025
-    const deadlineLima = new Date(Date.UTC(2025, 5, 28, 5, 0, 0)); // 2025-06-28 00:00:00-05:00 = 2025-06-28 05:00:00 UTC
+    // Limit June 28, 2025, 11am
+    const deadlineLima = new Date(Date.UTC(2025, 5, 28, 16, 0, 0)); // 2025-06-28 00:00:00-05:00 = 2025-06-28 05:00:00 UTC
     const nowUTC = new Date();
 
     if (nowUTC >= deadlineLima) {

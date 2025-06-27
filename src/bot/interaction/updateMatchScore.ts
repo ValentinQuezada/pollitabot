@@ -1,6 +1,6 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
-import { MatchMongoose } from "../../schemas/match";
+import { MatchMongoose, MatchTypeEnum } from "../../schemas/match";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { checkRole } from "../events/interactionCreate";
@@ -8,6 +8,7 @@ import { updateAuraPointsForMatch } from "../../utils/updateAuraPoints";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
 import { mapTeamName } from "../../gen/client";
+import { createMatch } from "../../database/controllers";
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -242,62 +243,111 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         await userStats.save();
       }
 
-      if(winners.length === 0){ return;}
+      if(winners.length != 0){
+        const winners_id = predictions
+        .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
+        .map(p => p.userId);
 
-      const winners_id = predictions
-      .filter(p => p.prediction.team1 === score1 && p.prediction.team2 === score2)
-      .map(p => p.userId);
+        // send winner message
+        let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
 
-      // send winner message
-      let winnerMsg = `**${winners.map(p => `<@${p.userId}>`).join('/')} (+${gainPerWinner})**\n vs. ${losers.map(p => `<@${p.userId}>`).join('/')} (-${matchFee})`
+        if (
+            interaction.channel &&
+            'send' in interaction.channel &&
+            typeof interaction.channel.send === 'function'
+        ) {
+            await interaction.channel.send(winnerMsg);
+        }
 
-      if (
-          interaction.channel &&
-          'send' in interaction.channel &&
-          typeof interaction.channel.send === 'function'
-      ) {
-          await interaction.channel.send(winnerMsg);
-      }
-
-      // save aura points before updating
-      const AuraPoints = db.model("AuraPoints", require("../../schemas/aura").AuraPointsSchema);
-      const beforeAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
-      const beforeAuraMap: Record<string, number> = {};
-      beforeAura.forEach(a => { beforeAuraMap[a.userId] = a.totalPoints || 0; });
+        // save aura points before updating
+        const AuraPoints = db.model("AuraPoints", require("../../schemas/aura").AuraPointsSchema);
+        const beforeAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
+        const beforeAuraMap: Record<string, number> = {};
+        beforeAura.forEach(a => { beforeAuraMap[a.userId] = a.totalPoints || 0; });
 
 
-      // update aura points for winners
-      await updateAuraPointsForMatch(match._id.toString(), winners_id);
+        // update aura points for winners
+        await updateAuraPointsForMatch(match._id.toString(), winners_id);
 
-      // calculate aura points difference
-      const afterAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
-      const auraDiffs = afterAura.map(a => ({
-        userId: a.userId,
-        diff: (a.totalPoints || 0) - (beforeAuraMap[a.userId] || 0),
-        total: a.totalPoints || 0
-      }));
+        // calculate aura points difference
+        const afterAura = await AuraPoints.find({ userId: { $in: winners_id } }).lean();
+        const auraDiffs = afterAura.map(a => ({
+          userId: a.userId,
+          diff: (a.totalPoints || 0) - (beforeAuraMap[a.userId] || 0),
+          total: a.totalPoints || 0
+        }));
 
-      // sort by difference
-      auraDiffs.sort((a, b) => b.diff - a.diff);
+        // sort by difference
+        auraDiffs.sort((a, b) => b.diff - a.diff);
 
-      // message for aura points
-      let auraMsg = "💠 ***Aura Points** ganados:*\n";
-      auraDiffs.forEach((a, idx) => {
-        auraMsg += `• <@${a.userId}> ganó +**${a.diff}** 💠 (total: ${a.total})\n`;
-      }); //${idx + 1}. 
-
-      // send aura points message
-      if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
-        await interaction.channel.send(auraMsg);
-      }
-
-      //update prediction status
-      for (const pred of winners){
-        pred.isWinner = true;
+        // message for aura points
+        let auraMsg = "💠 ***Aura Points** ganados:*\n";
         auraDiffs.forEach((a, idx) => {
-          if(a.userId === pred.userId) {pred.auraGiven = a.diff};
-        });
+          auraMsg += `• <@${a.userId}> ganó +**${a.diff}** 💠 (total: ${a.total})\n`;
+        }); //${idx + 1}. 
+
+        // send aura points message
+        if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
+          await interaction.channel.send(auraMsg);
+        }
+
+        //update prediction status
+        for (const pred of winners){
+          pred.isWinner = true;
+          auraDiffs.forEach((a, idx) => {
+            if(a.userId === pred.userId) {pred.auraGiven = a.diff};
+          });
+        }
+
       }
+
+      // create new match if extra time
+      if((match.matchType === "round-of-16-regular"
+        || match.matchType === "quarterfinal-regular"
+        || match.matchType === "semifinal-regular"
+        || match.matchType === "final-regular")
+        && match.score.team1 === match.score.team2){
+          const now: Date = new Date();
+          const future: Date = new Date(now);
+          future.setMinutes(now.getMinutes() + 15);
+          const newtype = match.matchType.replace("-regular", "-extra") as MatchTypeEnum;
+          const newMatch = {
+            team1: match.team1,
+            team2: match.team2,
+            datetime: future,
+            group: match.group,
+            matchType: newtype,
+            fee: winners.length === 0 ? match.fee : match.fee / 2,
+            isFinished: false,
+            hasStarted: false,
+            specialHit: false,
+            lateGoalHit: false,
+            upsetHit: false,
+            statsAnnounced: false
+          }
+          await createMatch(newMatch);
+          
+          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza el ${future} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
+        
+          // send announcement to the general channel
+          try {
+            const channel = await BOT_CLIENT.channels.fetch(GENERAL_CHANNEL_ID);
+            if (channel && 'send' in channel) {
+              await channel.send(announceMsg);
+            }
+          } catch (e) {
+            console.error("Error al enviar el mensaje al canal general:", e);
+            await interaction.editReply({
+              content: "❌ No se pudo enviar el mensaje de anuncio al canal general."
+            });
+            return;
+          }
+        
+          await interaction.editReply({
+            content: `✅​ ¡Partido **${team1} vs. ${team2}** creado con éxito!`
+          });
+        }
+
     }
   }
 };
