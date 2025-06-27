@@ -12,16 +12,12 @@ import { createMatch } from "../../database/controllers";
 import { addMinutes } from 'date-fns';
 import { toZonedTime, format } from 'date-fns-tz';
 
-function getLimaTimeIn15Minutes(): Date {
-  // The IANA time zone name for Lima
-  const timeZone = 'America/Lima';
-  // 1. Get the current universal time
+const timeZone = 'America/Lima';
+
+function getTimeIn15Minutes(): Date {
   const now = new Date();
-  // 2. Add 15 minutes to the current time
   const futureTimeUTC = addMinutes(now, 15);
-  // 3. Convert this future UTC time into a Date object for the Lima time zone
-  const limaTime = toZonedTime(futureTimeUTC, timeZone);
-  return limaTime;
+  return futureTimeUTC;
 }
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
@@ -325,7 +321,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           const newMatch = {
             team1: match.team1,
             team2: match.team2,
-            datetime: getLimaTimeIn15Minutes(),
+            datetime: getTimeIn15Minutes(),
             group: match.group,
             matchType: newtype,
             fee: winners.length === 0 ? match.fee : match.fee / 2,
@@ -338,7 +334,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
           await createMatch(newMatch);
           
-          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza el ${newMatch.datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
+          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza en **15 minutos** (${toZonedTime(newMatch.datetime, timeZone)}, hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
         
           // send announcement to the general channel
           try {
