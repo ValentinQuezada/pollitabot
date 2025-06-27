@@ -9,6 +9,20 @@ import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
 import { mapTeamName } from "../../gen/client";
 import { createMatch } from "../../database/controllers";
+import { addMinutes } from 'date-fns';
+import { toZonedTime, format } from 'date-fns-tz';
+
+function getLimaTimeIn15Minutes(): Date {
+  // The IANA time zone name for Lima
+  const timeZone = 'America/Lima';
+  // 1. Get the current universal time
+  const now = new Date();
+  // 2. Add 15 minutes to the current time
+  const futureTimeUTC = addMinutes(now, 15);
+  // 3. Convert this future UTC time into a Date object for the Lima time zone
+  const limaTime = toZonedTime(futureTimeUTC, timeZone);
+  return limaTime;
+}
 
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
@@ -307,14 +321,11 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
         || match.matchType === "semifinal-regular"
         || match.matchType === "final-regular")
         && match.score.team1 === match.score.team2){
-          const now: Date = new Date();
-          const future: Date = new Date(now);
-          future.setMinutes(now.getMinutes() + 15);
           const newtype = match.matchType.replace("-regular", "-extra") as MatchTypeEnum;
           const newMatch = {
             team1: match.team1,
             team2: match.team2,
-            datetime: future,
+            datetime: getLimaTimeIn15Minutes(),
             group: match.group,
             matchType: newtype,
             fee: winners.length === 0 ? match.fee : match.fee / 2,
@@ -327,7 +338,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
           await createMatch(newMatch);
           
-          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza el ${future} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
+          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza el ${newMatch.datetime} (hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
         
           // send announcement to the general channel
           try {

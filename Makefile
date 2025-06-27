@@ -2,6 +2,7 @@ pre:
 	brew install node
 	npm install -D typescript
 	npm install node-cron
+	npm install date-fns date-fns-tz
 
 build:
 	npm run build
