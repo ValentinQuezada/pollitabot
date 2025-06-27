@@ -59,7 +59,7 @@ const createMatchCommand = async (interaction: CommandInteraction) => {
     specialHit: false,
     lateGoalHit: false,
     upsetHit: false,
-    fee: 5,
+    fee,
     statsAnnounced: false
   });
 
