@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { ChannelType, GuildChannel, Message } from "discord.js";
 import BOT_CLIENT from "../init";
 import ConversationManager from "../conversation/manager";
 import { fixScoreExtraTime } from "../../gen/client";
@@ -80,12 +80,18 @@ const directMessageEvent = async (message: Message) => {
                 actionMessage = CALLABLES.sendScorePrediction(userId, context.details.match.team1, context.details.match.team2);
             }
 
-            message.client.channels.fetch(context.replyId).then((channel) => {
-                if (channel && 'send' in channel && typeof channel.send === 'function') {
-                    channel.messages.fetch(context.replyId).then((message) => {
-                        message.edit(actionMessage);
-                    });
-                }
+            if (context.guildId === null) {
+                await message.reply("Error: No se pudo encontrar el servidor.");
+                endDMConversation(userId);
+                return;
+            }
+
+            await message.client.guilds.fetch(context.guildId).then(
+                (guild) => guild.channels.fetch(context.channelId)
+            ).then((channel) => {
+                if (channel === null) return;
+                if (channel.type !== ChannelType.GuildText) return;
+                channel.send(actionMessage);
             });
 
             endDMConversation(userId);
