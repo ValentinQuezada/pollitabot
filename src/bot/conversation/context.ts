@@ -11,6 +11,7 @@ export interface ConversationMetadata {
 interface BaseContext {
     channelId: string;
     guildId: string | null;
+    replyId: string;
 }
 
 export interface FixPredictionContext extends BaseContext {

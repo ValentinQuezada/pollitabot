@@ -69,34 +69,23 @@ const directMessageEvent = async (message: Message) => {
             if (existingPrediction) {
                 existingPrediction.prediction = fixScoreResponse.data.score;
                 await existingPrediction.save();
-                actionMessage = `*¡<@${userId}> ha actualizado sus resultados para ${context.details.match.team1} vs ${context.details.match.team2}!*`;
+                actionMessage = CALLABLES.updateScorePrediction(userId, context.details.match.team1, context.details.match.team2);
             } else {
                 await Prediction.create({
                     userId: userId,
                     matchId: context.details.match._id,
                     prediction: fixScoreResponse.data.score
                 });
-                actionMessage = `*¡<@${userId}> ha enviado sus resultados para ${context.details.match.team1} vs ${context.details.match.team2}!*`;
+                actionMessage = CALLABLES.sendScorePrediction(userId, context.details.match.team1, context.details.match.team2);
             }
 
-
-            const channel = await BOT_CLIENT.channels.fetch(context.channelId);
-            if (channel && 'send' in channel && typeof channel.send === 'function') {
-                await channel.send(actionMessage);
-            }
-
-            const UserStats = db.model("UserStats", UserStatsSchema);
-            // await UserStats.updateOne(
-            //     { userId: userId },
-            //     {
-            //         $inc: {
-            //             totalPredictions: 1,
-            //             loss: -5,
-            //             total: -5
-            //         }
-            //     },
-            //     { upsert: true }
-            // );
+            message.client.channels.fetch(context.replyId).then((channel) => {
+                if (channel && 'send' in channel && typeof channel.send === 'function') {
+                    channel.messages.fetch(context.replyId).then((message) => {
+                        message.edit(actionMessage);
+                    });
+                }
+            });
 
             endDMConversation(userId);
             await message.reply({ content: '¡Predicción guardada!' });

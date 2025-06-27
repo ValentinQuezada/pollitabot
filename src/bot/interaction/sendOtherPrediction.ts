@@ -58,7 +58,8 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
                     details: {
                         match: match.toJSON(),
                         prediction: response.data,
-                    }
+                    },
+                    replyId: interaction.id
                 });
 
                 await dmChannel.send(
