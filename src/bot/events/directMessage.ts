@@ -6,6 +6,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { ConversationContext } from "../conversation/context";
+import { CALLABLES } from "../../constant/dictionary";
 
 const conversationManager = ConversationManager.getInstance();
 
