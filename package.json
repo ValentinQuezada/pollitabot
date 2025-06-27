@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",
+    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
@@ -21,7 +22,7 @@
   "scripts": {
     "build": "tsc",
     "prestart": "rimraf dist && npm run build",
-    "start:dev": "npm run prestart && npm run deploy:dev && dotenv -- node dist/index.js",
+    "start:dev": "npm run prestart && npm run deploy:dev && dotenv -- nodemon",
     "start": "npm run deploy && node dist/index.js",
     "container-start": "npm run deploy && node dist/index.js",
     "deploy:dev": "dotenv -- tsx src/deploy-commands.ts",
