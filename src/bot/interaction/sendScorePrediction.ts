@@ -38,7 +38,11 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             return;
         }
 
-        if ((match.matchType === "quarterfinal-extra" || match.matchType === "semifinal-extra" || match.matchType === "final-extra") && response.data.score.team1 === response.data.score.team2) {
+        if ((match.matchType === "round-of-16-extra"
+            || match.matchType === "quarterfinal-extra"
+            || match.matchType === "semifinal-extra"
+            || match.matchType === "final-extra")
+            && response.data.score.team1 === response.data.score.team2) {
             try {
                 const dmChannel = await interaction.user.createDM();
 

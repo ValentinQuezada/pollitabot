@@ -15,7 +15,6 @@ export const SYSTEM_INSTRUCTIONS = {
             Ejemplos válidos:
             - "El Real" → "Real Madrid (RMA)"
             - "El equipo de Messi" → "Inter Miami (MIA)"
-            - "El Real" -> "Real Madrid (RMA)"
             - "Los Blues" -> "Chelsea (CHE)"
             - "El City" -> "Manchester City (MCI)"
             - "PSG" -> "Paris Saint-Germain (PSG)"`

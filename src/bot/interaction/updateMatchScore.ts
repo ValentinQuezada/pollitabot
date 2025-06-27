@@ -20,6 +20,11 @@ function getTimeIn15Minutes(): Date {
   return futureTimeUTC;
 }
 
+function formatDateToString(dateObject: Date): string {
+  const formatString = 'MMM d yyyy HH:mm:ss';
+  return format(dateObject, formatString);
+}
+
 const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const hasRole = await checkRole(interaction, "ADMIN");
   if (!hasRole) {
@@ -334,7 +339,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
           await createMatch(newMatch);
           
-          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza en **15 minutos** (${toZonedTime(newMatch.datetime, timeZone)}, hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
+          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza en **15 minutos** (${formatDateToString(toZonedTime(newMatch.datetime, timeZone))}, hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
         
           // send announcement to the general channel
           try {
