@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "../constant/credentials";
 import { extractFromCodeblock } from "../utils/codeblock";
-import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema } from "./interfaces";
+import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema, ExtraScorePredictionType, ExtraScorePredictionSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
 import { ClubWorldCupTeams2025 } from "../constant/teams";
 import { MatchDocument, MatchType } from "../schemas/match";
@@ -37,6 +37,65 @@ export async function linkMatchScore(query: string, matches: [string, string][])
             jsonData = jsonData[0];
         }
         const parsedData = ScorePredictioSchema.parse(jsonData);
+
+        const match = matches.find(
+            match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1
+        );
+        if (!match) {
+            return {
+                success: false,
+                error: "​❌ No se encontró el partido. ¿Puedes ser un poco más exacto?"
+            }
+        }
+
+        if (parsedData.team1 === match[1]) {
+            parsedData.team1 = match[0];
+            parsedData.team2 = match[1];
+            parsedData.score.team1 = parsedData.score.team2;
+            parsedData.score.team2 = parsedData.score.team1;
+        }
+
+        return {
+            success: true,
+            data: parsedData
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            success: false,
+            error: `Invalid JSON ${e}`
+        }
+    }
+}
+
+export async function linkExtraTimeMatchScore(query: string, matches: [string, string][]): Promise<GenContentResponse<ExtraScorePredictionType>> {
+    const response = await ai.models.generateContent({
+        model: modelName,
+        config: {
+            systemInstruction: SYSTEM_INSTRUCTIONS.MATCH_MAPPING_EXTRA_TIME(
+                matches.map(match => match.join(' vs. '))
+            ),
+            maxOutputTokens: 100,
+            temperature: 0.1,
+            responseMimeType: "application/json",
+        },
+        contents: query
+    });
+
+    if (response.text === undefined) {
+        return {
+            success: false,
+            error: "Response text is undefined"
+        }
+    }
+
+    try {
+        const data = extractFromCodeblock(response.text);
+        let jsonData = JSON.parse(data);
+        if (Array.isArray(jsonData)) {
+            jsonData = jsonData[0];
+        }
+        const parsedData = ExtraScorePredictionSchema.parse(jsonData);
 
         const match = matches.find(
             match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1

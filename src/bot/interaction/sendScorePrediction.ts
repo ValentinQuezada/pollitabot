@@ -1,5 +1,5 @@
 import { CommandInteraction } from "discord.js";
-import { linkMatchScore } from "../../gen/client";
+import { linkMatchScore, linkExtraTimeMatchScore } from "../../gen/client";
 import { retrieveMatches } from "../../database/controllers";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
@@ -7,6 +7,7 @@ import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
 import { getSupLabels, isExtraTime } from "../../utils/sup";
 import { CALLABLES } from "../../constant/dictionary";
+import { GenContentResponse, PredictionType } from "../../gen/interfaces";
 
 const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     let response = await interaction.deferReply({ ephemeral: true });
@@ -16,12 +17,21 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     try {
         const predictionText = interaction.options.get('prediction')?.value as string;
         const matches = await retrieveMatches();
+
+        let response: GenContentResponse<PredictionType>;
+        switch (matches[0].matchType) {
+            case "round-of-16-extra":
+            case "quarterfinal-extra":
+            case "semifinal-extra":
+            case "final-extra":
+                response = await linkExtraTimeMatchScore(predictionText, matches.map(match => [match.team1, match.team2]));
+                break;
+            default:
+                response = await linkMatchScore(predictionText, matches.map(match => [match.team1, match.team2]));
+                break;
+        }
         console.log('Matches retrieved:', matches);
 
-        const response = await linkMatchScore(
-            predictionText,
-            matches.map(match => [match.team1, match.team2])
-        );
         if (!response.success) {
             await interaction.editReply({ content: response.error });
             return;

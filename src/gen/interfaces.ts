@@ -10,7 +10,17 @@ export const ScorePredictioSchema = z.object({
     })
 });
 
+export const ExtraScorePredictionSchema = ScorePredictioSchema.extend({
+    advances: z.enum(["team1", "team2"]).default(Math.random() > 0.5 ? "team1" : "team2")
+}).transform(data => ({
+    ...data, 
+    advances: (data.score.team1 > data.score.team2 ? "team1" : "team2") as "team1" | "team2"
+}));
+
 export type ScorePredictionType = z.infer<typeof ScorePredictioSchema>;
+export type ExtraScorePredictionType = z.infer<typeof ExtraScorePredictionSchema>;
+
+export type PredictionType = ScorePredictionType | ExtraScorePredictionType;
 
 interface GenContentSuccessResponse<T> {
     success: true;
@@ -26,9 +36,9 @@ interface GenContentErrorResponse {
 export type GenContentResponse<T> = GenContentSuccessResponse<T> | GenContentErrorResponse;
 
 export type TeamNameType = {
-  team: string;
+    team: string;
 };
 
 export const TeamNameSchema = z.object({
-  team: z.enum([...ClubWorldCupTeams2025] as [string, ...string[]])
+    team: z.enum([...ClubWorldCupTeams2025] as [string, ...string[]])
 });
