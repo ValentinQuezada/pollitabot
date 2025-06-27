@@ -5,6 +5,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
+import { getSupLabels, isExtraTime } from "../../utils/sup";
 import { CALLABLES } from "../../constant/dictionary";
 
 const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
@@ -41,23 +42,12 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             return;
         }
 
-        let sup = "";
-        if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-        ){
-            sup += " (sup.)";
-        }
+        const { sup } = getSupLabels(match.matchType);
 
-        if ((match.matchType === "round-of-16-extra"
-            || match.matchType === "quarterfinal-extra"
-            || match.matchType === "semifinal-extra"
-            || match.matchType === "final-extra")
+        if (isExtraTime(match.matchType)
             && response.data.score.team1 === response.data.score.team2) {
-            // if user did not bet in regular time, they cannot bet in extra time
-            const allowedToBet = (match as any).allowedToBet;
+
+                const allowedToBet = (match as any).allowedToBet;
             if (Array.isArray(allowedToBet) && !allowedToBet.includes(interaction.user.id)) {
                 await interaction.editReply({
                     content: "⛔ No puedes apostar en este partido de tiempo extra."

@@ -6,6 +6,7 @@ import { UserStatsSchema } from "../../schemas/user";
 import { CreateMatchType, MatchDocument } from "../../schemas/match";
 import { MatchMongoose } from "../../schemas/match";
 import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 import { retrieveMatches } from "../../database/controllers";
 import { linkMatch } from "../../gen/client";
 
@@ -65,15 +66,8 @@ const sendMatches = async (interaction: CommandInteraction) => {
 
     for (const match of matches) {
       let message = ""
-      let sup = "";
-      if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-      ){
-        sup += " (sup.)";
-      }
+      const { sup } = getSupLabels(match.matchType);
+      
       if(rev){
         message += `***${match.team1} vs. ${match.team2}${sup}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });

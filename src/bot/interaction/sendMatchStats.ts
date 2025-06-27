@@ -4,6 +4,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { GENERAL_CHANNEL_ID, OWNER_ID, REQUIRED_ROLE } from "../../constant/credentials";
 import { horaSimpleConHrs } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 import { mapTeamName } from "../../gen/client";
 
 
@@ -86,19 +87,9 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     const uniquePredictions = new Set(predictions.map(p => `${p.prediction.team1}-${p.prediction.team2}`));
     const variance = predictions.length > 0 ? (uniquePredictions.size / predictions.length) : 0;
 
-    let sup = "";
-    let SUPLE = "partido";
-    if (
-      match.matchType === "round-of-16-extra" ||
-      match.matchType === "quarterfinal-extra" ||
-      match.matchType === "semifinal-extra" ||
-      match.matchType === "final-extra"
-    ){
-      sup += " (sup.)";
-      SUPLE += "suplementario";
-    }
+    const { sup, SUPLE } = getSupLabels(match.matchType);
 
-    let message = `📊 ***Estadísticas pre-${SUPLE}***\n`;
+    let message = `📊 ***Estadísticas pre-${SUPLE ? "suplementario" : "partido"}***\n`;
     message += `***${team1} vs. ${team2}${sup}** (${horaSimpleConHrs(match.datetime)})*\n`;
     message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}`;
     message += ` (*Sin apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || '*Ninguno*'})\n`;

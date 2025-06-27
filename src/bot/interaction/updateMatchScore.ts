@@ -11,6 +11,7 @@ import { mapTeamName } from "../../gen/client";
 import { createMatch } from "../../database/controllers";
 import { addMinutes } from 'date-fns';
 import { toZonedTime, format } from 'date-fns-tz';
+import { getSupLabels, isExtraTime } from "../../utils/sup";
 
 const timeZone = 'America/Lima';
 
@@ -89,17 +90,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   await match.save();
 
-  let sup = "";
-  let SUPLE = "";
-  if (
-      match.matchType === "round-of-16-extra" ||
-      match.matchType === "quarterfinal-extra" ||
-      match.matchType === "semifinal-extra" ||
-      match.matchType === "final-extra"
-    ){
-      sup += " (sup.)";
-      SUPLE += " SUPLEMENTARIO";
-    }
+  const { sup, SUPLE } = getSupLabels(match.matchType);
 
   // get all predictions for this match
   const predictions = await Prediction.find({ matchId: match._id });

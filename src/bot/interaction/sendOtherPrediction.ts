@@ -6,6 +6,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
+import { getSupLabels, isExtraTime } from "../../utils/sup";
 
 const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
     const member = interaction.member as GuildMember;
@@ -47,7 +48,7 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
         }
         console.log(match.datetime, new Date());
 
-        if ((match.matchType === "quarterfinal-extra" || match.matchType === "semifinal-extra" || match.matchType === "final-extra") && response.data.score.team1 === response.data.score.team2) {
+        if (isExtraTime(match.matchType) && response.data.score.team1 === response.data.score.team2) {
             try {
                 const dmChannel = await interaction.user.createDM();
 
@@ -87,15 +88,7 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
             matchId: match._id
         });
         
-        let sup = "";
-        if (
-            match.matchType === "round-of-16-extra" ||
-            match.matchType === "quarterfinal-extra" ||
-            match.matchType === "semifinal-extra" ||
-            match.matchType === "final-extra"
-        ){
-            sup += " (sup.)";
-        }
+        const { sup } = getSupLabels(match.matchType);
 
         let actionMessage;
         if (existingPrediction) {

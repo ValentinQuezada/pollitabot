@@ -1,6 +1,7 @@
 import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 
 const seeMatches = async (interaction: CommandInteraction) => {
   await interaction.deferReply({ ephemeral: true });
@@ -20,15 +21,9 @@ const seeMatches = async (interaction: CommandInteraction) => {
   let message = "🎲​ **Partidos activos:**\n";
   message += matches
     .map(match => {
-      let item = `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}`;
-      if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-      ) {
-        item += " (sup.)";
-      }
+      const { sup } = getSupLabels(match.matchType);
+      let item = `- **${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs. ${match.team2}${sup}`;
+      
       return item;
     })
     .join("\n");

@@ -2,6 +2,7 @@ import { CommandInteraction } from "discord.js";
 import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { horaSimpleConHrs } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 
 const seeResultsCommand = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -22,15 +23,7 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
 
     let message = "🎲 **Tus predicciones activas:**\n";
     for (const match of matches) {
-      let sup = "";
-      if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-      ){
-        sup += " (sup.)";
-      }
+      const { sup } = getSupLabels(match.matchType);
       const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
       message += `- **${match.team1} vs. ${match.team2}${sup}** (${horaSimpleConHrs(match.datetime)}): ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
     }

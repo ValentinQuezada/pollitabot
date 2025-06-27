@@ -4,6 +4,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { checkRole } from "../events/interactionCreate";
 import { horaSimpleConHrs } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 import { mapTeamName } from "../../gen/client";
 
 const sendMissingCommand = async (interaction: CommandInteraction) => {
@@ -68,15 +69,7 @@ const sendMissingCommand = async (interaction: CommandInteraction) => {
       return;
     }
 
-    let sup = "";
-    if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-      ){
-        sup += " (sup.)";
-      }
+    const { sup } = getSupLabels(match.matchType);
     const mentionList = missingUsers.map(u => `<@${u.userId}>`).join(' ');
     const groupMessage = `*​🧿​ Estos jugadores aún no han enviado resultados para **${team1} vs. ${team2}${sup}** (${horaSimpleConHrs(match.datetime)}):* ${mentionList}`;
 

@@ -3,6 +3,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { horaSimpleConHrs } from "../../utils/timestamp";
+import { getSupLabels } from "../../utils/sup";
 
 const seeMissing = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -37,15 +38,7 @@ const seeMissing = async (interaction: CommandInteraction) => {
 
     let message = "⌛️ **Partidos pendientes por apostar:**\n";
     for (const match of missingMatches) {
-      let sup = "";
-      if (
-        match.matchType === "round-of-16-extra" ||
-        match.matchType === "quarterfinal-extra" ||
-        match.matchType === "semifinal-extra" ||
-        match.matchType === "final-extra"
-      ){
-        sup += " (sup.)";
-      }
+      const { sup } = getSupLabels(match.matchType);
       message += `- **${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs ${match.team2}${sup}\n`;
     }
 
