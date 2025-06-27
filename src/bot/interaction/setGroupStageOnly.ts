@@ -29,7 +29,7 @@ const setGroupStageOnlyCommand = async (interaction: CommandInteraction) => {
 
     await interaction.editReply({
       content: onlyGroupStage
-        ? "🏳️‍🌈​ Has elegido **apostar solo en fase de grupos**. No estarás obligado a apostar en las siguientes fases."
+        ? "🏳️‍🌈​ Has elegido **apostar solo en fase de grupos**. No estarás obligado a apostar en las siguientes fases. ¡¡ARRIBA ALIANZA!!"
         : "😎 Has elegido **apostar en todas las fases**. ¡Recuerda que deberás apostar en todos los partidos luego de la fase de grupos!"
     });
 };
