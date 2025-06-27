@@ -15,7 +15,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     try {
         const predictionText = interaction.options.get('prediction')?.value as string;
         const matches = await retrieveMatches();
-        // console.log('Matches retrieved:', matches);
+        console.log('Matches retrieved:', matches);
 
         const response = await linkMatchScore(
             predictionText,

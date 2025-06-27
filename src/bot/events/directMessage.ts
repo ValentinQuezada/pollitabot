@@ -70,14 +70,14 @@ const directMessageEvent = async (message: Message) => {
             if (existingPrediction) {
                 existingPrediction.prediction = fixScoreResponse.data.score;
                 await existingPrediction.save();
-                actionMessage = CALLABLES.updateScorePrediction(userId, context.details.match.team1, context.details.match.team2);
+                actionMessage = CALLABLES.updateScorePrediction(userId, context.details.match.team1, context.details.match.team2, "sup");
             } else {
                 await Prediction.create({
                     userId: userId,
                     matchId: context.details.match._id,
                     prediction: fixScoreResponse.data.score
                 });
-                actionMessage = CALLABLES.sendScorePrediction(userId, context.details.match.team1, context.details.match.team2);
+                actionMessage = CALLABLES.sendScorePrediction(userId, context.details.match.team1, context.details.match.team2, "sup");
             }
 
             if (context.guildId === null) {
