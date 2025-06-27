@@ -5,6 +5,7 @@ import databaseConnection from "../../database/connection";
 import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { startDMConversation } from "../events/directMessage";
+import { CALLABLES } from "../../constant/dictionary";
 
 const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
     let response = await interaction.deferReply({ ephemeral: true });
