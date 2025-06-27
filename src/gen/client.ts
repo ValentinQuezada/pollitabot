@@ -3,7 +3,7 @@ import { GEMINI_API_KEY } from "../constant/credentials";
 import { extractFromCodeblock } from "../utils/codeblock";
 import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
-import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
+import { ClubWorldCupTeams2025 } from "../constant/teams";
 import { MatchDocument, MatchType } from "../schemas/match";
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });

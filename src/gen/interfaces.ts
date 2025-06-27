@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ClubWorldCupTeams2025 } from "../bot/events/interactionCreate";
+import { ClubWorldCupTeams2025 } from "../constant/teams";
 
 export const ScorePredictioSchema = z.object({
     team1: z.string(),

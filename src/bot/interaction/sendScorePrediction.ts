@@ -41,10 +41,12 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             return;
         }
 
-        if ((match.matchType === "round-of-16-extra"
-            || match.matchType === "quarterfinal-extra"
-            || match.matchType === "semifinal-extra"
-            || match.matchType === "final-extra")
+        console.log(match.toObject());
+
+        if ((match.matchType === "round-of-16-regular"
+            || match.matchType === "quarterfinal-regular"
+            || match.matchType === "semifinal-regular"
+            || match.matchType === "final-regular")
             && response.data.score.team1 === response.data.score.team2) {
             // if user did not bet in regular time, they cannot bet in extra time
             const allowedToBet = (match as any).allowedToBet;

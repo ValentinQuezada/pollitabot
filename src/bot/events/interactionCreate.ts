@@ -23,48 +23,7 @@ import {
   // dailySummaryCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
-
-export const ClubWorldCupTeams2025 = [
-  // UEFA
-  "Manchester City (MCI)",
-  "Chelsea (CHE)",
-  "Real Madrid (RMA)",
-  "Bayern München (BAY)",
-  "Paris Saint-Germain (PSG)",
-  "Inter Milan (INT)",
-  "Benfica (BEN)",
-  "Porto (POR)",
-  "Borussia Dortmund (DOR)",
-  "Atlético de Madrid (ATM)",
-  "Red Bull Salzburg (SAL)",
-  "Juventus (JUV)",
-  // CONMEBOL
-  "Flamengo (FLA)",
-  "Palmeiras (PAL)",
-  "Fluminense (FLU)",
-  "River Plate (RIV)",
-  "Boca Juniors (BOC)",
-  "Botafogo (BOT)",
-    // CONCACAF
-  "Monterrey (MON)",
-  "Seattle Sounders (SEA)",
-  "Pachuca (PAC)",
-  "Los Angeles FC (LAF)",
-  // Anfitrión (USA)
-  "Inter Miami (MIA)",
-  // AFC (Asia)
-  "Al Hilal (HIL)",
-  "Al Ain (AIN)",
-  "Urawa Red Diamonds (URA)",
-  "Ulsan HD (ULS)",
-  // OFC (Oceanía)
-  "Auckland City (AUC)",
-  // CAF (África)
-  "Al Ahly (AHL)",
-  "Espérance de Tunis (EST)",
-  "Wydad Casablanca (WYD)",
-  "Mamelodi Sundowns (SUN)"
-];
+import { ClubWorldCupTeams2025 } from "../../constant/teams";
 
 export async function checkRole(interaction: CommandInteraction, roleName: string): Promise<boolean> {
   if (!interaction.inGuild()) return false;

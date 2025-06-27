@@ -4,7 +4,6 @@ import { retrieveAwards } from "../../database/controllers";
 import { AwardPredictionSchema } from "../../schemas/awardprediction";
 import { UserStatsSchema } from "../../schemas/user";
 import { getAwardFee } from "../../utils/fee"; // Necesitas crear esta función
-import { ClubWorldCupTeams2025 } from "../events/interactionCreate";
 import { mapTeamName } from "../../gen/client";
 
 const sendAwardPredictionCommand = async (interaction: CommandInteraction) => {

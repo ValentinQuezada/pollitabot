@@ -1,0 +1,130 @@
+[
+    {
+        "name": "Manchester City",
+        "alias": "MCI"
+    },
+    {
+        "name": "Chelsea",
+        "alias": "CHE"
+    },
+    {
+        "name": "Real Madrid",
+        "alias": "RMA"
+    },
+    {
+        "name": "Bayern München",
+        "alias": "BAY"
+    },
+    {
+        "name": "Paris Saint-Germain",
+        "alias": "PSG"
+    },
+    {
+        "name": "Inter Milan",
+        "alias": "INT"
+    },
+    {
+        "name": "Benfica",
+        "alias": "BEN"
+    },
+    {
+        "name": "Porto",
+        "alias": "POR"
+    },
+    {
+        "name": "Borussia Dortmund",
+        "alias": "DOR"
+    },
+    {
+        "name": "Atlético de Madrid",
+        "alias": "ATM"
+    },
+    {
+        "name": "Red Bull Salzburg",
+        "alias": "SAL"
+    },
+    {
+        "name": "Juventus",
+        "alias": "JUV"
+    },
+    {
+        "name": "Flamengo",
+        "alias": "FLA"
+    },
+    {
+        "name": "Palmeiras",
+        "alias": "PAL"
+    },
+    {
+        "name": "Fluminense",
+        "alias": "FLU"
+    },
+    {
+        "name": "River Plate",
+        "alias": "RIV"
+    },
+    {
+        "name": "Boca Juniors",
+        "alias": "BOC"
+    },
+    {
+        "name": "Botafogo",
+        "alias": "BOT"
+    },
+    {
+        "name": "Monterrey",
+        "alias": "MON"
+    },
+    {
+        "name": "Seattle Sounders",
+        "alias": "SEA"
+    },
+    {
+        "name": "Pachuca",
+        "alias": "PAC"
+    },
+    {
+        "name": "Los Angeles FC",
+        "alias": "LAF"
+    },
+    {
+        "name": "Inter Miami",
+        "alias": "MIA"
+    },
+    {
+        "name": "Al Hilal",
+        "alias": "HIL"
+    },
+    {
+        "name": "Al Ain",
+        "alias": "AIN"
+    },
+    {
+        "name": "Urawa Red Diamonds",
+        "alias": "URA"
+    },
+    {
+        "name": "Ulsan HD",
+        "alias": "ULS"
+    },
+    {
+        "name": "Auckland City",
+        "alias": "AUC"
+    },
+    {
+        "name": "Al Ahly",
+        "alias": "AHL"
+    },
+    {
+        "name": "Espérance de Tunis",
+        "alias": "EST"
+    },
+    {
+        "name": "Wydad Casablanca",
+        "alias": "WYD"
+    },
+    {
+        "name": "Mamelodi Sundowns",
+        "alias": "SUN"
+    }
+]
