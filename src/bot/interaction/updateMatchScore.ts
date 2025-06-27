@@ -89,6 +89,18 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   await match.save();
 
+  let sup = "";
+  let SUPLE = "";
+  if (
+      match.matchType === "round-of-16-extra" ||
+      match.matchType === "quarterfinal-extra" ||
+      match.matchType === "semifinal-extra" ||
+      match.matchType === "final-extra"
+    ){
+      sup += " (sup.)";
+      SUPLE += " SUPLEMENTARIO";
+    }
+
   // get all predictions for this match
   const predictions = await Prediction.find({ matchId: match._id });
   const winners = predictions.filter(p =>
@@ -97,8 +109,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   if (type === 'partial' || type === 'final') {
     let message = type === 'partial'
-      ? `⏸️ **¡MEDIO TIEMPO!**\n***${team1} vs. ${team2}***\n**Resultado parcial: (${score1} - ${score2})**\n`
-      : `🏁 **¡TIEMPO COMPLETO!**\n***${team1} vs. ${team2}***\n**Resultado final: (${score1} - ${score2})**\n`;
+      ? `⏸️ **¡MEDIO TIEMPO${SUPLE}!**\n***${team1} vs. ${team2}${sup}***\n**Resultado parcial: (${score1} - ${score2})**\n`
+      : `🏁 **¡TIEMPO${SUPLE} COMPLETO!**\n***${team1} vs. ${team2}${sup}***\n**Resultado final: (${score1} - ${score2})**\n`;
 
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};

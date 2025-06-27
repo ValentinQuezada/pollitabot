@@ -41,6 +41,16 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             return;
         }
 
+        let sup = "";
+        if (
+        match.matchType === "round-of-16-extra" ||
+        match.matchType === "quarterfinal-extra" ||
+        match.matchType === "semifinal-extra" ||
+        match.matchType === "final-extra"
+        ){
+            sup += " (sup.)";
+        }
+
         if ((match.matchType === "round-of-16-extra"
             || match.matchType === "quarterfinal-extra"
             || match.matchType === "semifinal-extra"
@@ -97,14 +107,14 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
         if (existingPrediction) {
             existingPrediction.prediction = response.data.score;
             await existingPrediction.save();
-            actionMessage = CALLABLES.updateScorePrediction(interaction.user.id, match.team1, match.team2);
+            actionMessage = CALLABLES.updateScorePrediction(interaction.user.id, match.team1, match.team2, sup);
         } else {
             await Prediction.create({
                 userId: interaction.user.id,
                 matchId: match._id,
                 prediction: response.data.score
             });
-            actionMessage = CALLABLES.sendScorePrediction(interaction.user.id, match.team1, match.team2);
+            actionMessage = CALLABLES.sendScorePrediction(interaction.user.id, match.team1, match.team2, sup);
 
             const matchFee = match.fee;
             const UserStats = db.model("UserStats", UserStatsSchema);
@@ -118,7 +128,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             await interaction.channel.send(actionMessage);
         }
 
-        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**.` });
+        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}${sup}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**.` });
     } catch (error) {
         console.error('Error in send-score-prediction:', error);
         if (interaction.deferred || interaction.replied) {

@@ -37,7 +37,16 @@ const seeMissing = async (interaction: CommandInteraction) => {
 
     let message = "⌛️ **Partidos pendientes por apostar:**\n";
     for (const match of missingMatches) {
-      message += `- **${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs ${match.team2}\n`;
+      let sup = "";
+      if (
+        match.matchType === "round-of-16-extra" ||
+        match.matchType === "quarterfinal-extra" ||
+        match.matchType === "semifinal-extra" ||
+        match.matchType === "final-extra"
+      ){
+        sup += " (sup.)";
+      }
+      message += `- **${horaSimpleConHrs(match.datetime)}:** ${match.team1} vs ${match.team2}${sup}\n`;
     }
 
     await interaction.editReply({ content: message });

@@ -86,8 +86,20 @@ const sendMatchStats = async (interaction: CommandInteraction) => {
     const uniquePredictions = new Set(predictions.map(p => `${p.prediction.team1}-${p.prediction.team2}`));
     const variance = predictions.length > 0 ? (uniquePredictions.size / predictions.length) : 0;
 
-    let message = `📊 ***Estadísticas pre-partido***\n`;
-    message += `***${team1} vs. ${team2}** (${horaSimpleConHrs(match.datetime)})*\n`;
+    let sup = "";
+    let SUPLE = "partido";
+    if (
+      match.matchType === "round-of-16-extra" ||
+      match.matchType === "quarterfinal-extra" ||
+      match.matchType === "semifinal-extra" ||
+      match.matchType === "final-extra"
+    ){
+      sup += " (sup.)";
+      SUPLE += "suplementario";
+    }
+
+    let message = `📊 ***Estadísticas pre-${SUPLE}***\n`;
+    message += `***${team1} vs. ${team2}${sup}** (${horaSimpleConHrs(match.datetime)})*\n`;
     message += `- **Total de apuestas:** ${predictions.length}/${fullPredictions}`;
     message += ` (*Sin apostar:* ${missingUsers.map(u => `<@${u.userId}>`).join(' ') || '*Ninguno*'})\n`;
     message += `- **Media de score:** ${meanA.toFixed(2)}-${meanB.toFixed(2)}\n`;
