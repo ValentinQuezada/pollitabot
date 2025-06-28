@@ -12,6 +12,7 @@ import { createMatch } from "../../database/controllers";
 import { addMinutes } from 'date-fns';
 import { toZonedTime, format } from 'date-fns-tz';
 import { getSupLabels, isExtraTime } from "../../utils/sup";
+import { markerToDuple } from "../../utils/matchers";
 
 const timeZone = 'America/Lima';
 
@@ -106,7 +107,17 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};
     predictions.forEach(p => {
-      const key = `${p.prediction.team1}-${p.prediction.team2}`;
+      let key: string;
+      switch (p.prediction.advances) {
+        case 'team1':
+          key = `${p.prediction.team1}>${p.prediction.team2}`;
+          break;
+        case 'team2':
+          key = `${p.prediction.team2}<${p.prediction.team1}`;
+          break;
+        default:
+          key = `${p.prediction.team1}-${p.prediction.team2}`;
+      }
       if (!predictionsByScore[key]) predictionsByScore[key] = [];
       predictionsByScore[key].push(`<@${p.userId}>`);
     });
@@ -129,8 +140,8 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     // sort predictions by score
     const sortedScores = Object.keys(predictionsByScore).sort((a, b) => {
-      const [a1, a2] = a.split('-').map(Number);
-      const [b1, b2] = b.split('-').map(Number);
+      const [a1, a2] = markerToDuple(a);
+      const [b1, b2] = markerToDuple(b);
       const totalA = a1 + a2;
       const totalB = b1 + b2;
       if (totalA != totalB) return totalB - totalA;
