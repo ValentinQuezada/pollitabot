@@ -101,7 +101,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
 
         let actionMessage;
         if (existingPrediction) {
-            existingPrediction.prediction = response.data?.score;
+            existingPrediction.prediction = {...response.data.score, advances: response.data.advances};
             await existingPrediction.save();
             actionMessage = CALLABLES.updateScorePrediction(interaction.user.id, match.team1, match.team2, sup);
         } else {
