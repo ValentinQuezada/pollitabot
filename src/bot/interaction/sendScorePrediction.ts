@@ -51,7 +51,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
         const { sup } = getSupLabels(match.matchType);
 
         if (isExtraTime(match.matchType)
-            && response.data.score.team1 === response.data.score.team2) {
+            && response.data.score.team1 === response.data.score.team2 && response.data.advances === undefined) {
 
                 const allowedToBet = (match as any).allowedToBet;
             if (Array.isArray(allowedToBet) && !allowedToBet.includes(interaction.user.id)) {

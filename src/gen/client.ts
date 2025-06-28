@@ -95,6 +95,7 @@ export async function linkExtraTimeMatchScore(query: string, match: [string, str
         if (Array.isArray(jsonData)) {
             jsonData = jsonData[0];
         }
+
         const parsedData = ExtraScorePredictionSchema.parse(jsonData);
 
         if (!match) {

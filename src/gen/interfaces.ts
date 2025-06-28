@@ -8,13 +8,18 @@ export const ScorePredictionSchema = z.object({
         team1: z.number(),
         team2: z.number()
     }),
-    advances: z.enum(["team1", "team2"]).nullish()
+    advances: z.enum(["team1", "team2"]).optional()
 });
 
-export const ExtraScorePredictionSchema = ScorePredictionSchema.transform(data => ({
-    ...data, 
-    advances: (data.score.team1 > data.score.team2 ? "team1" : "team2") as "team1" | "team2"
-}));
+export const ExtraScorePredictionSchema = ScorePredictionSchema.transform(data => {
+    if (data.advances === undefined) {
+        return {
+            ...data, 
+            advances: (data.score.team1 > data.score.team2 ? "team1" : "team2") as "team1" | "team2"
+        };
+    }
+    return data;
+});
 
 export type ScorePredictionType = z.infer<typeof ScorePredictionSchema>;
 
