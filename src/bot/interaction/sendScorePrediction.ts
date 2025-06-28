@@ -108,7 +108,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             await Prediction.create({
                 userId: interaction.user.id,
                 matchId: match._id,
-                prediction: response.data.score
+                prediction: {...response.data.score, advances: response.data.advances}
             });
             actionMessage = CALLABLES.sendScorePrediction(interaction.user.id, match.team1, match.team2, sup);
 
