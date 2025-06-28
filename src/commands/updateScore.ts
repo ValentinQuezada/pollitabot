@@ -24,6 +24,14 @@ const updateMatchScoreCommand = new SlashCommandBuilder()
       .setDescription('Score for Team 2')
       .setRequired(true))
   .addStringOption(option =>
+    option.setName('advances')
+      .setDescription('Quién avanza?')
+      .setRequired(false)
+      .addChoices(
+          { name: 'Equipo 1', value: 'team1' },
+          { name: 'Equipo 2', value: 'team2' }
+        ))
+  .addStringOption(option =>
     option.setName('type')
       .setDescription('¿Resultado parcial o final?')
       .setRequired(true)

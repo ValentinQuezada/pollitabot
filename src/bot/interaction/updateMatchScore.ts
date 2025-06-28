@@ -43,6 +43,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   let team2 = interaction.options.get('team2')?.value as string;
   const score1 = interaction.options.get('score1')?.value as number;
   const score2 = interaction.options.get('score2')?.value as number;
+  const advances = interaction.options.get('advances')?.value as string;
   const type = interaction.options.get('type')?.value as string;
 
   const response1 = await mapTeamName(team1);
@@ -96,7 +97,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   // get all predictions for this match
   const predictions = await Prediction.find({ matchId: match._id });
   const winners = predictions.filter(p =>
-    p.prediction.team1 === score1 && p.prediction.team2 === score2
+    p.prediction.team1 === score1 && p.prediction.team2 === score2 && (p.prediction.advances ? p.prediction.advances === advances : true)
   );
 
   if (type === 'partial' || type === 'final') {
@@ -188,10 +189,10 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       // get all predictions for this match
       const predictions = await Prediction.find({ matchId: match._id });
       const winners = predictions.filter(p =>
-        p.prediction.team1 === score1 && p.prediction.team2 === score2
+        p.prediction.team1 === score1 && p.prediction.team2 === score2 && (p.prediction.advances ? p.prediction.advances === advances : true)
       );
       const losers = predictions.filter(p =>
-        p.prediction.team1 != score1 || p.prediction.team2 != score2
+        p.prediction.team1 != score1 || p.prediction.team2 != score2 || (p.prediction.advances ? p.prediction.advances != advances : false)
       );
       const winnerIds = new Set(winners.map(w => w.userId));
       const allUserIds = predictions.map(p => p.userId);

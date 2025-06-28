@@ -38,7 +38,8 @@ export type CreateMatchType = z.infer<typeof createMatchSchema>;
 const updateMatchScoreSchema = z.object({
     score: z.object({
         team1: z.number().min(0).max(100),
-        team2: z.number().min(0).max(100)
+        team2: z.number().min(0).max(100),
+        advances: z.enum(['team1', 'team2']).optional()
     }).optional(),
     specialHit: z.boolean().default(false),
     lateGoalHit: z.boolean().default(false),
@@ -74,7 +75,8 @@ export const MatchMongoose = new Schema<MatchDocument>({
     score: { 
         type: {
             team1: Number,
-            team2: Number
+            team2: Number,
+            advances: { type: String, enum: ["team1", "team2"], default: undefined }
         }, 
         default: undefined, 
         _id: false,
