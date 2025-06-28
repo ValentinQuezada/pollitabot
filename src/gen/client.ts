@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "../constant/credentials";
-import { extractFromCodeblock } from "../utils/codeblock";
+import { extractFromCodeblock } from "../utils/matchers";
 import { GenContentResponse, ScorePredictionType, ScorePredictionSchema, TeamNameType, TeamNameSchema, ExtraScorePredictionSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
 import { ClubWorldCupTeams2025 } from "../constant/teams";
