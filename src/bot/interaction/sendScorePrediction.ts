@@ -124,7 +124,7 @@ const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
             await interaction.channel.send(actionMessage);
         }
 
-        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}${sup}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**.` });
+        await interaction.editReply({ content: `✅ ¡Se guardó tu predicción para el partido **${match.team1} vs. ${match.team2}${sup}**! Elegiste: **${response.data.score.team1}-${response.data.score.team2}**. ${response.data.advances ? `El equipo que avanza es: **${response.data[response.data.advances]}**.` : ''}` });
     } catch (error) {
         console.error('Error in send-score-prediction:', error);
         if (interaction.deferred || interaction.replied) {
