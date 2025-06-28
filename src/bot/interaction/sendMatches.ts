@@ -9,6 +9,7 @@ import { horaSimpleConHrs, diaSimple } from "../../utils/timestamp";
 import { getSupLabels } from "../../utils/sup";
 import { retrieveMatches } from "../../database/controllers";
 import { linkMatch } from "../../gen/client";
+import { markerToDuple } from "../../utils/matchers";
 
 const sendMatches = async (interaction: CommandInteraction) => {
     await interaction.deferReply({ ephemeral: true });
@@ -90,10 +91,10 @@ const sendMatches = async (interaction: CommandInteraction) => {
           predictionsByScore[key].push(`<@${p.userId}>`);
         });
 
-        // sort keys by team1-team2 in descending order
+        // sort predictions by score
         const sortedKeys = Object.keys(predictionsByScore).sort((a, b) => {
-          const [a1, a2] = a.split('-').map(Number);
-          const [b1, b2] = b.split('-').map(Number);
+          const [a1, a2] = markerToDuple(a);
+          const [b1, b2] = markerToDuple(b);
           const totalA = a1 + a2;
           const totalB = b1 + b2;
           if (totalA != totalB) return totalB - totalA;
