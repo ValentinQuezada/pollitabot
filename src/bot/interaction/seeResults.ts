@@ -25,7 +25,7 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
     for (const match of matches) {
       const { sup } = getSupLabels(match.matchType);
       const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
-      message += `- **${match.team1} vs. ${match.team2}${sup}** (${horaSimpleConHrs(match.datetime)}): ${pred?.prediction.team1}-${pred?.prediction.team2}\n`;
+      message += `- **${match.team1} vs. ${match.team2}${sup}** (${horaSimpleConHrs(match.datetime)}): ${pred?.prediction.team1}-${pred?.prediction.team2} ${pred?.prediction.advances ? `El equipo que avanza es: **${pred.prediction.advances}**.` : ''}\n`;
     }
 
     await interaction.editReply({ content: message });

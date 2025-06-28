@@ -72,16 +72,26 @@ const sendMatches = async (interaction: CommandInteraction) => {
         message += `***${match.team1} vs. ${match.team2}${sup}** (${diaSimple(match.datetime)}, ${horaSimpleConHrs(match.datetime)})*\n`
         const predictions = await Prediction.find({ matchId: match._id });
 
-        // group predictions by team1-team2
-        const grouped: Record<string, string[]> = {};
-        for (const pred of predictions) {
-        const key = `${pred.prediction.team1}-${pred.prediction.team2}`;
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(`<@${pred.userId}>`);
-        }
+        // group predictions by score
+        const predictionsByScore: Record<string, string[]> = {};
+        predictions.forEach(p => {
+          let key: string;
+          switch (p.prediction.advances) {
+            case 'team1':
+              key = `${p.prediction.team1}>${p.prediction.team2}`;
+              break;
+            case 'team2':
+              key = `${p.prediction.team2}<${p.prediction.team1}`;
+              break;
+            default:
+              key = `${p.prediction.team1}-${p.prediction.team2}`;
+          }
+          if (!predictionsByScore[key]) predictionsByScore[key] = [];
+          predictionsByScore[key].push(`<@${p.userId}>`);
+        });
 
         // sort keys by team1-team2 in descending order
-        const sortedKeys = Object.keys(grouped).sort((a, b) => {
+        const sortedKeys = Object.keys(predictionsByScore).sort((a, b) => {
           const [a1, a2] = a.split('-').map(Number);
           const [b1, b2] = b.split('-').map(Number);
           const totalA = a1 + a2;
@@ -93,7 +103,7 @@ const sendMatches = async (interaction: CommandInteraction) => {
         // message with predictions
         let predictionsMsg = "";
         for (const key of sortedKeys) {
-        predictionsMsg += `${key}: ${grouped[key].join("/")}\n`;
+        predictionsMsg += `${key}: ${predictionsByScore[key].join("/")}\n`;
         }
 
         message += predictionsMsg + "\n";
