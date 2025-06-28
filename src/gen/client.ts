@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "../constant/credentials";
 import { extractFromCodeblock } from "../utils/codeblock";
-import { GenContentResponse, ScorePredictionType, ScorePredictioSchema, TeamNameType, TeamNameSchema, ExtraScorePredictionType, ExtraScorePredictionSchema } from "./interfaces";
+import { GenContentResponse, ScorePredictionType, ScorePredictionSchema, TeamNameType, TeamNameSchema, ExtraScorePredictionSchema } from "./interfaces";
 import { SYSTEM_INSTRUCTIONS } from "./prompts";
 import { ClubWorldCupTeams2025 } from "../constant/teams";
 import { MatchDocument, MatchType } from "../schemas/match";
@@ -36,7 +36,7 @@ export async function linkMatchScore(query: string, matches: [string, string][])
         if (Array.isArray(jsonData)) {
             jsonData = jsonData[0];
         }
-        const parsedData = ScorePredictioSchema.parse(jsonData);
+        const parsedData = ScorePredictionSchema.parse(jsonData);
 
         const match = matches.find(
             match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1
@@ -68,12 +68,12 @@ export async function linkMatchScore(query: string, matches: [string, string][])
     }
 }
 
-export async function linkExtraTimeMatchScore(query: string, matches: [string, string][]): Promise<GenContentResponse<ExtraScorePredictionType>> {
+export async function linkExtraTimeMatchScore(query: string, match: [string, string]): Promise<GenContentResponse<ScorePredictionType>> {
     const response = await ai.models.generateContent({
         model: modelName,
         config: {
             systemInstruction: SYSTEM_INSTRUCTIONS.MATCH_MAPPING_EXTRA_TIME(
-                matches.map(match => match.join(' vs. '))
+                match.join(' vs. ')
             ),
             maxOutputTokens: 100,
             temperature: 0.1,
@@ -97,9 +97,6 @@ export async function linkExtraTimeMatchScore(query: string, matches: [string, s
         }
         const parsedData = ExtraScorePredictionSchema.parse(jsonData);
 
-        const match = matches.find(
-            match => match[0] === parsedData.team1 && match[1] === parsedData.team2 || match[0] === parsedData.team2 && match[1] === parsedData.team1
-        );
         if (!match) {
             return {
                 success: false,
@@ -152,7 +149,7 @@ export async function fixScoreExtraTime(query: string, wrongScore: ScorePredicti
         if (Array.isArray(jsonData)) {
             jsonData = jsonData[0];
         }
-        const parsedData = ScorePredictioSchema.parse(jsonData);
+        const parsedData = ScorePredictionSchema.parse(jsonData);
         return {
             success: true,
             data: parsedData
