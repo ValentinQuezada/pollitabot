@@ -16,9 +16,9 @@ import { markerToDuple } from "../../utils/matchers";
 
 const timeZone = 'America/Lima';
 
-function getTimeIn15Minutes(): Date {
+function getTimeIn10Minutes(): Date {
   const now = new Date();
-  const futureTimeUTC = addMinutes(now, 15);
+  const futureTimeUTC = addMinutes(now, 10);
   return futureTimeUTC;
 }
 
@@ -359,7 +359,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           const newMatch = {
             team1: match.team1,
             team2: match.team2,
-            datetime: getTimeIn15Minutes(),
+            datetime: getTimeIn10Minutes(),
             group: match.group,
             matchType: newtype,
             fee: winners.length === 0 ? match.fee : match.fee / 2,
@@ -373,7 +373,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
           }
           await createMatch(newMatch);
           
-          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza en **15 minutos** (${formatDateToString(toZonedTime(newMatch.datetime, timeZone))}, hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
+          const announceMsg = `📢 ***¡Tiempo suplementario creado!**\n**${team1} vs. ${team2}**\n🕒 Empieza en **10 minutos** (${formatDateToString(toZonedTime(newMatch.datetime, timeZone))}, hora Perú)\nEnvía tu predicción con* \`/send-score-prediction\`.`;
         
           // send announcement to the general channel
           try {
