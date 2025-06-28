@@ -5,6 +5,7 @@ import { PredictionSchema } from "../../schemas/prediction";
 import { UserStatsSchema } from "../../schemas/user";
 import BOT_CLIENT from "../init";
 import { GENERAL_CHANNEL_ID } from "../../constant/credentials";
+import { markerToDuple } from "../../utils/matchers";
 // import sendMatchStats from "../interaction/sendMatchStats";
 
 cron.schedule("* * * * *", async () => {
@@ -57,14 +58,25 @@ cron.schedule("* * * * *", async () => {
     await match.save();
 
     // all predictions for this match
-    const predictions = await Prediction.find({ matchId: match._id });
+    const predictions = await Prediction.find({ matchId: match._id }).lean();
 
     // group predictions by team1-team2
     const grouped: Record<string, string[]> = {};
     for (const pred of predictions) {
-    const key = `${pred.prediction.team1}-${pred.prediction.team2}`;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(`<@${pred.userId}>`);
+      let key: string;
+      switch(pred.prediction.advances){
+        case "team1":
+          key = `${pred.prediction.team1}>${pred.prediction.team2}`;
+          break;
+        case "team2":
+          key = `${pred.prediction.team1}<${pred.prediction.team2}`;
+          break;
+        default:
+          key = `${pred.prediction.team1}-${pred.prediction.team2}`;
+          break;
+      }
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(`<@${pred.userId}>`);
     }
 
     // missed users
@@ -96,8 +108,8 @@ cron.schedule("* * * * *", async () => {
 
     // sort keys by team1-team2 in descending order
     const sortedKeys = Object.keys(grouped).sort((a, b) => {
-      const [a1, a2] = a.split("-").map(Number);
-      const [b1, b2] = b.split("-").map(Number);
+      const [a1, a2] = markerToDuple(a);
+      const [b1, b2] = markerToDuple(b);
       const totalA = a1 + a2;
       const totalB = b1 + b2;
       if (totalA != totalB) return totalB - totalA;
