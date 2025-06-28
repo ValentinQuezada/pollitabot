@@ -100,10 +100,22 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     p.prediction.team1 === score1 && p.prediction.team2 === score2 && (p.prediction.advances ? p.prediction.advances === advances : true)
   );
 
+  let res: string;
+  switch (advances) {
+    case 'team1':
+      res = `${team1} > ${team2}`;
+      break;
+    case 'team2':
+      res = `${team1} < ${team2}`;
+      break;
+    default:
+      res = `${team1} - ${team2}`;
+  }
+
   if (type === 'partial' || type === 'final') {
     let message = type === 'partial'
-      ? `⏸️ **¡MEDIO TIEMPO${SUPLE}!**\n***${team1} vs. ${team2}${sup}***\n**Resultado parcial: (${score1} - ${score2})**\n`
-      : `🏁 **¡TIEMPO${SUPLE} COMPLETO!**\n***${team1} vs. ${team2}${sup}***\n**Resultado final: (${score1} - ${score2})**\n`;
+      ? `⏸️ **¡MEDIO TIEMPO${SUPLE}!**\n***${team1} vs. ${team2}${sup}***\n**Resultado parcial: (${res})**\n`
+      : `🏁 **¡TIEMPO${SUPLE} COMPLETO!**\n***${team1} vs. ${team2}${sup}***\n**Resultado final: (${res})**\n`;
 
     // group predictions by score
     const predictionsByScore: Record<string, string[]> = {};
@@ -124,14 +136,26 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     });
 
     // determine the emoji for each prediction
-    function getEmoji(pred: { team1: number; team2: number }): string {
+    function getEmoji(pred: { team1: number; team2: number; diferenciador: string }): string {
+      let key : string;
+      switch (pred.diferenciador) {
+        case '>':
+          key = 'team1';
+          break;
+        case '<':
+          key = 'team2';
+          break;
+        default:
+          key = '';
+      }
       if (type === 'partial') {
         if (pred.team1 === score1 && pred.team2 === score2) return "❇️";
         if (pred.team1 < score1 || pred.team2 < score2) return "❌";
         return "⏺️​";
       } else {
         if (winners.length > 0){
-          if (pred.team1 === score1 && pred.team2 === score2) return "✅​​";
+          if (pred.team1 === score1 && pred.team2 === score2
+            && (advances ? key === advances : true)) return "✅​​";
           return "❌";
         } else {
           return "⏹️";
@@ -151,8 +175,10 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
     // list predictions by score
     for (const score of sortedScores) {
-      const [pred1, pred2] = score.split('-').map(Number);
-      const emoji = getEmoji({ team1: pred1, team2: pred2 });
+      const [, pred1Str, diferenciador, pred2Str,] = score.match(/(\d+)([-><])(\d+)/) ?? [];
+      const pred1 = Number(pred1Str);
+      const pred2 = Number(pred2Str);
+      const emoji = getEmoji({ team1: pred1, team2: pred2, diferenciador });
       message += `${score}: ${predictionsByScore[score].join('/')} ${emoji}\n`;
     }
 

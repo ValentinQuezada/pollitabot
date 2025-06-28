@@ -8,7 +8,7 @@ const sendMatchesCommand = new SlashCommandBuilder()
             .setDescription('⚠️​ ¿Revelar los resultados de todos?')
             .setRequired(true))
   .addStringOption(option =>
-        option.setName('partido')
+        option.setName('Partido')
             .setDescription('Escoge un partido a filtrar (opcional)')
             .setRequired(false)
   );;
