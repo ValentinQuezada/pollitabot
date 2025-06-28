@@ -19,5 +19,6 @@ COPY package*.json ./
 RUN npm ci --omit=dev --silent
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/data ./data
 
 CMD ["npm", "run", "container-start"]
