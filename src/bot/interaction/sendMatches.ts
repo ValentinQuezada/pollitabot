@@ -27,7 +27,7 @@ const sendMatches = async (interaction: CommandInteraction) => {
     }
 
     const rev = interaction.options.get('revelar')?.value as boolean;
-    const par = interaction.options.get('partido')?.value as string;
+    const par = interaction.options.get('Partido')?.value as string;
     const db = await databaseConnection();
     const Match = db.model("Match");
     const Prediction = db.model("Prediction", PredictionSchema);
