@@ -201,7 +201,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     }
 
     // non-bettors
-    message += `❌: ${nonBettors.map(uid => `<@${uid}>`).join(" / ")}\n`
+    message += `❌: ${nonBettors.map(uid => `<@${uid}>`).join("/")}\n`
 
     // winners
     if (winners.length > 0) {

@@ -124,7 +124,7 @@ cron.schedule("* * * * *", async () => {
 
     let missedMsg = "";
     if (missedUserIds.length) {
-      missedMsg = `❌: ${missedUserIds.map(uid => `<@${uid}>`).join(" / ")}\n`;
+      missedMsg = `❌: ${missedUserIds.map(uid => `<@${uid}>`).join("/")}\n`;
     }
 
     // final message
