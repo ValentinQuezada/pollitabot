@@ -99,17 +99,35 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const winners = predictions.filter(p =>
     p.prediction.team1 === score1 && p.prediction.team2 === score2 && (p.prediction.advances ? p.prediction.advances === advances : true)
   );
+  const losers = predictions.filter(p =>
+    p.prediction.team1 != score1 || p.prediction.team2 != score2 || (p.prediction.advances ? p.prediction.advances != advances : false)
+  );
+  const winnerIds = new Set(winners.map(w => w.userId));
+  const allUserIds = predictions.map(p => p.userId);
+
+  const matchFee = match.fee;
+
+  // calculate the pool and gain per winner
+  const pool = allUserIds.length * matchFee;
+  const gainPerWinner = winners.length > 0 ? pool / winners.length - matchFee: 0;
+
+  // nonBettors are users who did not bet on this match
+  const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+  const userIdsWithPrediction = predictions.map(p => p.userId);
+  const nonBettors = nonGroupStageUsers
+  .filter(u => !userIdsWithPrediction.includes(u.userId))
+  .map(u => u.userId);
 
   let res: string;
   switch (advances) {
     case 'team1':
-      res = `${team1} > ${team2}`;
+      res = `${score1} > ${score2}`;
       break;
     case 'team2':
-      res = `${team1} < ${team2}`;
+      res = `${score1} < ${score2}`;
       break;
     default:
-      res = `${team1} - ${team2}`;
+      res = `${score1} - ${score2}`;
   }
 
   if (type === 'partial' || type === 'final') {
@@ -182,6 +200,9 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
       message += `${score}: ${predictionsByScore[score].join('/')} ${emoji}\n`;
     }
 
+    // non-bettors
+    message += `❌: ${nonBettors.map(uid => `<@${uid}>`).join(" / ")}\n`
+
     // winners
     if (winners.length > 0) {
       message += type === 'partial'
@@ -211,30 +232,6 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     if (type === 'final') {
       match.isFinished = true;
       await match.save();
-
-      // get all predictions for this match
-      const predictions = await Prediction.find({ matchId: match._id });
-      const winners = predictions.filter(p =>
-        p.prediction.team1 === score1 && p.prediction.team2 === score2 && (p.prediction.advances ? p.prediction.advances === advances : true)
-      );
-      const losers = predictions.filter(p =>
-        p.prediction.team1 != score1 || p.prediction.team2 != score2 || (p.prediction.advances ? p.prediction.advances != advances : false)
-      );
-      const winnerIds = new Set(winners.map(w => w.userId));
-      const allUserIds = predictions.map(p => p.userId);
-
-      const matchFee = match.fee;
-
-      // calculate the pool and gain per winner
-      const pool = allUserIds.length * matchFee;
-      const gainPerWinner = winners.length > 0 ? pool / winners.length - matchFee: 0;
-
-      // nonBettors are users who did not bet on this match
-      const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
-      const userIdsWithPrediction = predictions.map(p => p.userId);
-      const nonBettors = nonGroupStageUsers
-      .filter(u => !userIdsWithPrediction.includes(u.userId))
-      .map(u => u.userId);
 
       // const prediction = await Prediction.findOne({ userId: user.userId, matchId: match._id });
       if (
