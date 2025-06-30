@@ -105,18 +105,27 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   const winnerIds = new Set(winners.map(w => w.userId));
   const allUserIds = predictions.map(p => p.userId);
 
-  const matchFee = match.fee;
-
-  // calculate the pool and gain per winner
-  const pool = allUserIds.length * matchFee;
-  const gainPerWinner = winners.length > 0 ? pool / winners.length - matchFee: 0;
-
   // nonBettors are users who did not bet on this match
   const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
   const userIdsWithPrediction = predictions.map(p => p.userId);
   const nonBettors = nonGroupStageUsers
   .filter(u => !userIdsWithPrediction.includes(u.userId))
   .map(u => u.userId);
+
+  const matchFee = match.fee;
+
+  // calculate the pool and gain per winner
+  let pool: number;
+  if (match.matchType !== "group-regular") {
+    // out of group stage matches
+    const bettorsCount = allUserIds.length;
+    const nonBettorsCount = nonBettors.length;
+    pool = (bettorsCount * matchFee) + (nonBettorsCount * (matchFee / 2));
+  } else {
+    // group stage matches
+    pool = allUserIds.length * matchFee;
+  }
+  const gainPerWinner = winners.length > 0 ? pool / winners.length - matchFee: 0;
 
   let res: string;
   switch (advances) {
