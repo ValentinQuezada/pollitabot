@@ -129,7 +129,7 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
 
   let res: string;
   if(score1 != score2){
-    res = `${score1}-${score2}`;
+    res = `${score1} - ${score2}`;
   } else {
     switch (advances) {
       case 'team1':
