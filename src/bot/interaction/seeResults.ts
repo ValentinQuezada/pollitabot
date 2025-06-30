@@ -26,15 +26,19 @@ const seeResultsCommand = async (interaction: CommandInteraction) => {
       const { sup } = getSupLabels(match.matchType);
       const pred = predictions.find(p => p.matchId.toString() === match._id.toString());
       let key: string;
-      switch (pred?.prediction.advances) {
-        case 'team1':
-          key = match.team1;
-          break;
-        case 'team2':
-          key = match.team2;
-          break;
-        default:
-          key = "";
+      if(pred?.prediction.team1 != pred?.prediction.team2){
+        key = "";
+      } else {
+        switch (pred?.prediction.advances) {
+          case 'team1':
+            key = match.team1;
+            break;
+          case 'team2':
+            key = match.team2;
+            break;
+          default:
+            key = "";
+        }
       }
       message += `- **${match.team1} vs. ${match.team2}${sup}** (${horaSimpleConHrs(match.datetime)}): ${pred?.prediction.team1}-${pred?.prediction.team2}. ${pred?.prediction.advances ? `El equipo que avanza es: **${key}**.` : ''}\n`;
     }

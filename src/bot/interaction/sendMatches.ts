@@ -77,15 +77,19 @@ const sendMatches = async (interaction: CommandInteraction) => {
         const predictionsByScore: Record<string, string[]> = {};
         predictions.forEach(p => {
           let key: string;
-          switch (p.prediction.advances) {
-            case 'team1':
-              key = `${p.prediction.team1}>${p.prediction.team2}`;
-              break;
-            case 'team2':
-              key = `${p.prediction.team2}<${p.prediction.team1}`;
-              break;
-            default:
-              key = `${p.prediction.team1}-${p.prediction.team2}`;
+          if(p.prediction.team1 != p.prediction.team2){
+            key = `${p.prediction.team1}-${p.prediction.team2}`;
+          } else {
+            switch (p.prediction.advances) {
+              case 'team1':
+                key = `${p.prediction.team1}>${p.prediction.team2}`;
+                break;
+              case 'team2':
+                key = `${p.prediction.team2}<${p.prediction.team1}`;
+                break;
+              default:
+                key = `${p.prediction.team1}-${p.prediction.team2}`;
+            }
           }
           if (!predictionsByScore[key]) predictionsByScore[key] = [];
           predictionsByScore[key].push(`<@${p.userId}>`);

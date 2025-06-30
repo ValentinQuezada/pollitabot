@@ -119,15 +119,19 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
   .map(u => u.userId);
 
   let res: string;
-  switch (advances) {
-    case 'team1':
-      res = `${score1} > ${score2}`;
-      break;
-    case 'team2':
-      res = `${score1} < ${score2}`;
-      break;
-    default:
-      res = `${score1} - ${score2}`;
+  if(score1 != score2){
+    res = `${score1}-${score2}`;
+  } else {
+    switch (advances) {
+      case 'team1':
+        res = `${score1} > ${score2}`;
+        break;
+      case 'team2':
+        res = `${score1} < ${score2}`;
+        break;
+      default:
+        res = `${score1} - ${score2}`;
+    }
   }
 
   if (type === 'partial' || type === 'final') {
@@ -139,15 +143,19 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     const predictionsByScore: Record<string, string[]> = {};
     predictions.forEach(p => {
       let key: string;
-      switch (p.prediction.advances) {
-        case 'team1':
-          key = `${p.prediction.team1}>${p.prediction.team2}`;
-          break;
-        case 'team2':
-          key = `${p.prediction.team2}<${p.prediction.team1}`;
-          break;
-        default:
-          key = `${p.prediction.team1}-${p.prediction.team2}`;
+      if(p.prediction.team1 != p.prediction.team2){
+        key = `${p.prediction.team1}-${p.prediction.team2}`;
+      } else {
+        switch (p.prediction.advances) {
+          case 'team1':
+            key = `${p.prediction.team1}>${p.prediction.team2}`;
+            break;
+          case 'team2':
+            key = `${p.prediction.team2}<${p.prediction.team1}`;
+            break;
+          default:
+            key = `${p.prediction.team1}-${p.prediction.team2}`;
+        }
       }
       if (!predictionsByScore[key]) predictionsByScore[key] = [];
       predictionsByScore[key].push(`<@${p.userId}>`);
@@ -201,7 +209,9 @@ const updateMatchScoreCommand = async (interaction: CommandInteraction) => {
     }
 
     // non-bettors
-    message += `❌: ${nonBettors.map(uid => `<@${uid}>`).join("/")}\n`
+    if(nonBettors.length > 0){
+      message += `❌: ${nonBettors.map(uid => `<@${uid}>`).join("/")}\n`
+    }
 
     // winners
     if (winners.length > 0) {

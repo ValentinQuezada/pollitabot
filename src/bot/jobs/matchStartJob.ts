@@ -64,16 +64,20 @@ cron.schedule("* * * * *", async () => {
     const grouped: Record<string, string[]> = {};
     for (const pred of predictions) {
       let key: string;
-      switch(pred.prediction.advances){
-        case "team1":
-          key = `${pred.prediction.team1}>${pred.prediction.team2}`;
-          break;
-        case "team2":
-          key = `${pred.prediction.team1}<${pred.prediction.team2}`;
-          break;
-        default:
-          key = `${pred.prediction.team1}-${pred.prediction.team2}`;
-          break;
+      if(pred.prediction.team1 != pred.prediction.team2){
+        key = `${pred.prediction.team1}-${pred.prediction.team2}`;
+      } else {
+        switch(pred.prediction.advances){
+          case "team1":
+            key = `${pred.prediction.team1}>${pred.prediction.team2}`;
+            break;
+          case "team2":
+            key = `${pred.prediction.team1}<${pred.prediction.team2}`;
+            break;
+          default:
+            key = `${pred.prediction.team1}-${pred.prediction.team2}`;
+            break;
+        }
       }
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(`<@${pred.userId}>`);
