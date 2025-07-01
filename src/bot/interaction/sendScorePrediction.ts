@@ -9,9 +9,8 @@ import { getSupLabels, isExtraTime } from "../../utils/sup";
 import { CALLABLES } from "../../constant/dictionary";
 
 const sendScorePredictionCommand = async (interaction: CommandInteraction) => {
-    let response = await interaction.deferReply({ ephemeral: true });
-
-    interaction.editReply({ content: "Procesando predicción...",  });
+    await interaction.deferReply({ ephemeral: true });
+    interaction.editReply({ content: "🔄​ Procesando predicción...",  });
 
     try {
         const predictionText = interaction.options.get('prediction')?.value as string;

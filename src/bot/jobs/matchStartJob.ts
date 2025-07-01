@@ -87,7 +87,6 @@ cron.schedule("* * * * *", async () => {
     let missedUserIds: string[] = [];
     // announce message
     let announceMsg = `🕛​ **¡EMPEZÓ EL PARTIDO!**\n***${match.team1} vs. ${match.team2}***\n*Ya no más apuestas* 🙅`
-
     if (
       match.matchType === "round-of-16-extra" ||
       match.matchType === "quarterfinal-extra" ||
@@ -96,19 +95,13 @@ cron.schedule("* * * * *", async () => {
     ) {
       // change message
       announceMsg = `🕧​ **¡EMPEZÓ EL SUPLEMENTARIO!**\n***${match.team1} vs. ${match.team2} (sup.)***\n*Ya no más apuestas* 🙅`
-
-      // allowedToBet
-      const allowedToBet: string[] = (match as any).allowedToBet || [];
-      const userIdsWithPrediction = predictions.map(p => p.userId);
-      missedUserIds = allowedToBet.filter(uid => !userIdsWithPrediction.includes(uid));
-    } else {
-      // only group stage users
-      const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
-      const userIdsWithPrediction = predictions.map(p => p.userId);
-      missedUserIds = nonGroupStageUsers
-        .filter(u => !userIdsWithPrediction.includes(u.userId))
-        .map(u => u.userId);
     }
+
+    const nonGroupStageUsers = await UserStats.find({ onlyGroupStage: false });
+    const userIdsWithPrediction = predictions.map(p => p.userId);
+    missedUserIds = nonGroupStageUsers
+      .filter(u => !userIdsWithPrediction.includes(u.userId))
+      .map(u => u.userId);
 
     // sort keys by team1-team2 in descending order
     const sortedKeys = Object.keys(grouped).sort((a, b) => {

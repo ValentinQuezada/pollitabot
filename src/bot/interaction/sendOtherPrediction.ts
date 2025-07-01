@@ -21,8 +21,8 @@ const sendOtherPredictionCommand = async (interaction: CommandInteraction) => {
     return;
     }
 
-    
     await interaction.deferReply({ ephemeral: true });
+    interaction.editReply({ content: "🔄​ Procesando predicción...",  });
 
     try {
         const user_id = interaction.options.get('user-id')?.value as string;
