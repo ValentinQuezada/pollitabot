@@ -19,7 +19,7 @@ const auraLeaderboardCommand = {
 
     // build the leaderboard (ties are handled)
     let message = `​💎 **RANKING DE AURA POINTS**\n`;
-    let lastPoints = null;
+    let lastPoints = 0;
     let lastRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
