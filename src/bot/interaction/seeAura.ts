@@ -10,7 +10,8 @@ const seeAuraCommand = {
 
     // sorts the leaderboard by totalPoints in descending order
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
-    const idx = leaderboard.findIndex(row => row.userId === interaction.user.id) as number;
+    let idx = leaderboard.findIndex(row => row.userId === interaction.user.id) as number;
+    idx += 1;
     const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
     if (userAura) {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
@@ -18,7 +19,7 @@ const seeAuraCommand = {
         if (attr.key !== "totalPoints") {
           privateMessage += `${attr.label} **${attr.name}**: ${userAura[attr.key] ?? 0} 💠`;
         }
-        if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lategoalHit" || attr.key == "upsetHit") {
+        if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lateGoalHit" || attr.key == "upsetHit") {
           privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por Hit)`
         }
         privateMessage += `\n`
