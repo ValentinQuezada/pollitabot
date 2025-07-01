@@ -13,15 +13,16 @@ export const AURA_POINTS_VALUES = {
 };
 
 export const ATTRIBUTES = [
-  { key: "Hits:", label: "🎯" },
-  { key: "Hits únicos:", label: "🦄" },
-  { key: "Hits especiales:", label: "⭐" },
-  { key: "Hits de último minuto:", label: "⏰" },
-  { key: "Hits de no-favorito:", label: "⚡" },
-  { key: "Rachas:", label: "🔥" },
-  { key: "Bonus Mayor Profit:", label: "💰" },
-  { key: "Bonus Mayor Win Rate:", label: "📈" },
-  { key: "Bonus Mayor Racha:", label: "🏅" },
-  { key: "Awards:", label: "🏆" },
-  { key: "Totales:", label: "💠" }
+  { key: "Hits", label: "🎯" },
+  { key: "Hits únicos", label: "🦄" },
+  { key: "Hits especiales", label: "⭐" },
+  { key: "Hits de último minuto", label: "⏰" },
+  { key: "Hits de no-favorito", label: "⚡" },
+  { key: "Rachas", label: "🔥" },
+  { key: "Bonus Mayor Profit", label: "💰" },
+  { key: "Bonus Mayor Win Rate", label: "📈" },
+  { key: "Bonus Mayor Racha", label: "💥​" },
+  { key: "Awards", label: "🏆" },
+  { key: "Récords", label: "🏅" },
+  { key: "Totales", label: "💠" }
 ];

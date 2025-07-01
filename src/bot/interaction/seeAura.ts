@@ -14,7 +14,7 @@ const seeAuraCommand = {
     if (userAura) {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
       ATTRIBUTES.forEach(attr => {
-        if (attr.key !== "totalPoints") {
+        if (attr.key !== "Totales") {
           privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
         }
       });
