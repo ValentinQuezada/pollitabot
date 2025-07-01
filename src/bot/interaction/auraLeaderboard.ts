@@ -17,8 +17,9 @@ const auraLeaderboardCommand = {
       return;
     }
 
+    let message = "```\n";
     // build the leaderboard (ties are handled)
-    let message = `​💎 **RANKING DE AURA POINTS**\n`;
+    message += `​💎 **RANKING DE AURA POINTS**\n`;
     let lastPoints = 0;
     let lastRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
@@ -27,8 +28,9 @@ const auraLeaderboardCommand = {
         lastRank = idx + 1;
         lastPoints = row.totalPoints;
       }
-      message += `${lastRank+3}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+      message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
     }
+    message += '```';
 
     // top 3 highlights
     const winner = leaderboard[0];
