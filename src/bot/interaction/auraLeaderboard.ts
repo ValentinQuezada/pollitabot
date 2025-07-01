@@ -10,8 +10,10 @@ const auraLeaderboardCommand = {
     // sorts the leaderboard by totalPoints in descending order
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
 
+    await interaction.deferReply({ ephemeral: true });
+
     if (!leaderboard.length) {
-      await interaction.reply({ content: "​📂​ No hay datos de **Aura Points** aún.", ephemeral: true });
+      await interaction.editReply({ content: "​📂​ No hay datos de **Aura Points** aún." });
       return;
     }
 
