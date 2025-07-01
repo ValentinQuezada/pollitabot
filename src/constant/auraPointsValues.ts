@@ -9,4 +9,19 @@ export const AURA_POINTS_VALUES = {
   topWinRate: 10,
   topStreak: 10,
   awardHit: 8,
+  recordHit: 5
 };
+
+export const ATTRIBUTES = [
+  { key: "Hits:", label: "🎯" },
+  { key: "Hits únicos:", label: "🦄" },
+  { key: "Hits especiales:", label: "⭐" },
+  { key: "Hits de último minuto:", label: "⏰" },
+  { key: "Hits de no-favorito:", label: "⚡" },
+  { key: "Rachas:", label: "🔥" },
+  { key: "Bonus Mayor Profit:", label: "💰" },
+  { key: "Bonus Mayor Win Rate:", label: "📈" },
+  { key: "Bonus Mayor Racha:", label: "🏅" },
+  { key: "Awards:", label: "🏆" },
+  { key: "Totales:", label: "💠" }
+];

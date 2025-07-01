@@ -59,7 +59,7 @@ const assignAuraTopBonuses = async (interaction: CommandInteraction) => {
     await aura.save();
   }
 
-  await interaction.reply({ content: "✅ Bonos de aura top asignados correctamente.", ephemeral: true });
+  await interaction.reply({ content: "✅ Bonos de Aura asignados correctamente.", ephemeral: true });
 };
 
 export default assignAuraTopBonuses;

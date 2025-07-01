@@ -2,20 +2,6 @@ import mongoose from "mongoose";
 import { AuraPointsSchema } from "../../schemas/aura";
 import databaseConnection from "../../database/connection";
 
-const ATTRIBUTES = [
-  { key: "matchesHit", label: "🎯" },
-  { key: "uniqueHit", label: "🦄" },
-  { key: "specialHit", label: "⭐" },
-  { key: "lateGoalHit", label: "⏰" },
-  { key: "upsetHit", label: "⚡" },
-  { key: "streak3plus", label: "🔥" },
-  { key: "topProfit", label: "💰" },
-  { key: "topWinRate", label: "📈" },
-  { key: "topStreak", label: "🏅" },
-  { key: "awardHit", label: "🏆" },
-  { key: "totalPoints", label: "💠" }
-];
-
 const auraLeaderboardCommand = {
   async execute(interaction: any) {
     await databaseConnection();
@@ -61,22 +47,6 @@ const auraLeaderboardCommand = {
     }
     if (third) {
       message += `\n🥉 *En 3er lugar, <@${third.userId}> con **${third.totalPoints}** 💠.*`;
-    }
-
-    // breakdown personal (ephemeral)
-    const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
-    if (userAura) {
-      let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
-      ATTRIBUTES.forEach(attr => {
-        if (attr.key !== "totalPoints") {
-          privateMessage += `${attr.label} \`${attr.key}\`: **${userAura[attr.key] ?? 0}**\n`;
-        }
-      });
-      privateMessage += `💠 **totales: ${userAura.totalPoints}**`;
-      await interaction.reply({ content: privateMessage, ephemeral: true });
-    } else {
-      await interaction.reply({ content: message });
-      return;
     }
 
     // send the leaderboard to the channel

@@ -19,7 +19,8 @@ import {
   seeMatches,
   assignAuraTopBonusesCommand,
   sendMatchesCommand,
-  groupStageStatusCommand
+  groupStageStatusCommand,
+  seeAuraCommand
   // dailySummaryCommand
 } from "../interaction";
 import databaseConnection from "../../database/connection";
@@ -154,6 +155,9 @@ const interactionCreateEvent = async (interaction: Interaction) => {
       break;
     case 'group-stage-status':
       await groupStageStatusCommand(commandInteraction);
+      break;
+    case 'see-my-aura':
+      await seeAuraCommand.execute(commandInteraction);
       break;
     // case 'daily-summary':
     //   await dailySummaryCommand(commandInteraction);
