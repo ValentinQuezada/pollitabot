@@ -27,7 +27,7 @@ const auraLeaderboardCommand = {
         lastRank = idx + 1;
         lastPoints = row.totalPoints;
       }
-      message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+      message += `${lastRank+3}. <@${row.userId}> ${row.totalPoints} 💠\n`;
     }
 
     // top 3 highlights
