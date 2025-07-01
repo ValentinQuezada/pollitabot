@@ -19,15 +19,12 @@ const auraLeaderboardCommand = {
     let message = `​💎 **RANKING DE AURA POINTS**\n`;
     let lastPoints = null;
     let lastRank = 0;
-    let realRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
-      realRank++;
       if (lastPoints === row.totalPoints) {
-        // same points as last, keep the same rank
         message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
       } else {
-        lastRank = realRank;
+        lastRank = idx + 1;
         message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
         lastPoints = row.totalPoints;
       }
@@ -39,7 +36,6 @@ const auraLeaderboardCommand = {
     const third = leaderboard[2];
 
     if (winner && second) {
-      const diff = winner.totalPoints - second.totalPoints;
       message += `\n🥇 *¡<@${winner.userId}> lidera la tabla con **${winner.totalPoints}** 💠!*`;
     }
     if (second) {
@@ -49,8 +45,12 @@ const auraLeaderboardCommand = {
       message += `\n🥉 *En 3er lugar, <@${third.userId}> con **${third.totalPoints}** 💠.*`;
     }
 
-    // send the leaderboard to the channel
-    await interaction.channel.send({ content: message });
+    if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
+      await interaction.channel.send(message);
+      await interaction.editReply({ content: "✅ Listado enviado al canal.", ephemeral: true });
+    } else {
+      await interaction.editReply({ content: "❌ No se pudo enviar el listado al canal.", ephemeral: true });
+    }
   }
 };
 

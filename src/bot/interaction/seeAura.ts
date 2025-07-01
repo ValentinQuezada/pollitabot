@@ -17,10 +17,12 @@ const seeAuraCommand = {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
       ATTRIBUTES.forEach(attr => {
         if (attr.key !== "totalPoints") {
-          privateMessage += `${attr.label} **${attr.name}**: ${userAura[attr.key] ?? 0} 💠`;
+          privateMessage += `${attr.label} **${attr.name}:** ${userAura[attr.key] ?? 0} 💠`;
         }
         if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lateGoalHit" || attr.key == "upsetHit") {
           privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por hit)`
+        } else if (attr.key == "streak3plus") {
+          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por racha acumulada)`
         } else if (attr.key == "awardHit") {
           privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por award)`
         } else if (attr.key == "recordHit") {
