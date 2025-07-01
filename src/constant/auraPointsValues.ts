@@ -13,16 +13,16 @@ export const AURA_POINTS_VALUES = {
 };
 
 export const ATTRIBUTES = [
-  { key: "Hits", label: "🎯" },
-  { key: "Hits únicos", label: "🦄" },
-  { key: "Hits especiales", label: "⭐" },
-  { key: "Hits de último minuto", label: "⏰" },
-  { key: "Hits de no-favorito", label: "⚡" },
-  { key: "Rachas", label: "🔥" },
-  { key: "Bonus Mayor Profit", label: "💰" },
-  { key: "Bonus Mayor Win Rate", label: "📈" },
-  { key: "Bonus Mayor Racha", label: "💥​" },
-  { key: "Awards", label: "🏆" },
-  { key: "Récords", label: "🏅" },
-  { key: "Totales", label: "💠" }
+  { key: "matchesHit", name: "Hits", label: "🎯" },
+  { key: "uniqueHit", name: "Hits únicos", label: "🦄" },
+  { key: "specialHit", name: "Hits especiales", label: "⭐" },
+  { key: "lateGoalHit", name: "Hits de último minuto", label: "⏰" },
+  { key: "upsetHit", name: "Hits de no-favorito", label: "⚡" },
+  { key: "streak3plus", name: "Rachas", label: "🔥" },
+  { key: "topProfit", name: "Bonus Mayor Profit", label: "💰" },
+  { key: "topWinRate", name: "Bonus Mayor Win Rate", label: "📈" },
+  { key: "topStreak", name: "Bonus Mayor Racha", label: "💥​" },
+  { key: "awardHit", name: "Awards", label: "🏆" },
+  { key: "recordHit", name: "Récords", label: "🏅" },
+  { key: "totalPoints", name: "Totales", label: "💠" }
 ];
