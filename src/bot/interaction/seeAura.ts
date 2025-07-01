@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { AuraPointsSchema } from "../../schemas/aura";
 import databaseConnection from "../../database/connection";
-import { ATTRIBUTES } from "../../constant/auraPointsValues";
+import { AURA_POINTS_VALUES, ATTRIBUTES } from "../../constant/auraPointsValues";
 
 const seeAuraCommand = {
   async execute(interaction: any) {
@@ -14,9 +14,13 @@ const seeAuraCommand = {
     if (userAura) {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
       ATTRIBUTES.forEach(attr => {
-        if (attr.key !== "Totales") {
-          privateMessage += `${attr.label} ${attr.name}: **${userAura[attr.key] ?? 0}**\n`;
+        if (attr.key !== "totalPoints") {
+          privateMessage += `${attr.label} **${attr.name}**: ${userAura[attr.key] ?? 0} 💠`;
         }
+        if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lategoalHit" || attr.key == "upsetHit") {
+            privateMessage += `(${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por Hit)`
+        }
+        privateMessage += `\n`
       });
       privateMessage += `💠 **TOTALES: ${userAura.totalPoints}**`;
       await interaction.reply({ content: privateMessage, ephemeral: true });
