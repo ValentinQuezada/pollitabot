@@ -20,7 +20,11 @@ const seeAuraCommand = {
           privateMessage += `${attr.label} **${attr.name}**: ${userAura[attr.key] ?? 0} 💠`;
         }
         if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lateGoalHit" || attr.key == "upsetHit") {
-          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por Hit)`
+          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por hit)`
+        } else if (attr.key == "awardHit") {
+          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por award)`
+        } else if (attr.key == "recordHit") {
+          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por récord)`
         }
         privateMessage += `\n`
       });
