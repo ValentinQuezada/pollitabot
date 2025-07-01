@@ -23,13 +23,11 @@ const auraLeaderboardCommand = {
     let lastRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
-      if (lastPoints === row.totalPoints) {
-        message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
-      } else {
+      if (lastPoints != row.totalPoints) {
         lastRank = idx + 1;
-        message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
         lastPoints = row.totalPoints;
       }
+      message += `${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
     }
 
     // top 3 highlights
