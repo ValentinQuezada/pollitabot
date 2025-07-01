@@ -10,8 +10,18 @@ const seeAuraCommand = {
 
     // sorts the leaderboard by totalPoints in descending order
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
-    let idx = leaderboard.findIndex(row => row.userId === interaction.user.id) as number;
-    idx += 1;
+    // let lastRank = leaderboard.findIndex(row => row.userId === interaction.user.id) as number;
+    // lastRank += 1;
+    let lastPoints = null;
+    let lastRank = 0;
+    for (let idx = 0; idx < leaderboard.length; idx++) {
+      const row = leaderboard[idx];
+      if (lastPoints != row.totalPoints) {
+        lastRank = idx + 1;
+        lastPoints = row.totalPoints;
+      }
+      if( row.userId === interaction.user.id ) break;
+    }
     const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
     if (userAura) {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
@@ -31,7 +41,7 @@ const seeAuraCommand = {
         privateMessage += `\n`
       });
       privateMessage += `💠 **TOTALES: ${userAura.totalPoints}** Aura Points\n`;
-      privateMessage += `📊​ Ranking: ${idx}/${leaderboard.length}`;
+      privateMessage += `📊​ Ranking: ${lastRank}/${leaderboard.length}`;
       await interaction.reply({ content: privateMessage, ephemeral: true });
     } else {
       await interaction.reply({ content: "📂​ No hay datos de **Aura Points** aún." });

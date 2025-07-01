@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import { AuraPointsSchema } from "../../schemas/aura";
+import { UserStatsSchema } from "../../schemas/user";
 import databaseConnection from "../../database/connection";
 
 const auraLeaderboardCommand = {
   async execute(interaction: any) {
     await databaseConnection();
-    const AuraPoints = mongoose.model("AuraPoints", AuraPointsSchema);
+    const UserStats = mongoose.model("UserStats", UserStatsSchema);
 
     // sorts the leaderboard by totalPoints in descending order
-    const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
+    const leaderboard = await UserStats.find({}).sort({ auraPoints: -1 }).lean();
 
     await interaction.deferReply({ ephemeral: true });
 
@@ -19,15 +19,15 @@ const auraLeaderboardCommand = {
 
     // build the leaderboard (ties are handled)
     let message = `​💎 **RANKING DE AURA POINTS**\n`;
-    let lastPoints = 0;
+    let lastPoints = null;
     let lastRank = 0;
     for (let idx = 0; idx < leaderboard.length; idx++) {
       const row = leaderboard[idx];
-      if (lastPoints != row.totalPoints) {
+      if (lastPoints != row.auraPoints) {
         lastRank = idx + 1;
-        lastPoints = row.totalPoints;
+        lastPoints = row.auraPoints;
       }
-      message += `\u200b${lastRank}. <@${row.userId}> ${row.totalPoints} 💠\n`;
+      message += `\u200b${lastRank}. <@${row.userId}> ${row.auraPoints} 💠\n`;
     }
 
 
@@ -36,14 +36,14 @@ const auraLeaderboardCommand = {
     const second = leaderboard[1];
     const third = leaderboard[2];
 
-    if (winner && second) {
-      message += `\n🥇 *¡<@${winner.userId}> lidera la tabla con **${winner.totalPoints}** 💠!*`;
+    if (winner) {
+      message += `\n🥇 *¡<@${winner.userId}> lidera la tabla con **${winner.auraPoints}** 💠!*`;
     }
     if (second) {
-      message += `\n🥈 *En 2do lugar, <@${second.userId}> con **${second.totalPoints}** 💠.*`;
+      message += `\n🥈 *En 2do lugar, <@${second.userId}> con **${second.auraPoints}** 💠.*`;
     }
     if (third) {
-      message += `\n🥉 *En 3er lugar, <@${third.userId}> con **${third.totalPoints}** 💠.*`;
+      message += `\n🥉 *En 3er lugar, <@${third.userId}> con **${third.auraPoints}** 💠.*`;
     }
 
     if (interaction.channel && 'send' in interaction.channel && typeof interaction.channel.send === 'function') {
