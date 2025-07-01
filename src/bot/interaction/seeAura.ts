@@ -10,6 +10,7 @@ const seeAuraCommand = {
 
     // sorts the leaderboard by totalPoints in descending order
     const leaderboard = await AuraPoints.find({}).sort({ totalPoints: -1 }).lean();
+    const idx = leaderboard.findIndex(row => row.userId === interaction.user.id) as number;
     const userAura = leaderboard.find(row => row.userId === interaction.user.id) as any;
     if (userAura) {
       let privateMessage = `🔎 **Tus Aura Points (💠) por atributo:**\n`;
@@ -18,11 +19,12 @@ const seeAuraCommand = {
           privateMessage += `${attr.label} **${attr.name}**: ${userAura[attr.key] ?? 0} 💠`;
         }
         if (attr.key == "matchesHit" || attr.key == "uniqueHit" || attr.key == "specialHit" || attr.key == "lategoalHit" || attr.key == "upsetHit") {
-            privateMessage += `(${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por Hit)`
+          privateMessage += ` (${AURA_POINTS_VALUES[attr.key as keyof typeof AURA_POINTS_VALUES]} por Hit)`
         }
         privateMessage += `\n`
       });
-      privateMessage += `💠 **TOTALES: ${userAura.totalPoints}**`;
+      privateMessage += `💠 **TOTALES: ${userAura.totalPoints}** Aura Points\n`;
+      privateMessage += `📊​ Ranking: ${idx}/${leaderboard.length}`;
       await interaction.reply({ content: privateMessage, ephemeral: true });
     } else {
       await interaction.reply({ content: "📂​ No hay datos de **Aura Points** aún." });
